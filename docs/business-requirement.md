@@ -26,7 +26,7 @@ Phân tích thị trường tại khu vực Châu Á, đặc biệt là Việt N
 Dự án áp dụng mô hình kinh doanh Freemium Subscription B2C (Khách hàng Cá nhân) kết hợp với Gói Tích hợp B2B (Khách hàng Doanh nghiệp), tối đa hóa giá trị vòng đời khách hàng (LTV) và đảm bảo dòng tiền định kỳ (Recurring Revenue).
 
 #### a. Chiến lược B2C (Business-to-Consumer):
-- Mô hình Phễu (Funnel): Người dùng tải ứng dụng miễn phí và trải qua quá trình định chuẩn (Onboarding) kéo dài 7 ngày. Trong giai đoạn này, họ được trải nghiệm toàn bộ sức mạnh của thuật toán (Full Access), thấy rõ biểu đồ năng lượng và mức nợ giấc ngủ của mình. Sự trải nghiệm ngắn hạn này dựa trên nguyên lý tâm lý học về sự mất mát (Loss Aversion).
+- Mô hình Phễu (Funnel): Người dùng tải ứng dụng miễn phí và trải qua quá trình định chuẩn (Onboarding) chuyên sâu. Giai đoạn này bao gồm một bộ khảo sát y sinh (Onboarding Survey) nhằm xác định mục tiêu (hiệu suất/sức khỏe), các vấn đề bệnh lý (ADHD/khó ngủ), và lịch trình sinh hoạt dự kiến. Dữ liệu này giúp thuật toán hoạt động chính xác ngay từ ngày đầu tiên trước khi có đủ dữ liệu từ thiết bị đeo. Trong 7 ngày dùng thử, họ được trải nghiệm toàn bộ sức mạnh của thuật toán (Full Access)...
 - Paywall & Đăng ký (Subscription): Sau thời gian dùng thử, ứng dụng bị khóa các tính năng dự báo chuyên sâu. Người dùng buộc phải đăng ký gói thuê bao hàng tháng (Monthly Subscription) hoặc hàng năm (Annual Subscription) để tiếp tục duy trì khả năng đồng bộ hóa lịch trình, phân tích nhịp sinh học tương lai và sử dụng các công cụ như tiếng ồn trắng (sleep sounds), nhắc nhở thói quen thông minh. Việc tính phí đăng ký là cần thiết để bù đắp chi phí vận hành cơ sở dữ liệu chuỗi thời gian đắt đỏ và sức mạnh tính toán đám mây.
 
 #### b. Chiến lược B2B (Business-to-Business):
