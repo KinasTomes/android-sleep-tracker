@@ -1,3 +1,68 @@
 <resources>
     <string name="app_name">Sleeptracker</string>
+
+    <!-- Onboarding Common -->
+    <string name="onboarding_profile_title">Profile</string>
+    <string name="onboarding_gender_age_subtitle">Gender &amp; Age</string>
+    <string name="onboarding_button_save_continue">SAVE &amp; CONTINUE</string>
+    <string name="onboarding_button_skip">Skip</string>
+
+    <!-- Onboarding Step 1: Gender -->
+    <string name="onboarding_gender_select_title">Select your gender.</string>
+    <string name="onboarding_gender_select_description">Your sleep and energy patterns change over time based on age and hormones.</string>
+    <string name="gender_female">Female</string>
+    <string name="gender_male">Male</string>
+    <string name="gender_non_binary">Non-binary</string>
+    <string name="gender_other">Other</string>
+    <string name="gender_prefer_not_to_say">Prefer not to say</string>
+
+    <!-- Onboarding Step 2: Age -->
+    <string name="onboarding_age_select_title">What\'s your age?</string>
+    <string name="onboarding_age_select_description">Your sleep needs change with age. Knowing age help us offer better guidance.</string>
+    <string name="age_under_18">Under 18</string>
+    <string name="age_18_23">18-23</string>
+    <string name="age_24_29">24-29</string>
+    <string name="age_30_39">30-39</string>
+    <string name="age_40_49">40-49</string>
+    <string name="age_50_59">50-59</string>
+    <string name="age_60_plus">60+</string>
+
+    <string name="age_under_18_desc">Sleep need is higher for teens and adolescents than adults.</string>
+    <string name="age_18_23_desc">Our biological clocks are set to the latest they will ever be around the age of 20.</string>
+    <string name="age_24_29_desc">After age 20, our biological clocks adjust our sleep and wake times earlier.</string>
+    <string name="age_30_39_desc">Due to the demands of life, sleep duration starts to decrease around age 30.</string>
+    <string name="age_40_49_desc">People tend to get the least sleep around age 40.</string>
+    <string name="age_50_59_desc">People in their 50s sleep less and start to have trouble failing and staying asleep.</string>
+    <string name="age_60_plus_desc">Difficulty falling and staying asleep is the most common sleep problem in adults 60+.</string>
+    <!-- Onboarding Step 3: Goals -->
+    <string name="onboarding_goals_title">Goals</string>
+    <string name="onboarding_goals_select_title">Tell us about your goals.</string>
+    <string name="onboarding_goals_select_description">We will setup tools, tips, and timely reminders that match your goals.</string>
+    
+    <string name="goal_early_riser">Become an early riser</string>
+    <string name="goal_early_riser_desc">You\'re in good company - over 50% of our users consider themselves night owls.</string>
+    
+    <string name="goal_less_exhausted">Feel less exhausted</string>
+    <string name="goal_less_exhausted_desc">Nearly 4 out of 5 users say that our application has helped them manage their energy.</string>
+    
+    <string name="goal_sleep_schedule">Fix my sleep schedule</string>
+    <string name="goal_sleep_schedule_desc">Rediscover your natural sleep-wake cycle, for clarity and control amidst a busy life.</string>
+    
+    <string name="goal_fitness">Optimize my fitness</string>
+    <string name="goal_fitness_desc">We can help you find the optimal time to excercise based on your body and goals.</string>
+    
+    <string name="goal_productivity">Optimize my productivity</string>
+    <string name="goal_productivity_desc">Know when your body and mind are most primed for focus, insight, and creativity.</string>
+    
+    <string name="goal_habits">Improve my sleep habits</string>
+    <string name="goal_habits_desc">Learn scientifically proven steps you can take each day to improve your sleep habits.</string>
+    
+    <string name="goal_quality">Improve sleep quality</string>
+    <string name="goal_quality_desc">Discover your body\'s ideal time to fall asleep for higher sleep quality and more energy.</string>
+    
+    <string name="goal_anxiety">Reduce anxiety</string>
+    <string name="goal_anxiety_desc">Lising just 1 hour of sleep a night for a week can cause anxiety to reach clinical levels.</string>
+    
+    <string name="goal_disorder">Solve sleep disorder</string>
+    <string name="goal_disorder_desc">You\'re not alone - nearly 1 in 5 users is looking to better understands a sleep disorder.</string>
 </resources>

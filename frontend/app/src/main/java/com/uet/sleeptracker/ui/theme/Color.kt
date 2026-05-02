@@ -2,17 +2,21 @@ package com.uet.sleeptracker.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Sleep Tracker Palette based on image
-val SleepBackground = Color(0xFF0D0B14)
-val SleepSurface = Color(0xFF1B1922)
-val SleepPrimary = Color(0xFF9D5FF3)
+// Sleep Tracker Palette - Refined based on precise feedback
+val SleepBackground = Color(0xFF000000)
+val SleepSurface = Color(0xFF1C1C1E) 
+val SleepSurfaceSelected = Color(0xFF2C2C2E)
+val SleepOutlineLight = Color(0xFFD1D1D6) // Light gray, almost white for borders
+
+val SleepPrimary = Color(0xFF721BFD) // Exact purple: #721bfd
 val SleepSecondary = Color(0xFF2DD4BF)
 val SleepTertiary = Color(0xFFFFD700)
 
-val SleepOnBackground = Color(0xFFE6E1E5)
-val SleepOnSurface = Color(0xFFE6E1E5)
+val SleepOnBackground = Color(0xFFFFFFFF)
+val SleepOnSurface = Color(0xFFFFFFFF)
+val SleepOnSurfaceVariant = Color(0xFF8E8E93)
 
-// Keeping original placeholders if needed for compatibility
+// Standard Material 3 names for compatibility
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
 val Pink80 = Color(0xFFEFB8C8)
