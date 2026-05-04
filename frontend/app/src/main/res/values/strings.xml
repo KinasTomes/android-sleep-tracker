@@ -173,4 +173,12 @@
     
     <string name="data_permission_button">OK, LET\'S DO IT!</string>
     <string name="data_permission_support">Customer Support</string>
+
+    <!-- Discovery Intro Screen -->
+    <string name="discovery_intro_small_title">Great start! 🎉</string>
+    <string name="discovery_intro_main_bold">Now, let\'s discover your sleep and energy patterns.</string>
+    <string name="discovery_intro_main_desc">We turn existing data into powerful insights.</string>
+    <string name="discovery_intro_bullet">Track how your sleep impacts your energy throughout the day.</string>
+    <string name="discovery_intro_button">DISCOVER MY PATTERNS</string>
+    <string name="discovery_intro_learn_more">Learn more</string>
 </resources>
