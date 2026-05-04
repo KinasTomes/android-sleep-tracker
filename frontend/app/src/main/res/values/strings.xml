@@ -203,4 +203,8 @@
     <string name="perm_notif_button">Enable Notifications</string>
     <string name="perm_notif_enabled">Notifications Enabled</string>
     <string name="perm_notif_next">NEXT</string>
+
+    <!-- Sleep Need Intro Screen -->
+    <string name="sleep_need_intro_text">To understand your sleep debt, we must first answer the question, \"how much sleep do I need?\"</string>
+    <string name="sleep_need_intro_button">MY SLEEP PATTERNS</string>
 </resources>
