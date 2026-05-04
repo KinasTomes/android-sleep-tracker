@@ -106,4 +106,30 @@
 
     <string name="lc_academic_pressure">Studying or academic pressure</string>
     <string name="lc_academic_pressure_desc">Know when your brain is primed for focus and when it needs to rest.</string>
+
+    <!-- Onboarding Step 5: Sleep Practices -->
+    <string name="onboarding_practices_title">Sleep Practices</string>
+    <string name="onboarding_practices_select_title">Pick your go-to sleep practices.</string>
+    <string name="onboarding_practices_select_description">We\'ll setup tools, tips, and timely reminders to make them more effective.</string>
+
+    <string name="practice_bedroom">Comfortable bedroom</string>
+    <string name="practice_bedroom_desc">RISE can remind you to prep your sleep environment- make it cool, dark and quiet.</string>
+
+    <string name="practice_melatonin">Melatonin Supplements</string>
+    <string name="practice_melatonin_desc">We\'ll help you find the right time to take melatonin supplements based on your body.</string>
+
+    <string name="practice_relaxation">Relaxation techniques &amp; sounds</string>
+    <string name="practice_relaxation_desc">Stress makes it harder to fall asleep- reduce stress before your head hits the pillow.</string>
+
+    <string name="practice_alcohol">Alcohol</string>
+    <string name="practice_alcohol_desc">Alcohol leads to a restless sleep. We\'ll remind you when to cut off to reduce wake ups.</string>
+
+    <string name="practice_winding_down">Winding down</string>
+    <string name="practice_winding_down_desc">During busy evenings, we help you juggle tasks and catch your body\'s wind-down cues.</string>
+
+    <string name="practice_screen_time">Limiting screen time</string>
+    <string name="practice_screen_time_desc">We\'ll signal when to dim screens to keep your daily sleep rhythm steady.</string>
+
+    <string name="practice_journaling">Journaling or to-do list</string>
+    <string name="practice_journaling_desc">Ease your mind before bed using tools to offload thoughts and sleep easier.</string>
 </resources>
