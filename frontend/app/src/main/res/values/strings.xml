@@ -188,4 +188,12 @@
     <string name="perm_physical_button">Enable Physical Activity Data</string>
     <string name="perm_physical_instruction">Please, tap the button above to turn on motion data access</string>
     <string name="perm_physical_why">Why do you need this?</string>
+
+    <!-- Health Connect Permission Screen -->
+    <string name="perm_health_title">Next, we need to turn on Health Connect Data</string>
+    <string name="perm_health_desc">We integrate with other sleep apps and alarm clocks and use step data to estimate historical sleep and provide estimations.</string>
+    <string name="perm_health_instruction_bold">Connect RISE to your Health Connect account</string>
+    <string name="perm_health_instruction_regular">then tap allow.</string>
+    <string name="perm_health_button">TURN ON SLEEP &amp; STEPS, GOT IT!</string>
+    <string name="perm_health_why">Tell me again, why is this important?</string>
 </resources>
