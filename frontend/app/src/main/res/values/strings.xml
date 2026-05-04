@@ -181,4 +181,11 @@
     <string name="discovery_intro_bullet">Track how your sleep impacts your energy throughout the day.</string>
     <string name="discovery_intro_button">DISCOVER MY PATTERNS</string>
     <string name="discovery_intro_learn_more">Learn more</string>
+
+    <!-- Physical Activity Permission Screen -->
+    <string name="perm_physical_title">First, let\'s enable Physical Activity Data</string>
+    <string name="perm_physical_desc">Let\'s allow Rise to access your motion data. We use this along with other metrics to figure out how well you\'re sleeping.</string>
+    <string name="perm_physical_button">Enable Physical Activity Data</string>
+    <string name="perm_physical_instruction">Please, tap the button above to turn on motion data access</string>
+    <string name="perm_physical_why">Why do you need this?</string>
 </resources>
