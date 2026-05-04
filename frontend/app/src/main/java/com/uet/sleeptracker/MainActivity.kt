@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import com.uet.sleeptracker.ui.screens.onboarding.Step1GenderScreen
 import com.uet.sleeptracker.ui.screens.onboarding.Step2AgeScreen
 import com.uet.sleeptracker.ui.screens.onboarding.Step3GoalScreen
+import com.uet.sleeptracker.ui.screens.onboarding.Step4LCScreen
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 
 class MainActivity : ComponentActivity() {
@@ -21,6 +22,7 @@ class MainActivity : ComponentActivity() {
                 var selectedGender by remember { mutableStateOf("") }
                 var selectedAge by remember { mutableStateOf("") }
                 var selectedGoals by remember { mutableStateOf(setOf<String>()) }
+                var selectedChallenges by remember { mutableStateOf(setOf<String>()) }
                 
                 when (currentStep) {
                     1 -> Step1GenderScreen(
@@ -44,7 +46,15 @@ class MainActivity : ComponentActivity() {
                         onNavigateNext = { goals ->
                             selectedGoals = goals
                             println("Goals selected: ${goals.joinToString()}")
-                            // Chuyển sang màn hình chính của ứng dụng
+                            currentStep = 4
+                        },
+                        onSkip = { currentStep = 4 }
+                    )
+                    4 -> Step4LCScreen(
+                        onNavigateNext = { challenges ->
+                            selectedChallenges = challenges
+                            println("Challenges selected: ${challenges.joinToString()}")
+                            // Vào màn hình chính
                         },
                         onSkip = { /* Vào màn hình chính */ }
                     )

@@ -65,4 +65,45 @@
     
     <string name="goal_disorder">Solve sleep disorder</string>
     <string name="goal_disorder_desc">You\'re not alone - nearly 1 in 5 users is looking to better understands a sleep disorder.</string>
+
+    <!-- Onboarding Step 4: Lifestyle & Challenges -->
+    <string name="onboarding_lifestyle_title">Lifestyle &amp; Challenges</string>
+    <string name="onboarding_lifestyle_select_title">What are the biggest challenges to achieving your goals?</string>
+    <string name="onboarding_lifestyle_select_description">We adapts to your lifestyle.</string>
+
+    <string name="lc_falling_asleep">Difficulty falling asleep</string>
+    <string name="lc_falling_asleep_desc">65% of users struggled falling asleep. We\'ve helped them find the best time to fall asleep.</string>
+
+    <string name="lc_work_from_home">Working from home</string>
+    <string name="lc_work_from_home_desc">We\'ll uncover your body\'s peak productivity hours to optimize your existing flow.</string>
+
+    <string name="lc_adhd">ADHD</string>
+    <string name="lc_adhd_desc">Nearly 1 in 5 RISE users have ADHD. We\'ll help you find the best times to focus.</string>
+
+    <string name="lc_work_stress">New job or work stress</string>
+    <string name="lc_work_stress_desc">Stress can make it harder to sleep. We\'ll tell you when your body is primed for sleep.</string>
+
+    <string name="lc_health_concerns">Health changes or concerns</string>
+    <string name="lc_health_concerns_desc">Poor sleep can wreak havoc on your immune system. Sleep is essential for staying healthy.</string>
+
+    <string name="lc_new_baby">New baby</string>
+    <string name="lc_new_baby_desc">We\'ve helped parents get back on track with their sleep after having a baby.</string>
+
+    <string name="lc_sleep_environment">Difficult sleep environment</string>
+    <string name="lc_sleep_environment_desc">You\'ll learn the 3 keywords for prepping your sleep environment: cool, dark, and quiet.</string>
+
+    <string name="lc_staying_asleep">Difficulty staying asleep</string>
+    <string name="lc_staying_asleep_desc">Knowing the right time to fall asleep helps you stay asleep throughout the night.</string>
+
+    <string name="lc_social_life">Busy social life &amp; commitments</string>
+    <string name="lc_social_life_desc">Understand how your body\'s energy schedule compares to your social schedule.</string>
+
+    <string name="lc_family_obligations">Family obligations</string>
+    <string name="lc_family_obligations_desc">We\'ll help you find the best times to get things done for yourself and others.</string>
+
+    <string name="lc_recent_move">Recent move</string>
+    <string name="lc_recent_move_desc">Stress from moving makes it hard to sleep. We\'ll tell you when your body is ready for rest.</string>
+
+    <string name="lc_academic_pressure">Studying or academic pressure</string>
+    <string name="lc_academic_pressure_desc">Know when your brain is primed for focus and when it needs to rest.</string>
 </resources>
