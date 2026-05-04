@@ -163,7 +163,7 @@ fun DataPermissionInfoScreen(
             Text(
                 text = stringResource(id = R.string.data_permission_button),
                 style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.Normal,
                     letterSpacing = 1.sp
                 )
             )
