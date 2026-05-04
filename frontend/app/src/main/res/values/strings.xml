@@ -132,4 +132,30 @@
 
     <string name="practice_journaling">Journaling or to-do list</string>
     <string name="practice_journaling_desc">Ease your mind before bed using tools to offload thoughts and sleep easier.</string>
+
+    <!-- Onboarding Step 6: Energy Boost -->
+    <string name="onboarding_energy_title">Energy Boost</string>
+    <string name="onboarding_energy_select_title">What strategies do you use to boost your energy?</string>
+    <string name="onboarding_energy_select_description">We\'ll setup tools, tips, and timely reminders to make them more effective.</string>
+
+    <string name="energy_caffeine">Caffeine</string>
+    <string name="energy_caffeine_desc">Caffeine affects you for ten hours. We\'ll make sure you know your daily cutoff time.</string>
+
+    <string name="energy_planners">Planners &amp; time management</string>
+    <string name="energy_planners_desc">Learn when you\'ll feel most alert, focused, and equipped to take on important tasks.</string>
+
+    <string name="energy_naps">Power naps</string>
+    <string name="energy_naps_desc">We\'ll pinpoint your ideal nap time, ensuring it doesn\'t disrupt your nightly sleep rhythm.</string>
+
+    <string name="energy_sunshine">Fresh air &amp; sunshine</string>
+    <string name="energy_sunshine_desc">We\'ll remind you to get light in the morning to suppress melatonin and feel more alert.</string>
+
+    <string name="energy_diet">Managing diet</string>
+    <string name="energy_diet_desc">Appetite is part of your circadian rhythm. We\'ll help you avoid late meals which disrupt sleep.</string>
+
+    <string name="energy_exercise">Exercise &amp; physical activity</string>
+    <string name="energy_exercise_desc">Exercising at the right time can improve your energy. We\'ll track your boosts from workouts.</string>
+
+    <string name="energy_social">Social time &amp; hobbies</string>
+    <string name="energy_social_desc">Understand how your body\'s energy schedule compares to your social schedule.</string>
 </resources>

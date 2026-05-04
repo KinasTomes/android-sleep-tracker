@@ -10,6 +10,7 @@ import com.uet.sleeptracker.ui.screens.onboarding.Step2AgeScreen
 import com.uet.sleeptracker.ui.screens.onboarding.Step3GoalScreen
 import com.uet.sleeptracker.ui.screens.onboarding.Step4LCScreen
 import com.uet.sleeptracker.ui.screens.onboarding.Step5SleepPracticeScreen
+import com.uet.sleeptracker.ui.screens.onboarding.Step6EnergyBoostScreen
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 
 class MainActivity : ComponentActivity() {
@@ -25,6 +26,7 @@ class MainActivity : ComponentActivity() {
                 var selectedGoals by remember { mutableStateOf(setOf<String>()) }
                 var selectedChallenges by remember { mutableStateOf(setOf<String>()) }
                 var selectedPractices by remember { mutableStateOf(setOf<String>()) }
+                var selectedEnergyBoosters by remember { mutableStateOf(setOf<String>()) }
                 
                 when (currentStep) {
                     1 -> Step1GenderScreen(
@@ -64,6 +66,14 @@ class MainActivity : ComponentActivity() {
                         onNavigateNext = { practices ->
                             selectedPractices = practices
                             println("Practices selected: ${practices.joinToString()}")
+                            currentStep = 6
+                        },
+                        onSkip = { currentStep = 6 }
+                    )
+                    6 -> Step6EnergyBoostScreen(
+                        onNavigateNext = { strategies ->
+                            selectedEnergyBoosters = strategies
+                            println("Energy boosters selected: ${strategies.joinToString()}")
                             // Vào màn hình chính
                         },
                         onSkip = { /* Vào màn hình chính */ }
