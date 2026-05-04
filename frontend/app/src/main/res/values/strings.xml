@@ -196,4 +196,11 @@
     <string name="perm_health_instruction_regular">then tap allow.</string>
     <string name="perm_health_button">TURN ON SLEEP &amp; STEPS, GOT IT!</string>
     <string name="perm_health_why">Tell me again, why is this important?</string>
+
+    <!-- Notification Permission Screen -->
+    <string name="perm_notif_title">We\'ll also need to send you reminders.</string>
+    <string name="perm_notif_desc">For many people, timely and relevant reminders help create new habits or adjust existing ones for sleeping better. You will be able to adjust how much and how frequent they are in the app settings at any time.</string>
+    <string name="perm_notif_button">Enable Notifications</string>
+    <string name="perm_notif_enabled">Notifications Enabled</string>
+    <string name="perm_notif_next">NEXT</string>
 </resources>
