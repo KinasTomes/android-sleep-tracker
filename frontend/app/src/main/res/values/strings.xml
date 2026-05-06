@@ -207,4 +207,11 @@
     <!-- Sleep Need Intro Screen -->
     <string name="sleep_need_intro_text">To understand your sleep debt, we must first answer the question, \"how much sleep do I need?\"</string>
     <string name="sleep_need_intro_button">MY SLEEP PATTERNS</string>
+
+    <!-- Sleep Schedule Screen -->
+    <string name="sleep_schedule_title">SLEEP PATTERNS</string>
+    <string name="sleep_schedule_headline">On a normal weekday, what is your approximate sleep schedule?</string>
+    <string name="sleep_schedule_in_bed">In bed</string>
+    <string name="sleep_schedule_wake_up">Wake up</string>
+    <string name="sleep_schedule_next">NEXT</string>
 </resources>
