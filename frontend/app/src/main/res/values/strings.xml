@@ -20,11 +20,11 @@
     <string name="onboarding_age_select_title">What\'s your age?</string>
     <string name="onboarding_age_select_description">Your sleep needs change with age. Knowing age help us offer better guidance.</string>
     <string name="age_under_18">Under 18</string>
-    <string name="age_18_23">18-23</string>
-    <string name="age_24_29">24-29</string>
-    <string name="age_30_39">30-39</string>
-    <string name="age_40_49">40-49</string>
-    <string name="age_50_59">50-59</string>
+    <string name="age_18_23">18–23</string>
+    <string name="age_24_29">24–29</string>
+    <string name="age_30_39">30–39</string>
+    <string name="age_40_49">40–49</string>
+    <string name="age_50_59">50–59</string>
     <string name="age_60_plus">60+</string>
 
     <string name="age_under_18_desc">Sleep need is higher for teens and adolescents than adults.</string>
@@ -34,6 +34,7 @@
     <string name="age_40_49_desc">People tend to get the least sleep around age 40.</string>
     <string name="age_50_59_desc">People in their 50s sleep less and start to have trouble failing and staying asleep.</string>
     <string name="age_60_plus_desc">Difficulty falling and staying asleep is the most common sleep problem in adults 60+.</string>
+
     <!-- Onboarding Step 3: Goals -->
     <string name="onboarding_goals_title">Goals</string>
     <string name="onboarding_goals_select_title">Tell us about your goals.</string>
@@ -214,7 +215,7 @@
     <string name="sleep_schedule_in_bed">In bed</string>
     <string name="sleep_schedule_wake_up">Wake up</string>
     <string name="sleep_schedule_next">NEXT</string>
-</resources>
+
     <!-- Profile Screen -->
     <string name="profile_title">Profile</string>
     <string name="profile_edit_profile">Edit profile</string>

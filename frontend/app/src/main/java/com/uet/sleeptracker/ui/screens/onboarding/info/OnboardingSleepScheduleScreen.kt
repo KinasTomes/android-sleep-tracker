@@ -1,6 +1,9 @@
 package com.uet.sleeptracker.ui.screens.onboarding.info
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -31,6 +34,8 @@ import com.uet.sleeptracker.R
 import com.uet.sleeptracker.ui.theme.SleepBackground
 import com.uet.sleeptracker.ui.theme.SleepPrimary
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
+import kotlinx.coroutines.launch
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -210,13 +215,48 @@ fun TimeRulerPicker(
     currentMinutes: Int,
     onTimeChange: (Int) -> Unit
 ) {
-    val scrollState = rememberScrollState(initial = currentMinutes * 10) // 1 minute = 10 pixels
+    val pxPerMinute = 10f
+    val snapInterval = 5 // Snap every 5 minutes
+    val coroutineScope = rememberCoroutineScope()
     
-    // Sync scroll to minutes
-    LaunchedEffect(scrollState.value) {
-        val newMinutes = (scrollState.value / 10f).roundToInt() % 1440
-        if (newMinutes != currentMinutes) {
-            onTimeChange(if (newMinutes < 0) newMinutes + 1440 else newMinutes)
+    var scrollOffset by remember { mutableFloatStateOf(currentMinutes * pxPerMinute) }
+    var lastDragTime by remember { mutableLongStateOf(0L) }
+    
+    // Animate to target position
+    val animatedOffset = remember { Animatable(scrollOffset) }
+    
+    // Check if we should snap (after user stops dragging)
+    LaunchedEffect(scrollOffset) {
+        val currentTime = System.currentTimeMillis()
+        lastDragTime = currentTime
+        
+        kotlinx.coroutines.delay(150) // Wait for user to stop dragging
+        
+        if (System.currentTimeMillis() - lastDragTime >= 150) {
+            // User has stopped dragging, snap to nearest 5-minute mark
+            val currentMinuteFloat = scrollOffset / pxPerMinute
+            val snappedMinute = ((currentMinuteFloat / snapInterval).roundToInt() * snapInterval)
+            val normalizedMinutes = if (snappedMinute < 0) {
+                (snappedMinute % 1440 + 1440) % 1440
+            } else {
+                snappedMinute % 1440
+            }
+            
+            val targetOffset = normalizedMinutes * pxPerMinute
+            
+            if (abs(targetOffset - scrollOffset) > 1f) {
+                onTimeChange(normalizedMinutes)
+                
+                // Animate to snapped position
+                animatedOffset.animateTo(
+                    targetValue = targetOffset,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessLow
+                    )
+                )
+                scrollOffset = animatedOffset.value
+            }
         }
     }
 
@@ -230,40 +270,50 @@ fun TimeRulerPicker(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .horizontalScrollable(scrollState)
+                .scrollable(
+                    orientation = Orientation.Horizontal,
+                    state = rememberScrollableState { delta ->
+                        coroutineScope.launch {
+                            val newOffset = scrollOffset - delta
+                            scrollOffset = newOffset
+                            animatedOffset.snapTo(newOffset)
+                        }
+                        delta
+                    }
+                )
         ) {
             Canvas(modifier = Modifier.fillMaxSize()) {
                 val width = size.width
                 val height = size.height
-                val centerY = height / 2
-                val pxPerMinute = 10f
                 
                 val centerOffset = width / 2
-                val scrollOffset = scrollState.value.toFloat()
+                val currentOffset = animatedOffset.value
 
                 // Draw visible ticks
-                val startMinute = ((scrollOffset - centerOffset) / pxPerMinute).toInt() - 60
-                val endMinute = ((scrollOffset + centerOffset) / pxPerMinute).toInt() + 60
+                val startMinute = ((currentOffset - centerOffset) / pxPerMinute).toInt() - 60
+                val endMinute = ((currentOffset + centerOffset) / pxPerMinute).toInt() + 60
 
                 for (min in startMinute..endMinute) {
-                    val x = centerOffset + (min * pxPerMinute) - scrollOffset
+                    val x = centerOffset + (min * pxPerMinute) - currentOffset
                     
                     val normalizedMin = if (min < 0) (min % 1440 + 1440) % 1440 else min % 1440
                     
-                    if (normalizedMin % 60 == 0) {
-                        // Hour Tick
+                    if (normalizedMin % 30 == 0) {
+                        // 30-minute Tick (Dark/Bold) - from 35% to 75% of height
                         drawLine(
                             color = Color.White,
-                            start = Offset(x, height * 0.3f),
-                            end = Offset(x, height * 0.7f),
+                            start = Offset(x, height * 0.35f),
+                            end = Offset(x, height * 0.75f),
                             strokeWidth = 2.dp.toPx()
                         )
                         
-                        // Time Label
+                        // Time Label - moved higher
+                        val hour = normalizedMin / 60
+                        val minute = normalizedMin % 60
                         drawContext.canvas.nativeCanvas.drawText(
-                            String.format("%02d:00", normalizedMin / 60),
+                            String.format("%02d:%02d", hour, minute),
                             x,
-                            height * 0.2f,
+                            height * 0.15f,
                             android.graphics.Paint().apply {
                                 color = android.graphics.Color.WHITE
                                 textAlign = android.graphics.Paint.Align.CENTER
@@ -271,12 +321,12 @@ fun TimeRulerPicker(
                                 alpha = 180
                             }
                         )
-                    } else if (normalizedMin % 15 == 0) {
-                        // 15 min tick
+                    } else if (normalizedMin % 5 == 0) {
+                        // 5-minute tick (Light)
                         drawLine(
                             color = Color.White.copy(alpha = 0.3f),
-                            start = Offset(x, height * 0.4f),
-                            end = Offset(x, height * 0.6f),
+                            start = Offset(x, height * 0.45f),
+                            end = Offset(x, height * 0.65f),
                             strokeWidth = 1.dp.toPx()
                         )
                     }
@@ -284,28 +334,25 @@ fun TimeRulerPicker(
             }
         }
 
-        // Fixed Center Indicator (The Purple Box)
+        // Fixed Center Indicator (The Purple Box) - with padding around bars
         Box(
             modifier = Modifier
-                .size(width = 100.dp, height = 70.dp)
-                .background(SleepPrimary.copy(alpha = 0.2f), RoundedCornerShape(4.dp))
-                .border(1.dp, SleepPrimary.copy(alpha = 0.5f), RoundedCornerShape(4.dp)),
+                .size(width = 120.dp, height = 60.dp)
+                .offset(y = 5.dp) // Offset down to align with bars (bars center at 55% not 50%)
+                .background(SleepPrimary.copy(alpha = 0.15f), RoundedCornerShape(8.dp))
+                .border(2.dp, SleepPrimary.copy(alpha = 0.6f), RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {
-            // Central line
+            // Central line - same height as hour bars (40% of 100dp = 40dp)
             Box(
                 modifier = Modifier
-                    .fillMaxHeight()
+                    .height(40.dp)
                     .width(2.dp)
-                    .background(Color.White)
+                    .background(SleepPrimary)
             )
         }
     }
 }
-
-// Helper to handle horizontal scroll logic
-@Composable
-fun Modifier.horizontalScrollable(state: androidx.compose.foundation.ScrollState) = this.horizontalScroll(state)
 
 @SuppressLint("DefaultLocale")
 private fun formatTime(minutes: Int): String {

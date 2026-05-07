@@ -4,8 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.*
-import com.uet.sleeptracker.ui.screens.onboarding.info.DataPermissionInfoScreen
+import com.uet.sleeptracker.ui.screens.onboarding.info.OnboardingSleepScheduleScreen
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 
 class MainActivity : ComponentActivity() {
@@ -14,9 +13,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SleeptrackerTheme {
-                DataPermissionInfoScreen(
-                    onConfirm = { println("User clicked OK, Let's do it!") },
-                    onSupportClick = { println("User clicked Customer Support") }
+                OnboardingSleepScheduleScreen(
+                    onNavigateNext = { bedH, bedM, wakeH, wakeM ->
+                        println("Sleep Schedule: Bed at $bedH:$bedM, Wake at $wakeH:$wakeM")
+                    },
+                    onBack = {
+                        println("Back clicked")
+                    }
                 )
             }
         }
