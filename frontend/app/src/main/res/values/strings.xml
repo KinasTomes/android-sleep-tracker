@@ -49,7 +49,7 @@
     <string name="goal_sleep_schedule_desc">Rediscover your natural sleep-wake cycle, for clarity and control amidst a busy life.</string>
     
     <string name="goal_fitness">Optimize my fitness</string>
-    <string name="goal_fitness_desc">We can help you find the optimal time to excercise based on your body and goals.</string>
+    <string name="goal_fitness_desc">We can help you find the optimal time to exercise based on your body and goals.</string>
     
     <string name="goal_productivity">Optimize my productivity</string>
     <string name="goal_productivity_desc">Know when your body and mind are most primed for focus, insight, and creativity.</string>
@@ -65,4 +65,116 @@
     
     <string name="goal_disorder">Solve sleep disorder</string>
     <string name="goal_disorder_desc">You\'re not alone - nearly 1 in 5 users is looking to better understands a sleep disorder.</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_title">Profile</string>
+    <string name="profile_edit_profile">Edit profile</string>
+    <string name="profile_section_my_sleep">MY SLEEP</string>
+    <string name="profile_my_sleep_need">My sleep need</string>
+    <string name="profile_wake_time_goal">Wake time goal</string>
+    <string name="profile_section_personalize">PERSONALIZE SETTINGS</string>
+    <string name="profile_data_sources">Data sources</string>
+    <string name="profile_notifications">Notifications</string>
+    <string name="profile_calendars">Calendars</string>
+    <string name="profile_time_format">Time format</string>
+    <string name="profile_language">Language</string>
+    <string name="profile_section_membership">MEMBERSHIP</string>
+    <string name="profile_subscription">Subscription</string>
+    <string name="profile_support">Support</string>
+    <string name="profile_report_bug">Report a bug</string>
+    <string name="profile_terms_privacy">Terms of Service &amp; Privacy Policy</string>
+    <string name="profile_logout">Logout</string>
+    <string name="profile_enabled">Enabled</string>
+    <string name="profile_24h_clock">24-hour clock</string>
+    <string name="profile_english">English</string>
+    <string name="profile_trial">Trial</string>
+
+    <!-- Sleep Need Screen -->
+    <string name="sleep_need_header">My sleep need</string>
+    <string name="sleep_need_based_on">Based on 7 nights of sleep</string>
+    <string name="sleep_need_what_is_title">What is a sleep need?</string>
+    <string name="sleep_need_what_is_desc">Every person needs a certain amount of consistent sleep to perform optimally. Research has shown your need is determined by your biology and lifestyle. Your sleep need remains the same throughout adulthood.</string>
+    <string name="sleep_need_lumi_title">LUMI estimates your sleep need.</string>
+    <string name="sleep_need_lumi_desc">We estimate your sleep need by comparing how much sleep you usually get versus when you sleep longer than usual—something we call sleep rebound. This is because your body tries to make up the sleep it needs when you sleep longer than usual. When you sleep longer on the weekends your body is trying to lower your sleep debt.</string>
+    <string name="sleep_need_most_people">Most people</string>
+
+    <!-- Data Sources Screen -->
+    <string name="data_sources_title">Data sources</string>
+    <string name="data_sources_connected">Connected</string>
+    <string name="data_sources_connected_desc">All available sleep sources in priority order and the last date used.</string>
+    <string name="data_sources_motion_activity">Motion &amp; Activity</string>
+    <string name="data_sources_phone_motion">Phone motion</string>
+    <string name="data_sources_last_used">Monday, May 5</string>
+    <string name="data_sources_how_it_works">How it works</string>
+    <string name="data_sources_apple_health_title">Apple Health compatible sleep trackers</string>
+    <string name="data_sources_apple_health_desc">Each morning, LUMI checks Apple Health for the previous night\'s sleep. If your sleep tracking app has sent data to Apple Health, RISE will use it instead of phone-motion based sleep detection.</string>
+    <string name="data_sources_lumi_detection_title">LUMI Sleep Detection (phone motion)</string>
+    <string name="data_sources_lumi_detection_desc">Steps, movement and phone motion data are translated into daily predictions for when and how long you have slept. Use your phone as you normally would and LUMI will automatically track your sleep daily.</string>
+
+    <!-- Notifications Screen -->
+    <string name="notifications_title">Notifications</string>
+    <string name="notifications_card_title">Notifications</string>
+    <string name="notifications_card_enabled">Enabled</string>
+    <string name="notifications_steps_title">Steps to allow notifications</string>
+    <string name="notifications_step_1">1. Open the \"Settings\" app</string>
+    <string name="notifications_step_2">2. Scroll down and tap \"LUMI\"</string>
+    <string name="notifications_step_3">3. Tap \"Notifications\"</string>
+    <string name="notifications_step_4">4. Toggle on \"Allow Notifications\"</string>
+    <string name="notifications_steps_footer">After completing these steps, you\'ll start receiving notifications from LUMI on your device</string>
+    <string name="notifications_stay_tuned_title">Stay tuned to your body</string>
+    <string name="notifications_stay_tuned_desc">Notifications are crucial to RISE. They keep on track and help you optimize your routines by reminding you at the right time based on your daily energy schedule. Don\'t miss out on personalized energy-based nudges for work, rest, sleep, and more.</string>
+    <string name="notifications_customize_title">Customize notifications</string>
+    <string name="notifications_customize_desc">To customize notifications in RISE, go to \"Settings\" on your iPhone, select RISE, and choose the notification style. To adjust a specific reminder, swipe up on the shortcuts tray above the tabs, and tap the reminder to customize.</string>
+
+    <!-- Notification Menu Screen -->
+    <string name="notification_menu_title">Notification Menu</string>
+    <string name="notification_lumi_title">LUMI</string>
+    <string name="notification_lumi_desc">You own 3.6 hours of sleep.</string>
+    <string name="notification_lumi_tools_title">LUMI Tools</string>
+    <string name="notification_lumi_tools_desc">Discover sleep tools in the app to help you rest better and wake up refreshed!</string>
+    <string name="notification_energy_title">Energy</string>
+    <string name="notification_energy_desc">You\'re in your morning peak!!</string>
+
+    <!-- Calendars Screen -->
+    <string name="calendars_title">Calendars</string>
+    <string name="calendars_accounts">Accounts</string>
+    <string name="calendars_apple_calendar">Apple Calendar</string>
+    <string name="calendars_google_calendar">Google Calendar</string>
+    <string name="calendars_not_connected">Not connect</string>
+    <string name="calendars_energy_peaks_title">View energy peaks &amp; dips on your calendar</string>
+    <string name="calendars_energy_peaks_desc">LUMI publishes your Peak Energy and Dip Energy calendars to your calendar daily. When you open your calendar you\'ll see your energy times blocked out for the next 7 days to help you plan according to your energy.</string>
+
+    <!-- Time Format Screen -->
+    <string name="time_format_title">Time Format</string>
+    <string name="time_format_preferences_header">Time format preferences</string>
+    <string name="time_format_12h">12-hour clock</string>
+    <string name="time_format_24h">24-hour clock</string>
+    <string name="time_format_desc_1">Your timekeeping preference will determine the clock used for time references in RISE. Your energy schedule, reminders, sleep times, etc will all switch to display the clock of your choice.</string>
+    <string name="time_format_desc_2">The 12-hour clock is a time convention in which the 24 hours of the day are divided into two periods: a.m. and p.m.</string>
+    <string name="time_format_desc_3">The 24-hour clock, popularly referred to as military time, is the convention of timekeeping in which the day runs from midnight to midnight and is divided into 24 hours. This is indicated by the hours passed since midnight, from 0 to 23.</string>
+
+    <!-- Language Screen -->
+    <string name="language_title">Select your language</string>
+    <string name="language_english_label">English</string>
+    <string name="language_vietnamese_label">Tiếng Việt</string>
+    <string name="language_description">Your iPhone’s language preference will determine the language used by RISE on first use, if the app supports it. You can always switch languages. If you feel the translations are not as good as our primary language, English, please let us know as we are working on improving those and adding more language support.</string>
+
+    <!-- Album Radio Screen -->
+    <string name="album_radio_title">Album Radio</string>
+    <string name="coming_next_header">Coming Next</string>
+    <string name="current_song_title">Billie Bossa Nova - Billie Eilish</string>
+    <string name="current_album_title">Happier Than Ever</string>
+
+    <!-- Tools Screen -->
+    <string name="tools_title">Tools</string>
+    <string name="tools_sleep_detection_title">Sleep detection</string>
+    <string name="tools_sleep_detection_desc">Automatically detect from your nightstand</string>
+    <string name="tools_sleep_aids_title">Sleep aids</string>
+    <string name="tools_guides_title">GUIDES</string>
+    <string name="tools_write_brain_dump_title">Write a brain dump</string>
+    <string name="tools_write_brain_dump_desc">Ease your mind before bed</string>
+    <string name="tools_prep_bedroom_title">Prep your bedroom</string>
+    <string name="tools_prep_bedroom_desc">Guidance to an environment check</string>
+    <string name="tools_habit_reminders_title">Habit Reminders</string>
+    <string name="tools_habit_reminders_desc">Optimize routines with nudges aligned with your daily energy schedule.</string>
 </resources>
