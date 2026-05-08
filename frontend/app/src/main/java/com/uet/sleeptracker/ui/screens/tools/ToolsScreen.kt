@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,6 +22,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
+import com.uet.sleeptracker.ui.components.AppBottomNavigation
+import com.uet.sleeptracker.ui.components.IconPlaceholder
 import com.uet.sleeptracker.ui.theme.SleepBackground
 import com.uet.sleeptracker.ui.theme.SleepOnSurfaceVariant
 import com.uet.sleeptracker.ui.theme.SleepPrimary
@@ -29,13 +34,17 @@ import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 fun ToolsScreen(
     modifier: Modifier = Modifier,
     onNotificationClick: () -> Unit = {},
-    onProfileClick: () -> Unit = {}
+    onProfileClick: () -> Unit = {},
+    onNavigateToHome: () -> Unit = {}
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = SleepBackground,
         bottomBar = {
-            ToolsBottomNavigation()
+            AppBottomNavigation(
+                selectedTab = "tools",
+                onNavigateToHome = onNavigateToHome
+            )
         }
     ) { innerPadding ->
         LazyColumn(
@@ -126,12 +135,25 @@ private fun ToolsTopBar(
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold
         )
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
             IconButton(onClick = onNotificationClick) {
-                IconPlaceholder(color = Color(0xFF721BFD), size = 28.dp, type = "bell")
+                Icon(
+                    imageVector = Icons.Default.Notifications,
+                    contentDescription = "Notifications",
+                    tint = SleepPrimary,
+                    modifier = Modifier.size(28.dp)
+                )
             }
             IconButton(onClick = onProfileClick) {
-                IconPlaceholder(color = Color(0xFF721BFD), size = 32.dp, type = "profile")
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Profile",
+                    tint = SleepPrimary,
+                    modifier = Modifier.size(28.dp)
+                )
             }
         }
     }
@@ -291,82 +313,6 @@ private fun SectionHeader(title: String) {
         fontSize = 22.sp,
         fontWeight = FontWeight.Bold
     )
-}
-
-@Composable
-private fun ToolsBottomNavigation() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 24.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Surface(
-            color = Color.White,
-            shape = RoundedCornerShape(32.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(64.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                BottomNavItem(type = "bed", isSelected = false)
-                BottomNavItem(type = "lightning", isSelected = false)
-                BottomNavItem(type = "toolbox", isSelected = true)
-                BottomNavItem(type = "chart", isSelected = false)
-            }
-        }
-    }
-}
-
-@Composable
-private fun BottomNavItem(type: String, isSelected: Boolean) {
-    val color = if (isSelected) SleepPrimary else Color(0xFF8E8E93)
-    IconPlaceholder(color = color, size = 28.dp, type = type)
-}
-
-@Composable
-private fun IconPlaceholder(color: Color, size: Dp, type: String) {
-    Box(
-        modifier = Modifier
-            .size(size),
-        contentAlignment = Alignment.Center
-    ) {
-        when (type) {
-            "bell" -> {
-                Box(modifier = Modifier.size(size * 0.7f).border(2.dp, color, RoundedCornerShape(topStart = size, topEnd = size)))
-            }
-            "profile" -> {
-                Box(modifier = Modifier.size(size).border(2.dp, color, CircleShape), contentAlignment = Alignment.Center) {
-                    Box(modifier = Modifier.size(size * 0.4f).border(2.dp, color, CircleShape))
-                }
-            }
-            "bed" -> {
-                Box(modifier = Modifier.size(size * 0.8f, size * 0.5f).border(2.dp, color, RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp)))
-            }
-            "lightning" -> {
-                // Simple lightning bolt shape placeholder
-                Box(modifier = Modifier.size(size * 0.5f, size * 0.8f).background(color, RoundedCornerShape(2.dp)))
-            }
-            "toolbox" -> {
-                Box(modifier = Modifier.size(size * 0.8f, size * 0.6f).border(2.dp, color, RoundedCornerShape(4.dp)), contentAlignment = Alignment.TopCenter) {
-                    Box(modifier = Modifier.size(size * 0.3f, size * 0.2f).offset(y = (-4).dp).border(2.dp, color, RoundedCornerShape(2.dp)))
-                }
-            }
-            "chart" -> {
-                Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.size(size * 0.8f)) {
-                    Box(modifier = Modifier.weight(1f).height(size * 0.3f).background(color))
-                    Spacer(modifier = Modifier.width(2.dp))
-                    Box(modifier = Modifier.weight(1f).height(size * 0.6f).background(color))
-                    Spacer(modifier = Modifier.width(2.dp))
-                    Box(modifier = Modifier.weight(1f).height(size * 0.4f).background(color))
-                }
-            }
-        }
-    }
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFF000000)

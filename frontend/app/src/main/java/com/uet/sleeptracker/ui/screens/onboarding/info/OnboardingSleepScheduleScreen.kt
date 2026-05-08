@@ -230,7 +230,7 @@ fun TimeRulerPicker(
         val currentTime = System.currentTimeMillis()
         lastDragTime = currentTime
         
-        kotlinx.coroutines.delay(150) // Wait for user to stop dragging
+        kotlinx.coroutines.delay(150) // Waẻit for user to stop dragging
         
         if (System.currentTimeMillis() - lastDragTime >= 150) {
             // User has stopped dragging, snap to nearest 5-minute mark

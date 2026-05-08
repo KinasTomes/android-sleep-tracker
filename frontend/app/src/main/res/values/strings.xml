@@ -327,4 +327,5 @@
     <string name="tools_prep_bedroom_desc">Guidance to an environment check</string>
     <string name="tools_habit_reminders_title">Habit Reminders</string>
     <string name="tools_habit_reminders_desc">Optimize routines with nudges aligned with your daily energy schedule.</string>
+    <string name="perm_physical_enabled">Ok</string>
 </resources>
