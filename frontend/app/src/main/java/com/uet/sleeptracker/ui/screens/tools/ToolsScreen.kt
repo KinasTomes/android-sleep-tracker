@@ -3,8 +3,8 @@ package com.uet.sleeptracker.ui.screens.tools
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
@@ -18,15 +18,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
-import com.uet.sleeptracker.ui.components.AppBottomNavigation
-import com.uet.sleeptracker.ui.components.IconPlaceholder
+import com.uet.sleeptracker.ui.components.SleepBottomNavTab
+import com.uet.sleeptracker.ui.components.SleepBottomNavigation
+import com.uet.sleeptracker.ui.components.SleepIconPlaceholder
+import com.uet.sleeptracker.ui.components.SleepIconType
+import com.uet.sleeptracker.ui.components.SleepTopActionIcon
 import com.uet.sleeptracker.ui.theme.SleepBackground
 import com.uet.sleeptracker.ui.theme.SleepOnSurfaceVariant
-import com.uet.sleeptracker.ui.theme.SleepPrimary
 import com.uet.sleeptracker.ui.theme.SleepSurface
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 
@@ -135,26 +136,19 @@ private fun ToolsTopBar(
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold
         )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            IconButton(onClick = onNotificationClick) {
-                Icon(
-                    imageVector = Icons.Default.Notifications,
-                    contentDescription = "Notifications",
-                    tint = SleepPrimary,
-                    modifier = Modifier.size(28.dp)
-                )
-            }
-            IconButton(onClick = onProfileClick) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Profile",
-                    tint = SleepPrimary,
-                    modifier = Modifier.size(28.dp)
-                )
-            }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            SleepTopActionIcon(
+                type = SleepIconType.Bell,
+                onClick = onNotificationClick,
+                tint = Color(0xFF721BFD),
+                size = 28.dp
+            )
+            SleepTopActionIcon(
+                type = SleepIconType.Profile,
+                onClick = onProfileClick,
+                tint = Color(0xFF721BFD),
+                size = 32.dp
+            )
         }
     }
 }
@@ -312,6 +306,14 @@ private fun SectionHeader(title: String) {
         color = Color.White,
         fontSize = 22.sp,
         fontWeight = FontWeight.Bold
+    )
+}
+
+@Composable
+private fun ToolsBottomNavigation() {
+    SleepBottomNavigation(
+        selectedTab = SleepBottomNavTab.Tools,
+        onTabSelected = {}
     )
 }
 
