@@ -38,6 +38,58 @@ fun OnboardingSleepNeedResultScreen(
     onHowCalculated: () -> Unit,
     onAdjustSleepNeed: () -> Unit
 ) {
+    OnboardingSleepNeedResultContent(
+        nightsCount = nightsCount,
+        informationText = buildAnnotatedString {
+            append(stringResource(id = R.string.sleep_need_result_prefix))
+            append("\n")
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                append(stringResource(id = R.string.sleep_need_result_bold))
+            }
+        },
+        primaryButtonText = stringResource(id = R.string.sleep_need_result_confirm),
+        showHowCalculated = true,
+        onPrimaryAction = onLooksRight,
+        onHowCalculated = onHowCalculated,
+        onAdjustSleepNeed = onAdjustSleepNeed
+    )
+}
+
+@Composable
+fun OnboardingSleepDebtInfoScreen(
+    nightsCount: Int = 0,
+    onPrimaryAction: () -> Unit,
+    onAdjustSleepNeed: () -> Unit
+) {
+    OnboardingSleepNeedResultContent(
+        nightsCount = nightsCount,
+        informationText = buildAnnotatedString {
+            append(stringResource(id = R.string.sleep_debt_info_prefix))
+            append(" ")
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                append(stringResource(id = R.string.sleep_debt_info_italic))
+            }
+            append(stringResource(id = R.string.sleep_debt_info_suffix))
+        },
+        primaryButtonText = stringResource(id = R.string.sleep_debt_info_confirm),
+        showHowCalculated = false,
+        onPrimaryAction = onPrimaryAction,
+        onHowCalculated = {},
+        onAdjustSleepNeed = onAdjustSleepNeed
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun OnboardingSleepNeedResultContent(
+    nightsCount: Int = 0,
+    informationText: androidx.compose.ui.text.AnnotatedString,
+    primaryButtonText: String,
+    showHowCalculated: Boolean,
+    onPrimaryAction: () -> Unit,
+    onHowCalculated: () -> Unit,
+    onAdjustSleepNeed: () -> Unit
+) {
     var showSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
@@ -62,13 +114,7 @@ fun OnboardingSleepNeedResultScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             Text(
-                text = buildAnnotatedString {
-                    append(stringResource(id = R.string.sleep_need_result_prefix))
-                    append("\n")
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(stringResource(id = R.string.sleep_need_result_bold))
-                    }
-                },
+                text = informationText,
                 style = MaterialTheme.typography.headlineMedium.copy(
                     color = Color.White,
                     fontSize = 22.sp,
@@ -81,15 +127,20 @@ fun OnboardingSleepNeedResultScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            TextButton(onClick = { showSheet = true }) {
-                Text(
-                    text = stringResource(id = R.string.sleep_need_result_how_calculated),
-                    color = SleepPrimary,
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Normal
+            if (showHowCalculated) {
+                TextButton(onClick = {
+                    onHowCalculated()
+                    showSheet = true
+                }) {
+                    Text(
+                        text = stringResource(id = R.string.sleep_need_result_how_calculated),
+                        color = SleepPrimary,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Normal
+                        )
                     )
-                )
+                }
             }
 
             TextButton(onClick = onAdjustSleepNeed) {
@@ -106,8 +157,8 @@ fun OnboardingSleepNeedResultScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             SleepPrimaryOutlinedButton(
-                text = stringResource(id = R.string.sleep_need_result_confirm),
-                onClick = onLooksRight,
+                text = primaryButtonText,
+                onClick = onPrimaryAction,
                 modifier = Modifier.fillMaxWidth()
             )
         }
