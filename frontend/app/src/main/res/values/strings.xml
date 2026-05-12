@@ -209,6 +209,16 @@
     <!-- Sleep Need Intro Screen -->
     <string name="sleep_need_intro_text">To understand your sleep debt, we must first answer the question, \"how much sleep do I need?\"</string>
     <string name="sleep_need_intro_button">MY SLEEP PATTERNS</string>
+    <string name="sleep_need_result_value">7h 45m</string>
+    <string name="sleep_need_result_prefix">Based on your sleep patterns, we\'ve learned your</string>
+    <string name="sleep_need_result_bold">sleep need is 7h 45m</string>
+    <string name="sleep_need_result_how_calculated">How do you calculate it?</string>
+    <string name="sleep_need_result_adjust">Adjust sleep need</string>
+    <string name="sleep_need_result_confirm">THAT LOOKS RIGHT</string>
+    <string name="sleep_need_result_min">7h</string>
+    <string name="sleep_need_result_most_people_start">7h 30m</string>
+    <string name="sleep_need_result_most_people_end">8h 40m</string>
+    <string name="sleep_need_result_max">9h</string>
 
     <!-- Sleep Schedule Screen -->
     <string name="sleep_schedule_title">SLEEP PATTERNS</string>
