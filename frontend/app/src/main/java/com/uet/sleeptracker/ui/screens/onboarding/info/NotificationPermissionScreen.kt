@@ -69,12 +69,11 @@ fun NotificationPermissionScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp)
                 .clickable(enabled = !isEnabled) { isEnabled = true },
             shape = RoundedCornerShape(16.dp),
             color = Color.Transparent,
@@ -82,8 +81,8 @@ fun NotificationPermissionScreen(
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 24.dp),
+                    .fillMaxWidth()
+                    .padding(20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (!isEnabled) {
@@ -94,9 +93,9 @@ fun NotificationPermissionScreen(
                             .size(48.dp)
                             .clip(RoundedCornerShape(12.dp))
                     )
-                    
+
                     Spacer(modifier = Modifier.width(16.dp))
-                    
+
                     Text(
                         text = stringResource(id = R.string.perm_notif_button),
                         style = MaterialTheme.typography.titleMedium.copy(
@@ -106,15 +105,20 @@ fun NotificationPermissionScreen(
                         )
                     )
                 } else {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = null,
-                        tint = Color(0xFF10B981),
-                        modifier = Modifier.size(32.dp)
-                    )
-                    
+                    Box(
+                        modifier = Modifier.size(48.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                            tint = Color(0xFF10B981),
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+
                     Spacer(modifier = Modifier.width(16.dp))
-                    
+
                     Text(
                         text = stringResource(id = R.string.perm_notif_enabled),
                         style = MaterialTheme.typography.titleMedium.copy(
@@ -127,18 +131,26 @@ fun NotificationPermissionScreen(
             }
         }
 
-        Spacer(modifier = Modifier.weight(1.5f))
+        Spacer(modifier = Modifier.weight(1f))
 
-        AnimatedVisibility(
-            visible = isEnabled,
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically()
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(64.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            SleepPrimaryOutlinedButton(
-                text = stringResource(id = R.string.perm_notif_next),
-                onClick = onNext,
-                modifier = Modifier.fillMaxWidth()
-            )
+            AnimatedVisibility(
+                visible = isEnabled,
+                enter = fadeIn() + expandVertically(expandFrom = Alignment.CenterVertically),
+                exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.CenterVertically)
+            ) {
+                SleepPrimaryOutlinedButton(
+                    text = stringResource(id = R.string.perm_notif_next),
+                    onClick = onNext,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
     }
 }

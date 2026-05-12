@@ -1,27 +1,23 @@
 package com.uet.sleeptracker.ui.screens.onboarding.info
 
-import androidx.compose.animation.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
-import com.uet.sleeptracker.ui.components.SleepPrimaryButton
 import com.uet.sleeptracker.ui.theme.SleepBackground
 import com.uet.sleeptracker.ui.theme.SleepPrimary
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
@@ -31,8 +27,6 @@ fun PhysicalActivityPermissionScreen(
     onNext: () -> Unit,
     onWhyClick: () -> Unit
 ) {
-    var isEnabled by remember { mutableStateOf(false) }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -73,66 +67,45 @@ fun PhysicalActivityPermissionScreen(
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp)
-                .clickable(enabled = !isEnabled) { isEnabled = true },
+                .clickable(onClick = onNext),
             shape = RoundedCornerShape(16.dp),
             color = Color.Transparent,
-            border = BorderStroke(2.dp, if (isEnabled) Color(0xFF1C1C1E) else SleepPrimary)
+            border = BorderStroke(2.dp, SleepPrimary)
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
+                    .fillMaxWidth()
+                    .padding(20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (!isEnabled) {
-                    Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = Color(0xFF64C564),
-                        modifier = Modifier.size(48.dp)
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = Color(0xFF64C564),
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.directions_run_24px),
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
+                        Icon(
+                            painter = painterResource(id = R.drawable.directions_run_24px),
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Text(
-                        text = stringResource(id = R.string.perm_physical_button),
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            color = Color.White,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Normal
-                        )
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = null,
-                        tint = Color(0xFF10B981),
-                        modifier = Modifier.size(32.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Text(
-                        text = stringResource(id = R.string.perm_physical_enabled),
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            color = Color.Gray,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Normal
-                        )
-                    )
                 }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Text(
+                    text = stringResource(id = R.string.perm_physical_button),
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Normal
+                    )
+                )
             }
         }
 
@@ -152,35 +125,15 @@ fun PhysicalActivityPermissionScreen(
 
         Spacer(modifier = Modifier.weight(1.5f))
 
-        AnimatedVisibility(
-            visible = isEnabled,
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically()
-        ) {
-            SleepPrimaryButton(
-                text = stringResource(id = R.string.onboarding_button_save_continue),
-                onClick = onNext,
-                modifier = Modifier.fillMaxWidth(),
-                height = 56.dp,
-                textStyle = MaterialTheme.typography.labelLarge.copy(
-                    fontWeight = FontWeight.Normal,
-                    letterSpacing = 1.2.sp,
-                    color = Color.White
+        TextButton(onClick = onWhyClick) {
+            Text(
+                text = stringResource(id = R.string.perm_physical_why),
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    color = SleepPrimary,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Normal
                 )
             )
-        }
-
-        if (!isEnabled) {
-            TextButton(onClick = onWhyClick) {
-                Text(
-                    text = stringResource(id = R.string.perm_physical_why),
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        color = SleepPrimary,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Normal
-                    )
-                )
-            }
         }
     }
 }
