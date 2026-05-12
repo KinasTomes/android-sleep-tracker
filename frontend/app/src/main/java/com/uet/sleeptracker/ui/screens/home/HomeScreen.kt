@@ -39,7 +39,6 @@ import com.uet.sleeptracker.ui.components.SleepTopActionIcon
 import com.uet.sleeptracker.ui.theme.SleepBackground
 import com.uet.sleeptracker.ui.theme.SleepOnSurfaceVariant
 import com.uet.sleeptracker.ui.theme.SleepPrimary
-import com.uet.sleeptracker.ui.theme.SleepSurface
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 
 @Composable
@@ -282,7 +281,7 @@ private fun DebtSummary(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
-            text = "${text} debt",
+            text = "$text debt",
             color = Color.White,
             fontSize = 16.sp,
             lineHeight = 19.sp
