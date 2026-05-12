@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
+import com.uet.sleeptracker.ui.components.SleepPrimaryOutlinedButton
 import com.uet.sleeptracker.ui.theme.SleepBackground
 import com.uet.sleeptracker.ui.theme.SleepPrimary
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
@@ -133,25 +134,11 @@ fun NotificationPermissionScreen(
             enter = fadeIn() + expandVertically(),
             exit = fadeOut() + shrinkVertically()
         ) {
-            OutlinedButton(
+            SleepPrimaryOutlinedButton(
+                text = stringResource(id = R.string.perm_notif_next),
                 onClick = onNext,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp),
-                shape = RoundedCornerShape(8.dp),
-                border = BorderStroke(2.dp, SleepPrimary),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = Color.White
-                )
-            ) {
-                Text(
-                    text = stringResource(id = R.string.perm_notif_next),
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Normal,
-                        letterSpacing = 1.sp
-                    )
-                )
-            }
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }

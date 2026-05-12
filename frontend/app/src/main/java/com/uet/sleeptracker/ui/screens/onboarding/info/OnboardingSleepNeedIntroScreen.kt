@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
+import com.uet.sleeptracker.ui.components.SleepPrimaryButton
 import com.uet.sleeptracker.ui.theme.SleepBackground
 import com.uet.sleeptracker.ui.theme.SleepPrimary
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
@@ -67,25 +68,11 @@ fun OnboardingSleepNeedIntroScreen(
 
             Spacer(modifier = Modifier.weight(1.2f))
 
-            Button(
+            SleepPrimaryButton(
+                text = stringResource(id = R.string.sleep_need_intro_button),
                 onClick = onNavigateNext,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = SleepPrimary
-                )
-            ) {
-                Text(
-                    text = stringResource(id = R.string.sleep_need_intro_button),
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Normal,
-                        letterSpacing = 1.sp,
-                        color = Color.White
-                    )
-                )
-            }
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }

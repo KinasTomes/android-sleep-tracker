@@ -14,12 +14,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
+import com.uet.sleeptracker.ui.components.SleepPrimaryButton
 import com.uet.sleeptracker.ui.theme.SleepBackground
 import com.uet.sleeptracker.ui.theme.SleepPrimary
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
@@ -86,16 +88,18 @@ fun PhysicalActivityPermissionScreen(
                 if (!isEnabled) {
                     Surface(
                         shape = RoundedCornerShape(8.dp),
-                        color = Color(0xFF4CAF50),
+                        color = Color(0xFF64C564),
                         modifier = Modifier.size(48.dp)
                     ) {
                         Box(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            Text(
-                                text = "🏃",
-                                fontSize = 24.sp
+                            Icon(
+                                painter = painterResource(id = R.drawable.directions_run_24px),
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     }
@@ -153,26 +157,17 @@ fun PhysicalActivityPermissionScreen(
             enter = fadeIn() + expandVertically(),
             exit = fadeOut() + shrinkVertically()
         ) {
-            Button(
+            SleepPrimaryButton(
+                text = stringResource(id = R.string.onboarding_button_save_continue),
                 onClick = onNext,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = SleepPrimary,
-                    contentColor = Color.White
+                modifier = Modifier.fillMaxWidth(),
+                height = 56.dp,
+                textStyle = MaterialTheme.typography.labelLarge.copy(
+                    fontWeight = FontWeight.Normal,
+                    letterSpacing = 1.2.sp,
+                    color = Color.White
                 )
-            ) {
-                Text(
-                    text = stringResource(id = R.string.onboarding_button_save_continue),
-                    style = MaterialTheme.typography.labelLarge.copy(
-                        fontWeight = FontWeight.Normal,
-                        letterSpacing = 1.2.sp,
-                        color = Color.White
-                    )
-                )
-            }
+            )
         }
 
         if (!isEnabled) {
