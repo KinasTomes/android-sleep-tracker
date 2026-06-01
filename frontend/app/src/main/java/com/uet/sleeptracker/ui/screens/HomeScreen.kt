@@ -266,6 +266,71 @@ fun HomeScreen(
 }
 
 @Composable
+fun SleepDebtHero(
+    sleepDebtHours: Float,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(20.dp))
+            .background(Color(0xFF232429)),
+        contentAlignment = Alignment.Center
+    ) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            // Coordinate system:
+            // - Left edge = y-axis
+            // - Center of left edge = origin (0, 0)
+            // - Viewport: x in [0..8], y in [-4..4]
+            val vpWidth = 8f
+            val vpHeight = 8f // y from -4 to 4
+
+            val scaleX = size.width / vpWidth
+            val scaleY = size.height / vpHeight
+
+            // Convert coordinate-space (x, y) to canvas px
+            fun toCanvas(x: Float, y: Float): Offset {
+                return Offset(
+                    x = x * scaleX,
+                    y = (vpHeight / 2 - y) * scaleY
+                )
+            }
+
+            // Circle params: (R, dx) → center at (R - dx, 0)
+            data class CircleDef(val r: Float, val dx: Float)
+
+            val circles = listOf(
+                CircleDef(
+                    r = (8f * 8f) / (8f * 0.7f) + 0.7f / 2f,   // ~11.7786
+                    dx = 2.1f
+                ),
+                CircleDef(
+                    r = (8f * 8f) / (8f * 1.75f) + 1.75f / 2f,  // ~5.4464
+                    dx = 5.5f
+                ),
+                CircleDef(
+                    r = (8f * 8f) / (8f * 2.5f) + 2.5f / 2f,    // ~4.45
+                    dx = 8f
+                )
+            )
+
+            for (circle in circles) {
+                val cx = circle.r - circle.dx
+                val cy = 0f
+                val center = toCanvas(cx, cy)
+                val radiusPx = circle.r * scaleX
+
+                drawCircle(
+                    color = Color.Black,
+                    radius = radiusPx,
+                    center = center,
+                    style = Stroke(width = 1.dp.toPx())
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun SleepDebtVisualization(
     sleepDebt: Float,
     modifier: Modifier = Modifier
@@ -284,38 +349,27 @@ fun SleepDebtVisualization(
             val centerX = canvasWidth / 2
             val centerY = canvasHeight / 2
             val radius = minOf(canvasWidth, canvasHeight) / 2 - 40.dp.toPx()
-            
-            // Draw multiple concentric arcs with gradient effect
+
             val arcCount = 7
             val arcSpacing = 20.dp.toPx()
-            
+
             for (i in 0 until arcCount) {
                 val currentRadius = radius - (i * arcSpacing)
                 val strokeWidth = 12.dp.toPx()
-                
-                // Calculate arc parameters for each ring
                 val startAngle = 180f + (i * 15f)
                 val sweepAngle = 90f - (i * 10f)
-                
-                // Create gradient colors - purple to pink
+
                 val gradientColors = if (i == 1) {
-                    listOf(
-                        Color(0xFFE91E63),
-                        Color(0xFF9C27B0),
-                        Color(0xFF673AB7)
-                    )
+                    listOf(Color(0xFFE91E63), Color(0xFF9C27B0), Color(0xFF673AB7))
                 } else {
-                    listOf(
-                        Color(0xFF1A1A1A),
-                        Color(0xFF2A2A2A)
-                    )
+                    listOf(Color(0xFF1A1A1A), Color(0xFF2A2A2A))
                 }
-                
+
                 val brush = Brush.sweepGradient(
                     colors = gradientColors,
                     center = Offset(centerX, centerY)
                 )
-                
+
                 drawArc(
                     brush = brush,
                     startAngle = startAngle,
@@ -327,8 +381,7 @@ fun SleepDebtVisualization(
                 )
             }
         }
-        
-        // Center content with sleep debt info
+
         Box(
             modifier = Modifier
                 .size(180.dp)
@@ -336,9 +389,7 @@ fun SleepDebtVisualization(
                 .background(Color(0xFF2A2A2A)),
             contentAlignment = Alignment.Center
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = sleepDebt.toString(),
                     style = MaterialTheme.typography.displayLarge.copy(
@@ -435,5 +486,18 @@ fun HomeTopBar(
 fun HomeScreenPreview() {
     SleeptrackerTheme {
         HomeScreen()
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun SleepDebtHeroPreview() {
+    SleeptrackerTheme {
+        SleepDebtHero(
+            sleepDebtHours = 3.6f,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(220.dp)
+        )
     }
 }

@@ -215,6 +215,15 @@
     <string name="sleep_need_result_how_calculated">How do you calculate it?</string>
     <string name="sleep_need_result_adjust">Adjust sleep need</string>
     <string name="sleep_need_result_confirm">THAT LOOKS RIGHT</string>
+    <string name="sleep_debt_info_prefix">When you sleep less than your sleep need, you build up</string>
+    <string name="sleep_debt_info_italic">sleep debt</string>
+    <string name="sleep_debt_info_suffix">.</string>
+    <string name="sleep_debt_info_confirm">WHAT IS MY SLEEP DEBT?</string>
+    <string name="sleep_need_edit_header">Edit sleep need</string>
+    <string name="sleep_need_edit_title">Adjust your sleep need until it feels more accurate to you</string>
+    <string name="sleep_need_edit_hint">Think about how long you would sleep if you were on vacation and had no reason to wake up early.</string>
+    <string name="sleep_need_edit_accuracy">This will help us increase the accuracy of your data.</string>
+    <string name="sleep_need_edit_save">SAVE</string>
     <string name="sleep_need_result_min">7h</string>
     <string name="sleep_need_result_most_people_start">7h 30m</string>
     <string name="sleep_need_result_most_people_end">8h 40m</string>
@@ -226,6 +235,10 @@
     <string name="sleep_schedule_in_bed">In bed</string>
     <string name="sleep_schedule_wake_up">Wake up</string>
     <string name="sleep_schedule_next">NEXT</string>
+
+    <!-- Weekend Sleep Schedule Screen -->
+    <string name="weekend_sleep_schedule_title">SLEEP PATTERNS</string>
+    <string name="weekend_sleep_schedule_headline">On a normal weekend, what is your approximate sleep schedule?</string>
 
     <!-- Profile Screen -->
     <string name="profile_title">Profile</string>

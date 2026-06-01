@@ -7,11 +7,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.uet.sleeptracker.ui.screens.HomeScreen
+import com.uet.sleeptracker.ui.components.SleepBottomNavTab
+import com.uet.sleeptracker.ui.navigation.onboardingNavGraph
+import com.uet.sleeptracker.ui.screens.home.HomeScreen
 import com.uet.sleeptracker.ui.screens.notifications.NotificationMenuScreen
 import com.uet.sleeptracker.ui.screens.notifications.NotificationsScreen
-import com.uet.sleeptracker.ui.screens.onboarding.*
-import com.uet.sleeptracker.ui.screens.onboarding.info.*
 import com.uet.sleeptracker.ui.screens.settings.*
 import com.uet.sleeptracker.ui.screens.tools.ToolsScreen
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
@@ -24,93 +24,20 @@ class MainActivity : ComponentActivity() {
             SleeptrackerTheme {
                 val navController = rememberNavController()
                 
-                NavHost(navController = navController, startDestination = "step1") {
-                    // Onboarding Steps
-                    composable("step1") {
-                        Step1GenderScreen(
-                            onNavigateNext = { _ -> navController.navigate("step2") },
-                            onSkip = { navController.navigate("info_discovery") }
-                        )
-                    }
-                    composable("step2") {
-                        Step2AgeScreen(
-                            onNavigateNext = { _ -> navController.navigate("step3") },
-                            onNavigateBack = { navController.popBackStack() },
-                            onSkip = { navController.navigate("info_discovery") }
-                        )
-                    }
-                    composable("step3") {
-                        Step3GoalScreen(
-                            onNavigateNext = { _ -> navController.navigate("step4") },
-                            onSkip = { navController.navigate("info_discovery") }
-                        )
-                    }
-                    composable("step4") {
-                        Step4LCScreen(
-                            onNavigateNext = { _ -> navController.navigate("step5") },
-                            onSkip = { navController.navigate("info_discovery") }
-                        )
-                    }
-                    composable("step5") {
-                        Step5SleepPracticeScreen(
-                            onNavigateNext = { _ -> navController.navigate("step6") },
-                            onSkip = { navController.navigate("info_discovery") }
-                        )
-                    }
-                    composable("step6") {
-                        Step6EnergyBoostScreen(
-                            onNavigateNext = { _ -> navController.navigate("info_discovery") },
-                            onSkip = { navController.navigate("info_discovery") }
-                        )
-                    }
-
-                    // Info Screens
-                    composable("info_discovery") {
-                        OnboardingDiscoveryIntroScreen(
-                            onNavigateNext = { navController.navigate("info_sleep_need") },
-                            onLearnMore = { /* Handle learn more */ }
-                        )
-                    }
-                    composable("info_sleep_need") {
-                        OnboardingSleepNeedIntroScreen(
-                            onNavigateNext = { navController.navigate("info_sleep_schedule") }
-                        )
-                    }
-                    composable("info_sleep_schedule") {
-                        OnboardingSleepScheduleScreen(
-                            onNavigateNext = { _, _, _, _ -> navController.navigate("info_data_permission") },
-                            onBack = { navController.popBackStack() }
-                        )
-                    }
-                    composable("info_data_permission") {
-                        DataPermissionInfoScreen(
-                            onConfirm = { navController.navigate("info_health_connect") }
-                        )
-                    }
-                    composable("info_health_connect") {
-                        HealthConnectPermissionScreen(
-                            onTurnOnClick = { navController.navigate("info_notification") },
-                            onWhyClick = { /* Handle why click */ }
-                        )
-                    }
-                    composable("info_notification") {
-                        NotificationPermissionScreen(
-                            onNext = { navController.navigate("info_physical_activity") }
-                        )
-                    }
-                    composable("info_physical_activity") {
-                        PhysicalActivityPermissionScreen(
-                            onNext = { navController.navigate("home") },
-                            onWhyClick = { /* Handle why click */ }
-                        )
-                    }
+                NavHost(navController = navController, startDestination = "home") {
+                    onboardingNavGraph(navController)
 
                     // Main Screens
                     composable("home") {
                         HomeScreen(
-                            onNavigateToNotifications = { navController.navigate("notification_menu") },
-                            onNavigateToProfile = { navController.navigate("profile") },
-                            onNavigateToTools = { navController.navigate("tools") }
+                            onNotificationClick = { navController.navigate("notification_menu") },
+                            onProfileClick = { navController.navigate("profile") },
+                            onBottomNavSelected = { tab ->
+                                when (tab) {
+                                    SleepBottomNavTab.Tools -> navController.navigate("tools")
+                                    else -> {}
+                                }
+                            }
                         )
                     }
                     composable("tools") {
