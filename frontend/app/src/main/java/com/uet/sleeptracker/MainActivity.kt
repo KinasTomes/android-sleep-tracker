@@ -30,7 +30,6 @@ class MainActivity : ComponentActivity() {
                     // Main Screens
                     composable("home") {
                         HomeScreen(
-                            onNotificationClick = { navController.navigate("notification_menu") },
                             onProfileClick = { navController.navigate("profile") },
                             onBottomNavSelected = { tab ->
                                 when (tab) {
