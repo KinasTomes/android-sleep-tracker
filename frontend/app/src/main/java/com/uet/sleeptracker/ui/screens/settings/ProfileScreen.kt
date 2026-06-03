@@ -31,7 +31,13 @@ fun ProfileScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onEditProfileClick: () -> Unit = {},
-    onLogoutClick: () -> Unit = {}
+    onLogoutClick: () -> Unit = {},
+    onMySleepNeedClick: () -> Unit = {},
+    onDataSourcesClick: () -> Unit = {},
+    onNotificationsClick: () -> Unit = {},
+    onCalendarsClick: () -> Unit = {},
+    onTimeFormatClick: () -> Unit = {},
+    onLanguageClick: () -> Unit = {}
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -53,7 +59,8 @@ fun ProfileScreen(
                 ProfileSectionHeader(title = stringResource(R.string.profile_section_my_sleep))
                 ProfileListItem(
                     label = stringResource(R.string.profile_my_sleep_need),
-                    value = "7h 45m"
+                    value = "7h 45m",
+                    onClick = onMySleepNeedClick
                 )
                 ProfileListItem(
                     label = stringResource(R.string.profile_wake_time_goal),
@@ -65,23 +72,28 @@ fun ProfileScreen(
                 ProfileSectionHeader(title = stringResource(R.string.profile_section_personalize))
                 ProfileListItem(
                     label = stringResource(R.string.profile_data_sources),
-                    value = "Today, 14:55"
+                    value = "Today, 14:55",
+                    onClick = onDataSourcesClick
                 )
                 ProfileListItem(
                     label = stringResource(R.string.profile_notifications),
-                    value = stringResource(R.string.profile_enabled)
+                    value = stringResource(R.string.profile_enabled),
+                    onClick = onNotificationsClick
                 )
                 ProfileListItem(
                     label = stringResource(R.string.profile_calendars),
-                    value = stringResource(R.string.profile_enabled)
+                    value = stringResource(R.string.profile_enabled),
+                    onClick = onCalendarsClick
                 )
                 ProfileListItem(
                     label = stringResource(R.string.profile_time_format),
-                    value = stringResource(R.string.profile_24h_clock)
+                    value = stringResource(R.string.profile_24h_clock),
+                    onClick = onTimeFormatClick
                 )
                 ProfileListItem(
                     label = stringResource(R.string.profile_language),
-                    value = stringResource(R.string.profile_english)
+                    value = stringResource(R.string.profile_english),
+                    onClick = onLanguageClick
                 )
             }
 

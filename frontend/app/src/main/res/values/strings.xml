@@ -20,11 +20,11 @@
     <string name="onboarding_age_select_title">What\'s your age?</string>
     <string name="onboarding_age_select_description">Your sleep needs change with age. Knowing age help us offer better guidance.</string>
     <string name="age_under_18">Under 18</string>
-    <string name="age_18_23">18-23</string>
-    <string name="age_24_29">24-29</string>
-    <string name="age_30_39">30-39</string>
-    <string name="age_40_49">40-49</string>
-    <string name="age_50_59">50-59</string>
+    <string name="age_18_23">18–23</string>
+    <string name="age_24_29">24–29</string>
+    <string name="age_30_39">30–39</string>
+    <string name="age_40_49">40–49</string>
+    <string name="age_50_59">50–59</string>
     <string name="age_60_plus">60+</string>
 
     <string name="age_under_18_desc">Sleep need is higher for teens and adolescents than adults.</string>
@@ -34,10 +34,11 @@
     <string name="age_40_49_desc">People tend to get the least sleep around age 40.</string>
     <string name="age_50_59_desc">People in their 50s sleep less and start to have trouble failing and staying asleep.</string>
     <string name="age_60_plus_desc">Difficulty falling and staying asleep is the most common sleep problem in adults 60+.</string>
+
     <!-- Onboarding Step 3: Goals -->
     <string name="onboarding_goals_title">Goals</string>
     <string name="onboarding_goals_select_title">Tell us about your goals.</string>
-    <string name="onboarding_goals_select_description">We will setup tools, tips, and timely reminders that match your goals.</string>
+    <string name="onboarding_goals_select_description">We will set up tools, tips, and timely reminders that match your goals.</string>
     
     <string name="goal_early_riser">Become an early riser</string>
     <string name="goal_early_riser_desc">You\'re in good company - over 50% of our users consider themselves night owls.</string>
@@ -61,10 +62,183 @@
     <string name="goal_quality_desc">Discover your body\'s ideal time to fall asleep for higher sleep quality and more energy.</string>
     
     <string name="goal_anxiety">Reduce anxiety</string>
-    <string name="goal_anxiety_desc">Lising just 1 hour of sleep a night for a week can cause anxiety to reach clinical levels.</string>
+    <string name="goal_anxiety_desc">Mising just 1 hour of sleep a night for a week can cause anxiety to reach clinical levels.</string>
     
     <string name="goal_disorder">Solve sleep disorder</string>
     <string name="goal_disorder_desc">You\'re not alone - nearly 1 in 5 users is looking to better understands a sleep disorder.</string>
+
+    <!-- Onboarding Step 4: Lifestyle & Challenges -->
+    <string name="onboarding_lifestyle_title">Lifestyle &amp; Challenges</string>
+    <string name="onboarding_lifestyle_select_title">What are the biggest challenges to achieving your goals?</string>
+    <string name="onboarding_lifestyle_select_description">We adapts to your lifestyle.</string>
+
+    <string name="lc_falling_asleep">Difficulty falling asleep</string>
+    <string name="lc_falling_asleep_desc">65% of users struggled falling asleep. We\'ve helped them find the best time to fall asleep.</string>
+
+    <string name="lc_work_from_home">Working from home</string>
+    <string name="lc_work_from_home_desc">We\'ll uncover your body\'s peak productivity hours to optimize your existing flow.</string>
+
+    <string name="lc_adhd">ADHD</string>
+    <string name="lc_adhd_desc">Nearly 1 in 5 RISE users have ADHD. We\'ll help you find the best times to focus.</string>
+
+    <string name="lc_work_stress">New job or work stress</string>
+    <string name="lc_work_stress_desc">Stress can make it harder to sleep. We\'ll tell you when your body is primed for sleep.</string>
+
+    <string name="lc_health_concerns">Health changes or concerns</string>
+    <string name="lc_health_concerns_desc">Poor sleep can wreak havoc on your immune system. Sleep is essential for staying healthy.</string>
+
+    <string name="lc_new_baby">New baby</string>
+    <string name="lc_new_baby_desc">We\'ve helped parents get back on track with their sleep after having a baby.</string>
+
+    <string name="lc_sleep_environment">Difficult sleep environment</string>
+    <string name="lc_sleep_environment_desc">You\'ll learn the 3 keywords for prepping your sleep environment: cool, dark, and quiet.</string>
+
+    <string name="lc_staying_asleep">Difficulty staying asleep</string>
+    <string name="lc_staying_asleep_desc">Knowing the right time to fall asleep helps you stay asleep throughout the night.</string>
+
+    <string name="lc_social_life">Busy social life &amp; commitments</string>
+    <string name="lc_social_life_desc">Understand how your body\'s energy schedule compares to your social schedule.</string>
+
+    <string name="lc_family_obligations">Family obligations</string>
+    <string name="lc_family_obligations_desc">We\'ll help you find the best times to get things done for yourself and others.</string>
+
+    <string name="lc_recent_move">Recent move</string>
+    <string name="lc_recent_move_desc">Stress from moving makes it hard to sleep. We\'ll tell you when your body is ready for rest.</string>
+
+    <string name="lc_academic_pressure">Studying or academic pressure</string>
+    <string name="lc_academic_pressure_desc">Know when your brain is primed for focus and when it needs to rest.</string>
+
+    <!-- Onboarding Step 5: Sleep Practices -->
+    <string name="onboarding_practices_title">Sleep Practices</string>
+    <string name="onboarding_practices_select_title">Pick your go-to sleep practices.</string>
+    <string name="onboarding_practices_select_description">We\'ll set up tools, tips, and timely reminders to make them more effective.</string>
+
+    <string name="practice_bedroom">Comfortable bedroom</string>
+    <string name="practice_bedroom_desc">RISE can remind you to prep your sleep environment- make it cool, dark and quiet.</string>
+
+    <string name="practice_melatonin">Melatonin Supplements</string>
+    <string name="practice_melatonin_desc">We\'ll help you find the right time to take melatonin supplements based on your body.</string>
+
+    <string name="practice_relaxation">Relaxation techniques &amp; sounds</string>
+    <string name="practice_relaxation_desc">Stress makes it harder to fall asleep - reduce stress before your head hits the pillow.</string>
+
+    <string name="practice_alcohol">Alcohol</string>
+    <string name="practice_alcohol_desc">Alcohol leads to a restless sleep. We\'ll remind you when to cut off to reduce wake-ups.</string>
+
+    <string name="practice_winding_down">Winding down</string>
+    <string name="practice_winding_down_desc">During busy evenings, we help you juggle tasks and catch your body\'s wind-down cues.</string>
+
+    <string name="practice_screen_time">Limiting screen time</string>
+    <string name="practice_screen_time_desc">We\'ll signal when to dim screens to keep your daily sleep rhythm steady.</string>
+
+    <string name="practice_journaling">Journaling or to-do list</string>
+    <string name="practice_journaling_desc">Ease your mind before bed using tools to offload thoughts and sleep easier.</string>
+
+    <!-- Onboarding Step 6: Energy Boost -->
+    <string name="onboarding_energy_title">Energy Boost</string>
+    <string name="onboarding_energy_select_title">What strategies do you use to boost your energy?</string>
+    <string name="onboarding_energy_select_description">We\'ll set up tools, tips, and timely reminders to make them more effective.</string>
+
+    <string name="energy_caffeine">Caffeine</string>
+    <string name="energy_caffeine_desc">Caffeine affects you for ten hours. We\'ll make sure you know your daily cutoff time.</string>
+
+    <string name="energy_planners">Planners &amp; time management</string>
+    <string name="energy_planners_desc">Learn when you\'ll feel most alert, focused, and equipped to take on important tasks.</string>
+
+    <string name="energy_naps">Power naps</string>
+    <string name="energy_naps_desc">We\'ll pinpoint your ideal nap time, ensuring it doesn\'t disrupt your nightly sleep rhythm.</string>
+
+    <string name="energy_sunshine">Fresh air &amp; sunshine</string>
+    <string name="energy_sunshine_desc">We\'ll remind you to get light in the morning to suppress melatonin and feel more alert.</string>
+
+    <string name="energy_diet">Managing diet</string>
+    <string name="energy_diet_desc">Appetite is part of your circadian rhythm. We\'ll help you avoid late meals which disrupt sleep.</string>
+
+    <string name="energy_exercise">Exercise &amp; physical activity</string>
+    <string name="energy_exercise_desc">Exercising at the right time can improve your energy. We\'ll track your boosts from workouts.</string>
+
+    <string name="energy_social">Social time &amp; hobbies</string>
+    <string name="energy_social_desc">Understand how your body\'s energy schedule compares to your social schedule.</string>
+
+    <!-- Data Permission Info Screen -->
+    <string name="data_permission_title">Without your sleep and step data, Rise won\'t work</string>
+    <string name="data_permission_recipe_title">Our Special Recipe</string>
+    <string name="data_permission_recipe_desc">Enabling data access will provide us with the ingredients needed to provide personalized insights.</string>
+    
+    <string name="data_permission_phone_motion"><b>PHONE MOTION:</b> helps determine when you are actively moving</string>
+    <string name="data_permission_sleep"><b>SLEEP:</b> we integrate with other sleep apps and your phone\'s alarm clocks</string>
+    <string name="data_permission_steps"><b>STEPS:</b> used to estimate historical sleep and to provide estimations.</string>
+    
+    <string name="data_permission_rest_easy_title">Rest Easy</string>
+    <string name="data_permission_rest_easy_desc">We don\'t share this data with anyone, it\'s always kept private and secure.</string>
+    
+    <string name="data_permission_button">OK, LET\'S DO IT!</string>
+    <string name="data_permission_support">Customer Support</string>
+
+    <!-- Discovery Intro Screen -->
+    <string name="discovery_intro_small_title">Great start! 🎉</string>
+    <string name="discovery_intro_main_bold">Now, let\'s discover your sleep and energy patterns.</string>
+    <string name="discovery_intro_main_desc">We turn existing data into powerful insights.</string>
+    <string name="discovery_intro_bullet">Track how your sleep impacts your energy throughout the day.</string>
+    <string name="discovery_intro_bullet_exercise">Find the optimal time to exercise and recover based on your body\'s energy cycles.</string>
+    <string name="discovery_intro_button">DISCOVER MY PATTERNS</string>
+    <string name="discovery_intro_learn_more">Learn more</string>
+
+    <!-- Physical Activity Permission Screen -->
+    <string name="perm_physical_title">First, let\'s enable Physical Activity Data</string>
+    <string name="perm_physical_desc">Let\'s allow Rise to access your motion data. We use this along with other metrics to figure out how well you\'re sleeping.</string>
+    <string name="perm_physical_button">Enable Physical Activity Data</string>
+    <string name="perm_physical_instruction">Please, tap the button above to turn on motion data access</string>
+    <string name="perm_physical_why">Why do you need this?</string>
+
+    <!-- Health Connect Permission Screen -->
+    <string name="perm_health_title">Next, we need to turn on Health Connect Data</string>
+    <string name="perm_health_desc">We integrate with other sleep apps and alarm clocks and use step data to estimate historical sleep and provide estimations.</string>
+    <string name="perm_health_instruction_bold">Connect RISE to your Health Connect account</string>
+    <string name="perm_health_instruction_regular">then tap allow.</string>
+    <string name="perm_health_button">TURN ON SLEEP &amp; STEPS, GOT IT!</string>
+    <string name="perm_health_why">Tell me again, why is this important?</string>
+
+    <!-- Notification Permission Screen -->
+    <string name="perm_notif_title">We\'ll also need to send you reminders.</string>
+    <string name="perm_notif_desc">For many people, timely and relevant reminders help create new habits or adjust existing ones for sleeping better. You will be able to adjust how much and how frequent they are in the app settings at any time.</string>
+    <string name="perm_notif_button">Enable Notifications</string>
+    <string name="perm_notif_enabled">Notifications Enabled</string>
+    <string name="perm_notif_next">NEXT</string>
+
+    <!-- Sleep Need Intro Screen -->
+    <string name="sleep_need_intro_text">To understand your sleep debt, we must first answer the question, \"how much sleep do I need?\"</string>
+    <string name="sleep_need_intro_button">MY SLEEP PATTERNS</string>
+    <string name="sleep_need_result_value">7h 45m</string>
+    <string name="sleep_need_result_prefix">Based on your sleep patterns, we\'ve learned your</string>
+    <string name="sleep_need_result_bold">sleep need is 7h 45m</string>
+    <string name="sleep_need_result_how_calculated">How do you calculate it?</string>
+    <string name="sleep_need_result_adjust">Adjust sleep need</string>
+    <string name="sleep_need_result_confirm">THAT LOOKS RIGHT</string>
+    <string name="sleep_debt_info_prefix">When you sleep less than your sleep need, you build up</string>
+    <string name="sleep_debt_info_italic">sleep debt</string>
+    <string name="sleep_debt_info_suffix">.</string>
+    <string name="sleep_debt_info_confirm">WHAT IS MY SLEEP DEBT?</string>
+    <string name="sleep_need_edit_header">Edit sleep need</string>
+    <string name="sleep_need_edit_title">Adjust your sleep need until it feels more accurate to you</string>
+    <string name="sleep_need_edit_hint">Think about how long you would sleep if you were on vacation and had no reason to wake up early.</string>
+    <string name="sleep_need_edit_accuracy">This will help us increase the accuracy of your data.</string>
+    <string name="sleep_need_edit_save">SAVE</string>
+    <string name="sleep_need_result_min">7h</string>
+    <string name="sleep_need_result_most_people_start">7h 30m</string>
+    <string name="sleep_need_result_most_people_end">8h 40m</string>
+    <string name="sleep_need_result_max">9h</string>
+
+    <!-- Sleep Schedule Screen -->
+    <string name="sleep_schedule_title">SLEEP PATTERNS</string>
+    <string name="sleep_schedule_headline">On a normal weekday, what is your approximate sleep schedule?</string>
+    <string name="sleep_schedule_in_bed">In bed</string>
+    <string name="sleep_schedule_wake_up">Wake up</string>
+    <string name="sleep_schedule_next">NEXT</string>
+
+    <!-- Weekend Sleep Schedule Screen -->
+    <string name="weekend_sleep_schedule_title">SLEEP PATTERNS</string>
+    <string name="weekend_sleep_schedule_headline">On a normal weekend, what is your approximate sleep schedule?</string>
 
     <!-- Profile Screen -->
     <string name="profile_title">Profile</string>
@@ -177,4 +351,5 @@
     <string name="tools_prep_bedroom_desc">Guidance to an environment check</string>
     <string name="tools_habit_reminders_title">Habit Reminders</string>
     <string name="tools_habit_reminders_desc">Optimize routines with nudges aligned with your daily energy schedule.</string>
+    <string name="perm_physical_enabled">Ok</string>
 </resources>
