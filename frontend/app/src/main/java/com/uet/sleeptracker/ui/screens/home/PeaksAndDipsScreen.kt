@@ -94,6 +94,7 @@ fun PeaksAndDipsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(top = 8.dp)
                     .background(PeaksScreenColor)
             ) {
                 Text(

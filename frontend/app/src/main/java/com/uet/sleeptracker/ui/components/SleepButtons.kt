@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.ui.theme.SleepPrimary
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun SleepPrimaryButton(
@@ -70,4 +71,10 @@ fun SleepPrimaryOutlinedButton(
     ) {
         Text(text = text, style = textStyle)
     }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun SleepPrimaryButtonPreview() {
+    SleepPrimaryButton(text = "Primary Button", onClick = {})
 }

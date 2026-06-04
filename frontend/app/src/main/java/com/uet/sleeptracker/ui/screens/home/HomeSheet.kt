@@ -37,6 +37,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
+import androidx.compose.ui.tooling.preview.Preview
+import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 
 private val SheetPanelColor = Color(0xFF232429)
 private val SheetBorderColor = Color(0xFF55565C)
@@ -189,7 +191,8 @@ internal fun SheetHeader(
 internal fun ColumnScope.SheetExpandedContent(
     modifier: Modifier = Modifier,
     onPeaksAndDipsClick: () -> Unit = {},
-    onCaffeineCutoffClick: () -> Unit = {}
+    onCaffeineCutoffClick: () -> Unit = {},
+    onEveningRoutineClick: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -259,7 +262,8 @@ internal fun ColumnScope.SheetExpandedContent(
                         },
                         title = "Evening routine",
                         subtitle = "20:35–22:45",
-                        showBell = true
+                        showBell = true,
+                        onClick = onEveningRoutineClick
                     )
                     Divider()
 
@@ -314,4 +318,24 @@ private fun Divider() {
             .height(1.dp)
             .background(SheetBorderColor)
     )
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF121212, widthDp = 402, heightDp = 600)
+@Composable
+private fun HomeSheetPreview() {
+    SleeptrackerTheme {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFF121212))
+                .padding(16.dp)
+        ) {
+            SheetHeader(
+                isExpanded = true,
+                onToggle = {}
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            SheetExpandedContent()
+        }
+    }
 }

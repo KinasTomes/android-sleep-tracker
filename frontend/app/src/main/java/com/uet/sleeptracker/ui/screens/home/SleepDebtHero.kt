@@ -35,6 +35,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 
 private data class SleepCurveConfig(val distanceX: Float, val radius: Float)
 
@@ -252,6 +254,22 @@ internal fun SleepDebtHero(sleepDebtHours: Float) {
                     fontWeight = FontWeight.Normal
                 )
             }
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF121212)
+@Composable
+private fun SleepDebtHeroPreview() {
+    SleeptrackerTheme {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(text = "Low Sleep Debt", color = Color.White)
+            SleepDebtHero(sleepDebtHours = 3.2f)
+            Text(text = "High Sleep Debt", color = Color.White)
+            SleepDebtHero(sleepDebtHours = 8.5f)
         }
     }
 }

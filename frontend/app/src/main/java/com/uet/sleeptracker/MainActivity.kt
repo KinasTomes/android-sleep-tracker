@@ -18,8 +18,11 @@ import androidx.compose.ui.Modifier
 import com.uet.sleeptracker.ui.components.SleepBottomNavTab
 import com.uet.sleeptracker.ui.navigation.onboardingNavGraph
 import com.uet.sleeptracker.ui.screens.home.CaffeineCutoffScreen
+import com.uet.sleeptracker.ui.screens.home.CaffeineLearnMoreScreen
 import com.uet.sleeptracker.ui.screens.home.buildReminderChoiceItems
 import com.uet.sleeptracker.ui.screens.home.buildDefaultReminderChoiceItems
+import com.uet.sleeptracker.ui.screens.home.EveningRoutineScreen
+import com.uet.sleeptracker.ui.screens.home.EveningRoutineSettingsScreen
 import com.uet.sleeptracker.ui.screens.home.findInitialReminderChoiceIndex
 import com.uet.sleeptracker.ui.screens.home.HomeScreen
 import com.uet.sleeptracker.ui.screens.home.PeaksAndDipsScreen
@@ -54,6 +57,7 @@ class MainActivity : ComponentActivity() {
                             onProfileClick = { navController.navigate("profile") },
                             onPeaksAndDipsClick = { navController.navigate("peaks_and_dips") },
                             onCaffeineCutoffClick = { navController.navigate("caffeine_cutoff") },
+                            onEveningRoutineClick = { navController.navigate("evening_routine") },
                             onBottomNavSelected = { tab ->
                                 when (tab) {
                                     SleepBottomNavTab.Tools -> navController.navigate("tools")
@@ -67,6 +71,69 @@ class MainActivity : ComponentActivity() {
                             onNotificationClick = { navController.navigate("notification_menu") },
                             onProfileClick = { navController.navigate("profile") },
                             onNavigateToHome = { navController.navigate("home") }
+                        )
+                    }
+                    composable(
+                        route = "evening_routine",
+                        enterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        exitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popEnterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popExitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        }
+                    ) {
+                        EveningRoutineScreen(
+                            onCloseClick = { navController.popBackStack() },
+                            onSettingsClick = { navController.navigate("evening_routine_settings") }
+                        )
+                    }
+                    composable(
+                        route = "evening_routine_settings",
+                        enterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        exitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popEnterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popExitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        }
+                    ) {
+                        EveningRoutineSettingsScreen(
+                            onCloseClick = { navController.popBackStack() }
                         )
                     }
                     composable(
@@ -98,7 +165,8 @@ class MainActivity : ComponentActivity() {
                     ) {
                         CaffeineCutoffScreen(
                             onCloseClick = { navController.popBackStack() },
-                            onReminderTimeClick = { navController.navigate("caffeine_cutoff_reminder_time") }
+                            onReminderTimeClick = { navController.navigate("caffeine_cutoff_reminder_time") },
+                            onLearnMoreClick = { navController.navigate("caffeine_cutoff_learn_more") }
                         )
                     }
                     composable(
@@ -183,6 +251,37 @@ class MainActivity : ComponentActivity() {
                                 options = reminderChoices,
                                 selectedLabel = selectedTime
                             ),
+                            onCloseClick = { navController.popBackStack() }
+                        )
+                    }
+                    composable(
+                        route = "caffeine_cutoff_learn_more",
+                        enterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        exitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popEnterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popExitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        }
+                    ) {
+                        CaffeineLearnMoreScreen(
                             onCloseClick = { navController.popBackStack() }
                         )
                     }

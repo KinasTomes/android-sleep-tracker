@@ -68,6 +68,7 @@ fun HomeScreen(
     onProfileClick: () -> Unit = {},
     onPeaksAndDipsClick: () -> Unit = {},
     onCaffeineCutoffClick: () -> Unit = {},
+    onEveningRoutineClick: () -> Unit = {},
     onBottomNavSelected: (SleepBottomNavTab) -> Unit = {}
 ) {
     var isSheetExpanded by rememberSaveable { mutableStateOf(false) }
@@ -265,7 +266,8 @@ fun HomeScreen(
                             if (shouldShowSheetContent) {
                                 SheetExpandedContent(
                                     onPeaksAndDipsClick = onPeaksAndDipsClick,
-                                    onCaffeineCutoffClick = onCaffeineCutoffClick
+                                    onCaffeineCutoffClick = onCaffeineCutoffClick,
+                                    onEveningRoutineClick = onEveningRoutineClick
                                 )
                             }
                         }

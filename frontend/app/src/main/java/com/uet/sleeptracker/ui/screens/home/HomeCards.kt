@@ -25,6 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
+import androidx.compose.ui.tooling.preview.Preview
+import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 
 @Composable
 internal fun DebtSummary(
@@ -257,6 +259,22 @@ internal fun NapsTodayCard(
                     fontSize = 18.sp
                 )
             }
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF121212)
+@Composable
+private fun HomeCardsPreview() {
+    SleeptrackerTheme {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            DebtSummary(value = "-0h 30m")
+            EnergyPotentialCard(value = "Peak Focus")
+            LastNightCard(totalSleepTime = "7h 45m", sleepTimeRange = "11:30 PM - 7:15 AM")
+            NapsTodayCard(napsTodayText = "None")
         }
     }
 }

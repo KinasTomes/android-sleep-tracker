@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.ui.tooling.preview.Preview
+import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -58,5 +60,13 @@ internal fun PeaksTopBar(
             thickness = 1.dp,
             modifier = Modifier.align(Alignment.BottomCenter)
         )
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF222328)
+@Composable
+private fun PeaksTopBarPreview() {
+    SleeptrackerTheme {
+        PeaksTopBar(title = "Evening Routine")
     }
 }

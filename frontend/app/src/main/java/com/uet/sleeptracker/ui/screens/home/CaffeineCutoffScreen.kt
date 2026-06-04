@@ -55,6 +55,7 @@ fun CaffeineCutoffScreen(
     reminderTimeText: String = "10h",
     onCloseClick: () -> Unit = {},
     onReminderTimeClick: () -> Unit = {},
+    onLearnMoreClick: () -> Unit = {},
 ) {
     var reminderEnabled by remember { mutableStateOf(true) }
 
@@ -113,7 +114,7 @@ fun CaffeineCutoffScreen(
 
             Spacer(modifier = Modifier.height(68.dp))
 
-            CaffeineLearnMoreRow()
+            CaffeineLearnMoreRow(onClick = onLearnMoreClick)
         }
     }
 }
@@ -273,13 +274,13 @@ private fun CaffeineReminderRow(
 }
 
 @Composable
-private fun CaffeineLearnMoreRow() {
+private fun CaffeineLearnMoreRow(onClick: () -> Unit) {
     HorizontalDivider(color = CaffeineDividerColor, thickness = 1.dp)
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(74.dp)
-            .clickable { }
+            .clickable(onClick = onClick)
             .padding(start = 21.dp, end = 21.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
