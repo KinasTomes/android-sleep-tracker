@@ -36,9 +36,9 @@ Nếu Process S là một đồng hồ đếm ngược dựa trên thời gian t
 $C(k) = \sum_{i=1}^{5} a_i \sin\left\{ i \frac{2\pi}{\tau} \right\}$. Trong đó, hệ số $\tau$ đại diện cho chu kỳ tự nhiên của máy tạo nhịp sinh học (thường tiệm cận 24.2 giờ ở môi trường không bị cô lập ánh sáng). Các hệ số biên độ $a_1$ đến $a_5$ lần lượt nhận các hằng số chuẩn hóa từ thực nghiệm lâm sàng: $a_1 = 0.97$, $a_2 = 0.22$, $a_3 = 0.07$, $a_4 = 0.03$, và $a_5 = 0.001$. Tham số $T_s$ là chu kỳ lấy mẫu của hệ thống cơ sở dữ liệu thời gian thực (ví dụ: mỗi 5 phút), và $\phi$ là pha sinh học ban đầu (initial circadian phase) của cá nhân, một biến số quan trọng được ứng dụng liên tục điều chỉnh dựa trên lịch sử giờ đi ngủ và thức dậy của người dùng.
 
 #### Sự tương tác Hệ thống (The Interaction Algorithm):
-Mức độ năng lượng hay khả năng duy trì sự tỉnh táo (Alertness/Sleep Propensity) tại một thời điểm $t$ bất kỳ không phải là kết quả đơn lẻ của S hay C, mà là hàm số phản ánh sự tương tác liên tục giữa hai quá trình này. Hệ thống ứng dụng tính toán biểu đồ năng lượng cuối cùng bằng cách tính đạo hàm và chênh lệch giữa tín hiệu cảnh báo của Process C và áp lực nội môi của Process S.
+Mức độ năng lượng hay khả năng duy trì sự tỉnh táo (Alertness/Sleep Propensity) tại một thời điểm $t$ bất kỳ không phải là kết quả đơn lẻ của S hay C, mà là hàm số phản ánh sự tương tác liên tục giữa hai quá trình này. Hệ thống ứng dụng tính toán biểu đồ năng lượng cuối cùng bằng cách tính đạo hàm và chênh lệch giữa tín hiệu cảnh báo của Process C và áp lực nội môi của Process S. 
 
-Sự chênh lệch này được khái quát qua phương trình tương tác: $\Phi(t) = H(t) - A_c x(t)$.
+Sự chênh lệch này được khái quát qua phương trình tương tác: $\Phi(t) = H(t) - A_c x(t)$. 
 
 Trong đó, $A_c$ là một hằng số khuếch đại (thường được đặt ở mức $0.1333$) và $x(t)$ đại diện cho trạng thái chuẩn hóa của Process C. Chính sự tương tác phi tuyến tính này giải thích tại sao một người dù bị mất ngủ nghiêm trọng (Process S rất cao) vẫn có thể cảm thấy tỉnh táo lạ thường vào buổi sáng muộn khi Process C đạt đỉnh, nhưng lại sụp đổ hoàn toàn vào buổi chiều khi Process C thoái trào.
 

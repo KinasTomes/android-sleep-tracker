@@ -36,6 +36,16 @@ class Settings(BaseSettings):
     HARMONIC_AMPLITUDES: list[float] = [0.97, 0.22, 0.07, 0.03, 0.001]
     CIRCADIAN_PERIOD: float = 24.2  # Natural circadian period (hours)
 
+    # Firebase Cloud Messaging
+    FCM_CREDENTIALS_PATH: str = ""  # Path to Firebase service account JSON
+
+    # AWS S3 Configuration
+    AWS_ACCESS_KEY_ID: str | None = None
+    AWS_SECRET_ACCESS_KEY: str | None = None
+    AWS_REGION: str = "us-east-1"
+    S3_SOUNDS_BUCKET: str = "user-private-dataset"
+    SOUNDS_S3_PREFIX: str = "lumi-sounds"
+
     class Config:
         env_file = ".env"
 
