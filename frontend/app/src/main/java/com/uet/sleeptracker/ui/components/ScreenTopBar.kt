@@ -2,6 +2,7 @@ package com.uet.sleeptracker.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -28,38 +32,60 @@ fun ScreenTopBar(
     mainTitle: String,
     subTitle: String? = null,
     actions: @Composable RowScope.() -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    horizontalPadding: Dp = 8.dp,
+    contentHeight: Dp = 64.dp,
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 6.dp, start = 8.dp, end = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(
-            verticalArrangement = if (subTitle != null) Arrangement.spacedBy(4.dp) else Arrangement.Bottom,
-            modifier = Modifier.weight(1f)
-        ) {
-            Text(
-                text = mainTitle,
-                color = Color.White,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold
-            )
-            if (subTitle != null) {
-                Text(
-                    text = subTitle,
-                    color = Color.White.copy(alpha = 0.6f),
-                    fontSize = 16.sp
-                )
-            }
-        }
+    val textSize = 20.sp
 
+    Column(modifier = modifier.fillMaxWidth()) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            content = actions
-        )
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(contentHeight)
+                .padding(top = 6.dp, start = horizontalPadding, end = horizontalPadding, bottom = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                verticalArrangement = if (subTitle != null) Arrangement.spacedBy(2.dp) else Arrangement.Center,
+                horizontalAlignment = Alignment.Start,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = mainTitle,
+                    color = Color.White,
+                    fontSize = textSize,
+                    lineHeight = textSize,
+                    fontWeight = FontWeight.Normal,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if (subTitle != null) {
+                    Text(
+                        text = subTitle,
+                        color = Color.White.copy(alpha = 0.6f),
+                        fontSize = textSize,
+                        lineHeight = textSize,
+                        fontWeight = FontWeight.Normal,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                content = actions
+            )
+        }
+        TopDivider()
     }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun ScreenTopbarPreview() {
+    ScreenTopBar(mainTitle = "My Sleep", subTitle = "May 17-30")
 }

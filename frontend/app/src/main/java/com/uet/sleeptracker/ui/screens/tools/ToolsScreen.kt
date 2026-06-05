@@ -1,326 +1,335 @@
 package com.uet.sleeptracker.ui.screens.tools
 
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
-import com.uet.sleeptracker.ui.components.AppBottomNavigation
-import com.uet.sleeptracker.ui.components.SleepBottomNavTab
-import com.uet.sleeptracker.ui.components.SleepBottomNavigation
-import com.uet.sleeptracker.ui.components.SleepIconPlaceholder
-import com.uet.sleeptracker.ui.components.SleepIconType
-import com.uet.sleeptracker.ui.components.SleepTopActionIcon
+import com.uet.sleeptracker.ui.components.SleepAudioCard
+import com.uet.sleeptracker.ui.components.SleepSuggestionCard
 import com.uet.sleeptracker.ui.theme.SleepBackground
-import com.uet.sleeptracker.ui.theme.SleepOnSurfaceVariant
-import com.uet.sleeptracker.ui.theme.SleepSurface
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
+
+private val ToolsCardShape = RoundedCornerShape(12.dp)
+private val ToolsCardBorder = Color(0xFF363636)
+private val ToolsCardSurface = Color(0xFF16151A)
+private val ToolsMutedText = Color(0xFF989898)
 
 @Composable
 fun ToolsScreen(
-    modifier: Modifier = Modifier,
-    onNotificationClick: () -> Unit = {},
-    onProfileClick: () -> Unit = {},
-    onNavigateToHome: () -> Unit = {}
+    modifier: Modifier = Modifier
 ) {
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        containerColor = SleepBackground,
-        bottomBar = {
-            AppBottomNavigation(
-                selectedTab = "tools",
-                onNavigateToHome = onNavigateToHome
-            )
-        }
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            item {
-                ToolsTopBar(
-                    onNotificationClick = onNotificationClick,
-                    onProfileClick = onProfileClick
-                )
-            }
+    val verticalScrollState = rememberScrollState()
+    val horizontalScrollState = rememberScrollState()
 
-            item {
-                SleepDetectionCard()
-            }
-
-            item {
-                SectionHeader(title = stringResource(R.string.tools_sleep_aids_title))
-                Spacer(modifier = Modifier.height(16.dp))
-                SleepAidsPlayerCard()
-            }
-
-            item {
-                Text(
-                    text = stringResource(R.string.tools_guides_title),
-                    color = SleepOnSurfaceVariant,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 1.sp
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    GuideCard(
-                        modifier = Modifier.weight(1f),
-                        title = stringResource(R.string.tools_write_brain_dump_title),
-                        description = stringResource(R.string.tools_write_brain_dump_desc),
-                        purpleColor = Color(0xFF5E5CE6)
-                    )
-                    GuideCard(
-                        modifier = Modifier.weight(1f),
-                        title = stringResource(R.string.tools_prep_bedroom_title),
-                        description = stringResource(R.string.tools_prep_bedroom_desc),
-                        purpleColor = Color(0xFF5E5CE6).copy(alpha = 0.7f)
-                    )
-                }
-            }
-
-            item {
-                SectionHeader(title = stringResource(R.string.tools_habit_reminders_title))
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = stringResource(R.string.tools_habit_reminders_desc),
-                    color = SleepOnSurfaceVariant,
-                    fontSize = 15.sp,
-                    lineHeight = 22.sp
-                )
-            }
-            
-            item {
-                Spacer(modifier = Modifier.height(40.dp))
-            }
-        }
-    }
-}
-
-@Composable
-private fun ToolsTopBar(
-    onNotificationClick: () -> Unit,
-    onProfileClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = stringResource(R.string.tools_title),
-            color = Color.White,
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            SleepTopActionIcon(
-                type = SleepIconType.Bell,
-                onClick = onNotificationClick,
-                tint = Color(0xFF721BFD),
-                size = 28.dp
-            )
-            SleepTopActionIcon(
-                type = SleepIconType.Profile,
-                onClick = onProfileClick,
-                tint = Color(0xFF721BFD),
-                size = 32.dp
-            )
-        }
-    }
-}
-
-@Composable
-private fun SleepDetectionCard() {
     Column(
-        modifier = Modifier
-            .width(220.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(SleepSurface)
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(verticalScrollState)
+            .background(SleepBackground)
     ) {
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(80.dp)
-                .background(Color(0xFF2C1C8F)),
-            contentAlignment = Alignment.Center
+                .padding(start = 19.dp, end = 20.dp, top = 28.dp),
+            horizontalArrangement = Arrangement.spacedBy(13.dp)
         ) {
-            // Graphic placeholder
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Zzz", color = Color.White.copy(alpha = 0.5f), fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.width(8.dp))
-                Column {
-                    repeat(4) {
-                        Box(
-                            modifier = Modifier
-                                .width(30.dp - (it * 4).dp)
-                                .height(2.dp)
-                                .background(Color.White.copy(alpha = 0.5f))
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                    }
-                }
-            }
-        }
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.tools_sleep_detection_title),
-                color = Color.White,
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Bold
+            ToolFeatureCard(
+                modifier = Modifier.weight(1f),
+                title = "Smart Alarm",
+                imageRes = R.drawable.smart_alarm,
+                detailLines = listOf(
+                    ToolCardDetail("08:00 Tomorrow", ToolsMutedText),
+                    ToolCardDetail("S M T W T F S", Color.White)
+                )
             )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = stringResource(R.string.tools_sleep_detection_desc),
-                color = SleepOnSurfaceVariant,
-                fontSize = 14.sp
+            ToolFeatureCard(
+                modifier = Modifier.weight(1f),
+                title = "Sleep quality",
+                imageRes = R.drawable.sleep_quality,
+                detailLines = listOf(
+                    ToolCardDetail("Monitor progress by", ToolsMutedText),
+                    ToolCardDetail("tracking how you feel", ToolsMutedText)
+                )
             )
         }
+
+        SectionTitle(
+            text = "Sleep aids",
+            modifier = Modifier.padding(start = 19.dp, top = 34.dp)
+        )
+
+        SleepAudioCard(
+            title = "Sleep sounds",
+            subtitle = "Ambient Music",
+            onClick = {},
+            modifier = Modifier.padding(start = 19.dp, end = 19.dp, top = 6.dp)
+        )
+
+        EyebrowTitle(
+            text = "GUIDES",
+            modifier = Modifier.padding(start = 19.dp, top = 26.dp)
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 19.dp, end = 19.dp, top = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(11.dp)
+        ) {
+            SleepSuggestionCard(
+                title = "Write a brain dump",
+                subtitle = "Ease your mind before\nbed",
+                backgroundImageResId = R.drawable.write_a_brain_dump,
+                onClick = {},
+                modifier = Modifier.weight(1f)
+            )
+            SleepSuggestionCard(
+                title = "Prep the bedroom",
+                subtitle = "Guidance to an\nenvironment check",
+                backgroundImageResId = R.drawable.prep_the_bedroom,
+                onClick = {},
+                modifier = Modifier.weight(1f)
+            )
+        }
+
+        SectionTitle(
+            text = "Habit Reminders",
+            modifier = Modifier.padding(start = 19.dp, top = 50.dp)
+        )
+
+        Text(
+            text = "Optimize routines with nudges aligned with your daily energy schedule",
+            color = ToolsMutedText,
+            fontSize = 14.sp,
+            lineHeight = 15.sp,
+            fontWeight = FontWeight.Normal,
+            modifier = Modifier.padding(start = 19.dp, end = 20.dp, top = 11.dp)
+        )
+
+        ReminderRailSection(
+            title = "START AT THE RIGHT TIME",
+            items = listOf(
+                ToolIconItem("Melatonin\nwindow", R.drawable.melatonin_window),
+                ToolIconItem("Melatonin\nsupplements", R.drawable.melatonin_supplement),
+                ToolIconItem("Blue light\nglasses", R.drawable.blue_light_glasses)
+            ),
+            modifier = Modifier.padding(top = 44.dp),
+            scrollState = horizontalScrollState
+        )
+
+        ReminderRailSection(
+            title = "STOP AT THE RIGHT TIME",
+            items = listOf(
+                ToolIconItem("Caffeine", R.drawable.ceffeine),
+                ToolIconItem("Meals", R.drawable.meals),
+                ToolIconItem("Workouts", R.drawable.workouts),
+                ToolIconItem("Alcohol", R.drawable.alcohols)
+            ),
+            modifier = Modifier.padding(top = 42.dp),
+            scrollState = rememberScrollState()
+        )
+
+        ReminderRailSection(
+            title = "OPTIMIZE ROUTINES",
+            items = listOf(
+                ToolIconItem("Evening", R.drawable.evening),
+                ToolIconItem("Morning", R.drawable.morning),
+                ToolIconItem("Blue Light", R.drawable.blue_light),
+                ToolIconItem("Peaks & Dips", R.drawable.paeks_n_dips)
+            ),
+            modifier = Modifier.padding(top = 42.dp, bottom = 140.dp),
+            scrollState = rememberScrollState()
+        )
     }
 }
 
 @Composable
-private fun SleepAidsPlayerCard() {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = SleepSurface,
-        shape = RoundedCornerShape(24.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(24.dp)
-        ) {
-            Text(
-                text = "Billie Bossa Nova - Billie Eilish",
-                color = Color.White,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = "Happier Than Ever",
-                color = SleepOnSurfaceVariant,
-                fontSize = 15.sp
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Column {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(4.dp)
-                        .background(Color(0xFF3A3A3C), RoundedCornerShape(2.dp))
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(0.4f)
-                            .fillMaxHeight()
-                            .background(Color.White, RoundedCornerShape(2.dp))
-                    )
-                    Box(
-                        modifier = Modifier
-                            .size(12.dp)
-                            .align(Alignment.CenterStart)
-                            .offset(x = 135.dp) // Approximately 40%
-                            .background(Color.White, CircleShape)
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = "0:38", color = SleepOnSurfaceVariant, fontSize = 11.sp)
-                    Text(text = "3:16", color = SleepOnSurfaceVariant, fontSize = 11.sp)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun GuideCard(
+private fun ToolFeatureCard(
     title: String,
-    description: String,
-    purpleColor: Color,
+    @DrawableRes imageRes: Int,
+    detailLines: List<ToolCardDetail>,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .height(120.dp)
+            .clip(ToolsCardShape)
+            .background(ToolsCardSurface)
+            .border(width = 1.dp, color = ToolsCardBorder, shape = ToolsCardShape)
+            .clickable(onClick = {})
+    ) {
+        Image(
+            painter = painterResource(id = imageRes),
+            contentDescription = null,
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier.fillMaxSize()
+        )
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .fillMaxWidth()
+                .height(71.dp)
+                .background(ToolsCardSurface)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 11.dp, end = 11.dp, top = 11.dp, bottom = 9.dp)
+            ) {
+                Text(
+                    text = title,
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    lineHeight = 15.sp,
+                    fontWeight = FontWeight.Normal
+                )
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                detailLines.forEach { line ->
+                    Text(
+                        text = line.text,
+                        color = line.color,
+                        fontSize = 12.sp,
+                        lineHeight = 15.sp,
+                        fontWeight = FontWeight.Normal
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SectionTitle(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = text,
+        color = Color.White,
+        fontSize = 24.sp,
+        lineHeight = 15.sp,
+        fontWeight = FontWeight.Normal,
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun EyebrowTitle(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = text,
+        color = Color.White,
+        fontSize = 16.sp,
+        lineHeight = 15.sp,
+        fontWeight = FontWeight.Normal,
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun ReminderRailSection(
+    title: String,
+    items: List<ToolIconItem>,
+    scrollState: androidx.compose.foundation.ScrollState,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        EyebrowTitle(
+            text = title,
+            modifier = Modifier.padding(start = 19.dp)
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(scrollState)
+                .padding(start = 19.dp, end = 19.dp, top = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            items.forEach { item ->
+                ReminderIconItem(item = item)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ReminderIconItem(
+    item: ToolIconItem,
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier
-            .clip(RoundedCornerShape(16.dp))
-            .background(SleepSurface)
+        modifier = modifier.size(width = 88.dp, height = 130.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(
+        Image(
+            painter = painterResource(id = item.imageRes),
+            contentDescription = null,
+            contentScale = ContentScale.FillBounds,
             modifier = Modifier
-                .fillMaxWidth()
-                .height(70.dp)
-                .background(purpleColor)
+                .size(88.dp)
+                .clip(RoundedCornerShape(16.dp))
         )
-        Column(
-            modifier = Modifier.padding(12.dp)
-        ) {
-            Text(
-                text = title,
-                color = Color.White,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = description,
-                color = SleepOnSurfaceVariant,
-                fontSize = 13.sp,
-                lineHeight = 18.sp
-            )
-        }
+
+        Text(
+            text = item.label,
+            color = ToolsMutedText,
+            fontSize = 14.sp,
+            lineHeight = 15.sp,
+            fontWeight = FontWeight.Normal,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 10.dp)
+        )
     }
 }
 
-@Composable
-private fun SectionHeader(title: String) {
-    Text(
-        text = title,
-        color = Color.White,
-        fontSize = 22.sp,
-        fontWeight = FontWeight.Bold
-    )
-}
+private data class ToolIconItem(
+    val label: String,
+    @param:DrawableRes val imageRes: Int,
+)
 
-@Composable
-private fun ToolsBottomNavigation() {
-    SleepBottomNavigation(
-        selectedTab = SleepBottomNavTab.Tools,
-        onTabSelected = {}
-    )
-}
+private data class ToolCardDetail(
+    val text: String,
+    val color: Color,
+)
 
 @Preview(showBackground = true, backgroundColor = 0xFF000000)
 @Composable
-fun ToolsScreenPreview() {
+private fun ToolsScreenPreview() {
     SleeptrackerTheme {
         ToolsScreen()
     }

@@ -19,9 +19,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.painterResource
+import com.uet.sleeptracker.R
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -91,12 +94,12 @@ private fun SleepBottomNavigationItem(
         SleepBottomNavTab.Learn -> "Learn"
     }
 
-    val iconType = when (tab) {
-        SleepBottomNavTab.MySleep -> SleepIconType.Target
-        SleepBottomNavTab.Energy -> SleepIconType.Lines
-        SleepBottomNavTab.Tools -> SleepIconType.Briefcase
-        SleepBottomNavTab.Stats -> SleepIconType.LineChart
-        SleepBottomNavTab.Learn -> SleepIconType.Lightbulb
+    val iconResId = when (tab) {
+        SleepBottomNavTab.MySleep -> R.drawable.sleep
+        SleepBottomNavTab.Energy -> R.drawable.energy
+        SleepBottomNavTab.Tools -> R.drawable.tools
+        SleepBottomNavTab.Stats -> R.drawable.progress
+        SleepBottomNavTab.Learn -> R.drawable.learn
     }
 
     Column(
@@ -107,10 +110,11 @@ private fun SleepBottomNavigationItem(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        SleepIconPlaceholder(
-            color = color,
-            size = 24.dp,
-            type = iconType
+        Icon(
+            painter = painterResource(id = iconResId),
+            contentDescription = label,
+            tint = color,
+            modifier = Modifier.size(24.dp)
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(

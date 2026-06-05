@@ -1,11 +1,15 @@
 package com.uet.sleeptracker.ui.screens.home
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.defaultMinSize
@@ -15,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -22,15 +27,28 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.semantics.Role
@@ -38,12 +56,149 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
 import androidx.compose.ui.tooling.preview.Preview
+import com.uet.sleeptracker.ui.theme.SleepPrimary
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
+import kotlin.math.absoluteValue
 
 private val SheetPanelColor = Color(0xFF232429)
 private val SheetBorderColor = Color(0xFF55565C)
 private val SheetItemsShape = RoundedCornerShape(16.dp)
 private val SheetItemMinHeight = 72.dp
+
+@Composable
+internal fun HomeSlideUpPanel(
+    modifier: Modifier = Modifier,
+    onPeaksAndDipsClick: () -> Unit = {},
+    onCaffeineCutoffClick: () -> Unit = {},
+    onEveningRoutineClick: () -> Unit = {}
+) {
+    var isSheetExpanded by rememberSaveable { mutableStateOf(false) }
+
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+        val density = LocalDensity.current
+        val collapsedSheetHeight = 64.dp
+        val expandedSheetHeight = maxHeight - 48.dp
+        val sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+        var isSheetDragging by remember { mutableStateOf(false) }
+        var targetSheetHeightVal by rememberSaveable { mutableStateOf(collapsedSheetHeight.value) }
+        val targetSheetHeight = targetSheetHeightVal.dp
+        var isArrowExpanded by rememberSaveable { mutableStateOf(false) }
+        val animatedSheetHeight by animateDpAsState(
+            targetValue = targetSheetHeight,
+            animationSpec = tween(durationMillis = if (isSheetDragging) 0 else 520),
+            label = "sheetHeightAnim"
+        )
+        val shouldShowSheetContent = animatedSheetHeight > collapsedSheetHeight + 8.dp
+
+        LaunchedEffect(isSheetExpanded, expandedSheetHeight, isSheetDragging) {
+            if (!isSheetDragging) {
+                targetSheetHeightVal = if (isSheetExpanded) expandedSheetHeight.value else collapsedSheetHeight.value
+            }
+        }
+
+        LaunchedEffect(animatedSheetHeight, collapsedSheetHeight, expandedSheetHeight, isSheetDragging) {
+            if (isSheetDragging) return@LaunchedEffect
+
+            when {
+                (animatedSheetHeight.value - expandedSheetHeight.value).absoluteValue < 0.5f -> {
+                    isArrowExpanded = true
+                }
+
+                (animatedSheetHeight.value - collapsedSheetHeight.value).absoluteValue < 0.5f -> {
+                    isArrowExpanded = false
+                }
+            }
+        }
+
+        Surface(
+            color = SheetPanelColor,
+            shape = sheetShape,
+            modifier = Modifier
+                .requiredWidth(maxWidth + 2.dp)
+                .height(animatedSheetHeight)
+                .align(Alignment.BottomCenter)
+                .pointerInput(maxHeight) {
+                    detectVerticalDragGestures(
+                        onDragStart = {
+                            isSheetDragging = true
+                            targetSheetHeightVal = animatedSheetHeight.value
+                        },
+                        onDragEnd = {
+                            isSheetDragging = false
+                            val sheetTopVal = maxHeight.value - targetSheetHeightVal
+                            val shouldExpand = sheetTopVal < maxHeight.value * 0.5f
+                            isSheetExpanded = shouldExpand
+                            targetSheetHeightVal = if (shouldExpand) expandedSheetHeight.value else collapsedSheetHeight.value
+                        },
+                        onDragCancel = {
+                            isSheetDragging = false
+                            targetSheetHeightVal = if (isSheetExpanded) expandedSheetHeight.value else collapsedSheetHeight.value
+                        }
+                    ) { change, dragAmount ->
+                        change.consume()
+                        val dragAmountDp = with(density) { dragAmount.toDp() }
+                        targetSheetHeightVal = (targetSheetHeightVal - dragAmountDp.value)
+                            .coerceIn(collapsedSheetHeight.value, expandedSheetHeight.value)
+                    }
+                }
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .width(36.dp)
+                                .height(4.dp)
+                                .clip(CircleShape)
+                                .background(Color.White.copy(alpha = 0.2f))
+                        )
+                    }
+
+                    SheetHeader(
+                        isExpanded = isArrowExpanded,
+                        onToggle = { isSheetExpanded = !isSheetExpanded }
+                    )
+
+                    if (shouldShowSheetContent) {
+                        SheetExpandedContent(
+                            onPeaksAndDipsClick = onPeaksAndDipsClick,
+                            onCaffeineCutoffClick = onCaffeineCutoffClick,
+                            onEveningRoutineClick = onEveningRoutineClick
+                        )
+                    }
+                }
+
+                androidx.compose.foundation.Canvas(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxSize()
+                        .align(Alignment.TopCenter)
+                ) {
+                    val radius = 20.dp.toPx()
+                    val strokeWidth = 1.dp.toPx()
+                    val inset = strokeWidth / 2f
+                    clipRect(bottom = size.height * 0.5f) {
+                        drawRoundRect(
+                            color = SheetBorderColor,
+                            topLeft = Offset(inset, inset),
+                            size = Size(
+                                width = size.width - strokeWidth,
+                                height = size.height - strokeWidth
+                            ),
+                            cornerRadius = CornerRadius(radius, radius),
+                            style = Stroke(width = strokeWidth)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
 
 @Composable
 internal fun SheetToolItem(
@@ -159,7 +314,7 @@ internal fun SheetHeader(
             Row(
                 modifier = Modifier
                     .clip(RoundedCornerShape(20.dp))
-                    .background(Color(0xFF7C5CFF))
+                    .background(Color(0xFF721BFD))
                     .padding(horizontal = 12.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -292,7 +447,7 @@ internal fun ColumnScope.SheetExpandedContent(
                             icon = {
                                 Text(
                                     text = "+",
-                                    color = Color(0xFFC084FC),
+                                    color = Color(0xFF8C5CFF),
                                     fontSize = 24.sp,
                                     fontWeight = FontWeight.Light,
                                     modifier = Modifier.padding(horizontal = 4.dp)
@@ -301,7 +456,7 @@ internal fun ColumnScope.SheetExpandedContent(
                             title = "Browse all tools",
                             subtitle = null,
                             showBell = false,
-                            titleColor = Color(0xFFC084FC)
+                            titleColor = Color(0xFF8C5CFF)
                         )
                     }
                 }

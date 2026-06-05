@@ -17,6 +17,7 @@ import androidx.navigation.navArgument
 import androidx.compose.ui.Modifier
 import com.uet.sleeptracker.ui.components.SleepBottomNavTab
 import com.uet.sleeptracker.ui.navigation.onboardingNavGraph
+import com.uet.sleeptracker.ui.screens.MainTabsScreen
 import com.uet.sleeptracker.ui.screens.home.CaffeineCutoffScreen
 import com.uet.sleeptracker.ui.screens.home.CaffeineLearnMoreScreen
 import com.uet.sleeptracker.ui.screens.home.buildReminderChoiceItems
@@ -24,14 +25,12 @@ import com.uet.sleeptracker.ui.screens.home.buildDefaultReminderChoiceItems
 import com.uet.sleeptracker.ui.screens.home.EveningRoutineScreen
 import com.uet.sleeptracker.ui.screens.home.EveningRoutineSettingsScreen
 import com.uet.sleeptracker.ui.screens.home.findInitialReminderChoiceIndex
-import com.uet.sleeptracker.ui.screens.home.HomeScreen
 import com.uet.sleeptracker.ui.screens.home.PeaksAndDipsScreen
 import com.uet.sleeptracker.ui.screens.home.ReminderTimeScreen
 import com.uet.sleeptracker.ui.screens.notifications.NotificationMenuScreen
 import com.uet.sleeptracker.ui.screens.notifications.NotificationsScreen
 import com.uet.sleeptracker.ui.screens.settings.*
 import com.uet.sleeptracker.ui.theme.SleepBackground
-import com.uet.sleeptracker.ui.screens.tools.ToolsScreen
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 
 class MainActivity : ComponentActivity() {
@@ -44,33 +43,19 @@ class MainActivity : ComponentActivity() {
                 
                 NavHost(
                     navController = navController,
-                    startDestination = "home",
+                    startDestination = "main_tabs",
                     modifier = Modifier
                         .fillMaxSize()
                         .background(SleepBackground)
                 ) {
                     onboardingNavGraph(navController)
 
-                    // Main Screens
-                    composable("home") {
-                        HomeScreen(
+                    composable("main_tabs") {
+                        MainTabsScreen(
                             onProfileClick = { navController.navigate("profile") },
                             onPeaksAndDipsClick = { navController.navigate("peaks_and_dips") },
                             onCaffeineCutoffClick = { navController.navigate("caffeine_cutoff") },
-                            onEveningRoutineClick = { navController.navigate("evening_routine") },
-                            onBottomNavSelected = { tab ->
-                                when (tab) {
-                                    SleepBottomNavTab.Tools -> navController.navigate("tools")
-                                    else -> {}
-                                }
-                            }
-                        )
-                    }
-                    composable("tools") {
-                        ToolsScreen(
-                            onNotificationClick = { navController.navigate("notification_menu") },
-                            onProfileClick = { navController.navigate("profile") },
-                            onNavigateToHome = { navController.navigate("home") }
+                            onEveningRoutineClick = { navController.navigate("evening_routine") }
                         )
                     }
                     composable(
