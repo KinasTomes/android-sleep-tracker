@@ -1,6 +1,7 @@
 import uuid
 
 import numpy as np
+from datetime import datetime, timedelta, timezone
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -32,12 +33,17 @@ async def calibrate_snop(
         raise ValueError(f"User {user_id} not found")
 
     # Get actual sleep data
+
+    window_start = datetime.now(timezone.utc) - timedelta(days=13)
+
     stmt = (
         select(SleepSession)
-        .where(SleepSession.user_id == user_id)
+        .where(
+            SleepSession.user_id == user_id,
+            SleepSession.start_time >= window_start,
+        )
         .where(SleepSession.session_type == "nightly")
         .order_by(SleepSession.start_time.desc())
-        .limit(14)
     )
     result = await db.execute(stmt)
     sessions = result.scalars().all()

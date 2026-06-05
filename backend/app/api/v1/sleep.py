@@ -1,8 +1,10 @@
 import uuid
+import numpy as np
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from datetime import datetime, timedelta, timezone
 
 from app.api.deps import get_current_user_id
 from app.db.session import get_db
@@ -89,17 +91,19 @@ async def get_sleep_debt(
     if not user:
         raise ValueError("User not found")
 
+    window_start = datetime.now(timezone.utc) - timedelta(days=13)
+
     stmt = (
         select(SleepSession)
-        .where(SleepSession.user_id == user_id)
+        .where(
+            SleepSession.user_id == user_id,
+            SleepSession.start_time >= window_start,
+        )
         .order_by(SleepSession.start_time.desc())
-        .limit(14)
     )
     result = await db.execute(stmt)
     sessions = result.scalars().all()
 
-    from datetime import datetime, timedelta, timezone
-    import numpy as np
 
     daily: dict[str, float] = {}
     for s in sessions:

@@ -6,12 +6,15 @@ import sys
 from sqlalchemy import text
 
 from app.core.config import settings
-from app.db.session import engine, Base
+from app.db.session import engine, Base, async_session_factory
 from app.db.base import (
     User, SleepSession, BiometricData, UserSurveyResponse,
     Habit, UserHabitPreference, HabitLog, DeviceToken,
     SoundTrack, UserSoundFavorite, SoundPlaybackLog,
 )
+
+from app.services.habit_seed import seed_habits
+from app.services.sound_seed import seed_sounds
 
 
 async def init():
@@ -50,7 +53,17 @@ async def init():
         """))
 
     print("[init] Tables and hypertables created successfully.")
-
+    async with async_session_factory() as db:
+        try:
+            habits_inserted = await seed_habits(db)
+            sounds_inserted = await seed_sounds(db)
+            
+            # Phải gọi commit() để lưu dữ liệu vì các hàm seed chỉ gọi flush()
+            await db.commit() 
+            print(f"[init] Success: Seeded {habits_inserted} new habits and {sounds_inserted} new sounds.")
+        except Exception as e:
+            await db.rollback()
+            print(f"[init] Error seeding data: {e}")
 
 if __name__ == "__main__":
     asyncio.run(init())
