@@ -104,6 +104,22 @@ services:
     volumes:
       - ./app:/app/app
       - ./config:/app/config:ro
+  
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lumi-celery-beat
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: celery -A app.tasks.worker beat --loglevel=info
+    volumes:
+      - ./app:/app/app
+      - ./config:/app/config:ro
 
 volumes:
   timescaledb_data:

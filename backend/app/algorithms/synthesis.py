@@ -138,25 +138,28 @@ def _classify_zones(
     # Morning peak: highest peak in first 8 hours
     morning_peaks = [p for p in peaks if 90 < t_hours[p] * 60 < 480]
     if morning_peaks:
-        best = max(morning_peaks, key=lambda p: energy[p])
-        start = max(0, best - 30)
-        end = min(len(energy), best + 30)
+        best_idx = max(morning_peaks, key=lambda p: energy[p])
+        best_minute = best_idx * 5
+        start = max(0, best_minute - 30)
+        end = min(1440, best_minute + 30)
         zones.append(EnergyZone("morning_peak", start, end))
 
     # Afternoon dip: lowest trough between hours 5-9
     afternoon_troughs = [t for t in troughs if 300 < t_hours[t] * 60 < 540]
     if afternoon_troughs:
         worst = min(afternoon_troughs, key=lambda t: energy[t])
-        start = max(0, worst - 60)
-        end = min(len(energy), worst + 60)
+        worst_minute = worst * 5
+        start = max(0, worst_minute - 60)
+        end = min(1440, worst_minute + 60)
         zones.append(EnergyZone("afternoon_dip", start, end))
 
     # Evening peak: second highest peak in hours 10-16
     evening_peaks = [p for p in peaks if 600 < t_hours[p] * 60 < 960]
     if evening_peaks:
-        best = max(evening_peaks, key=lambda p: energy[p])
-        start = max(0, best - 30)
-        end = min(len(energy), best + 30)
+        best_idx = max(evening_peaks, key=lambda p: energy[p])
+        best_minute = best_idx * 5
+        start = max(0, best_minute - 30)
+        end = min(1440, best_minute + 30)
         zones.append(EnergyZone("evening_peak", start, end))
 
     # Melatonin window (DLMO): dynamically computed from circadian phase
