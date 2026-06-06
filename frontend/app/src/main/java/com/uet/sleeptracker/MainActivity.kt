@@ -30,8 +30,16 @@ import com.uet.sleeptracker.ui.screens.home.ReminderTimeScreen
 import com.uet.sleeptracker.ui.screens.notifications.NotificationMenuScreen
 import com.uet.sleeptracker.ui.screens.notifications.NotificationsScreen
 import com.uet.sleeptracker.ui.screens.settings.*
+import com.uet.sleeptracker.ui.screens.tools.SmartAlarmSettingScreen
+import com.uet.sleeptracker.ui.screens.tools.SmartAlarmScheduleScreen
+import com.uet.sleeptracker.ui.screens.tools.EnvironmentCheckScreen
 import com.uet.sleeptracker.ui.theme.SleepBackground
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,6 +48,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             SleeptrackerTheme {
                 val navController = rememberNavController()
+                val alarmList = remember { mutableStateListOf("08:00", "09:30") }
+                var editingIndex by remember { mutableStateOf<Int?>(null) }
                 
                 NavHost(
                     navController = navController,
@@ -55,7 +65,122 @@ class MainActivity : ComponentActivity() {
                             onProfileClick = { navController.navigate("profile") },
                             onPeaksAndDipsClick = { navController.navigate("peaks_and_dips") },
                             onCaffeineCutoffClick = { navController.navigate("caffeine_cutoff") },
-                            onEveningRoutineClick = { navController.navigate("evening_routine") }
+                            onEveningRoutineClick = { navController.navigate("evening_routine") },
+                            onSmartAlarmClick = { navController.navigate("smart_alarm_settings") },
+                            onPrepBedroomClick = { navController.navigate("environment_check") }
+                        )
+                    }
+                    composable(
+                        route = "smart_alarm_settings",
+                        enterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        exitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popEnterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popExitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        }
+                    ) {
+                        SmartAlarmSettingScreen(
+                            alarms = alarmList,
+                            onBackClick = { navController.popBackStack() },
+                            onSettingsClick = { index ->
+                                editingIndex = index
+                                navController.navigate("smart_alarm_schedule")
+                            },
+                            onAddAlarmClick = {
+                                alarmList.add("07:00")
+                                editingIndex = alarmList.lastIndex
+                                navController.navigate("smart_alarm_schedule")
+                            }
+                        )
+                    }
+                    composable(
+                        route = "smart_alarm_schedule",
+                        enterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        exitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popEnterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popExitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        }
+                    ) {
+                        SmartAlarmScheduleScreen(
+                            onBackClick = { navController.popBackStack() },
+                            onDeleteClick = {
+                                editingIndex?.let { index ->
+                                    if (alarmList.size > 1 && index in alarmList.indices) {
+                                        alarmList.removeAt(index)
+                                    }
+                                }
+                                navController.popBackStack()
+                            },
+                            canDelete = alarmList.size > 1
+                        )
+                    }
+                    composable(
+                        route = "environment_check",
+                        enterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        exitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popEnterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popExitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        }
+                    ) {
+                        EnvironmentCheckScreen(
+                            onRemindMeClick = { navController.popBackStack() },
+                            onNotNowClick = { navController.popBackStack() }
                         )
                     }
                     composable(

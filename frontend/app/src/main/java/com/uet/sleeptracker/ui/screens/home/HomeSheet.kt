@@ -76,7 +76,7 @@ internal fun HomeSlideUpPanel(
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val density = LocalDensity.current
-        val collapsedSheetHeight = 64.dp
+        val collapsedSheetHeight = 148.dp // 76.dp bottom bar height + 72.dp visible header height
         val expandedSheetHeight = maxHeight - 48.dp
         val sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
         var isSheetDragging by remember { mutableStateOf(false) }
@@ -354,7 +354,7 @@ internal fun ColumnScope.SheetExpandedContent(
             .fillMaxWidth()
             .weight(1f)
             .verticalScroll(rememberScrollState())
-            .padding(bottom = 16.dp),
+            .padding(bottom = 92.dp), // 16.dp default + 76.dp bottom bar height
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Column(

@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -38,33 +39,28 @@ fun MainTabsScreen(
     onPeaksAndDipsClick: () -> Unit = {},
     onCaffeineCutoffClick: () -> Unit = {},
     onEveningRoutineClick: () -> Unit = {},
+    onSmartAlarmClick: () -> Unit = {},
+    onPrepBedroomClick: () -> Unit = {},
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(SleepBottomNavTab.MySleep) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = SleepBackground,
-        bottomBar = {
-            SleepBottomNavigation(
-                selectedTab = selectedTab,
-                onTabSelected = { tab ->
-                    selectedTab = when (tab) {
-                        SleepBottomNavTab.MySleep,
-                        SleepBottomNavTab.Tools -> tab
-
-                        else -> selectedTab
-                    }
-                }
-            )
-        }
+        containerColor = SleepBackground
     ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
                 .background(SleepBackground)
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = innerPadding.calculateTopPadding(),
+                        bottom = 76.dp
+                    )
+            ) {
                 MainTabsTopBar(
                     selectedTab = selectedTab,
                     onProfileClick = onProfileClick,
@@ -81,7 +77,11 @@ fun MainTabsScreen(
                         }
 
                         SleepBottomNavTab.Tools -> {
-                            ToolsScreen(modifier = Modifier.fillMaxSize())
+                            ToolsScreen(
+                                modifier = Modifier.fillMaxSize(),
+                                onSmartAlarmClick = onSmartAlarmClick,
+                                onPrepBedroomClick = onPrepBedroomClick
+                            )
                         }
 
                         else -> {
@@ -92,10 +92,25 @@ fun MainTabsScreen(
             }
 
             HomeSlideUpPanel(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = innerPadding.calculateTopPadding()),
                 onPeaksAndDipsClick = onPeaksAndDipsClick,
                 onCaffeineCutoffClick = onCaffeineCutoffClick,
                 onEveningRoutineClick = onEveningRoutineClick
+            )
+
+            SleepBottomNavigation(
+                selectedTab = selectedTab,
+                onTabSelected = { tab ->
+                    selectedTab = when (tab) {
+                        SleepBottomNavTab.MySleep,
+                        SleepBottomNavTab.Tools -> tab
+
+                        else -> selectedTab
+                    }
+                },
+                modifier = Modifier.align(Alignment.BottomCenter)
             )
         }
     }

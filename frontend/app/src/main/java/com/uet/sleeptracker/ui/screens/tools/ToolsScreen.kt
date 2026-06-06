@@ -3,17 +3,12 @@ package com.uet.sleeptracker.ui.screens.tools
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -34,18 +29,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
 import com.uet.sleeptracker.ui.components.SleepAudioCard
+import com.uet.sleeptracker.ui.components.SleepSuggestionCardDetailLine
+import com.uet.sleeptracker.ui.components.SleepSuggestionCardTextStyle
 import com.uet.sleeptracker.ui.components.SleepSuggestionCard
 import com.uet.sleeptracker.ui.theme.SleepBackground
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 
-private val ToolsCardShape = RoundedCornerShape(12.dp)
-private val ToolsCardBorder = Color(0xFF363636)
-private val ToolsCardSurface = Color(0xFF16151A)
 private val ToolsMutedText = Color(0xFF989898)
 
 @Composable
 fun ToolsScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSmartAlarmClick: () -> Unit = {},
+    onPrepBedroomClick: () -> Unit = {},
 ) {
     val verticalScrollState = rememberScrollState()
     val horizontalScrollState = rememberScrollState()
@@ -62,23 +58,27 @@ fun ToolsScreen(
                 .padding(start = 19.dp, end = 20.dp, top = 28.dp),
             horizontalArrangement = Arrangement.spacedBy(13.dp)
         ) {
-            ToolFeatureCard(
+            SleepSuggestionCard(
                 modifier = Modifier.weight(1f),
                 title = "Smart Alarm",
-                imageRes = R.drawable.smart_alarm,
+                backgroundImageResId = R.drawable.smart_alarm,
+                textStyle = SleepSuggestionCardTextStyle.Details,
                 detailLines = listOf(
-                    ToolCardDetail("08:00 Tomorrow", ToolsMutedText),
-                    ToolCardDetail("S M T W T F S", Color.White)
-                )
+                    SleepSuggestionCardDetailLine("08:00 Tomorrow", ToolsMutedText),
+                    SleepSuggestionCardDetailLine("S M T W T F S", Color.White)
+                ),
+                onClick = onSmartAlarmClick
             )
-            ToolFeatureCard(
+            SleepSuggestionCard(
                 modifier = Modifier.weight(1f),
                 title = "Sleep quality",
-                imageRes = R.drawable.sleep_quality,
+                backgroundImageResId = R.drawable.sleep_quality,
+                textStyle = SleepSuggestionCardTextStyle.Details,
                 detailLines = listOf(
-                    ToolCardDetail("Monitor progress by", ToolsMutedText),
-                    ToolCardDetail("tracking how you feel", ToolsMutedText)
-                )
+                    SleepSuggestionCardDetailLine("Monitor progress by", ToolsMutedText),
+                    SleepSuggestionCardDetailLine("tracking how you feel", ToolsMutedText)
+                ),
+                onClick = {}
             )
         }
 
@@ -116,7 +116,7 @@ fun ToolsScreen(
                 title = "Prep the bedroom",
                 subtitle = "Guidance to an\nenvironment check",
                 backgroundImageResId = R.drawable.prep_the_bedroom,
-                onClick = {},
+                onClick = onPrepBedroomClick,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -169,64 +169,6 @@ fun ToolsScreen(
             modifier = Modifier.padding(top = 42.dp, bottom = 140.dp),
             scrollState = rememberScrollState()
         )
-    }
-}
-
-@Composable
-private fun ToolFeatureCard(
-    title: String,
-    @DrawableRes imageRes: Int,
-    detailLines: List<ToolCardDetail>,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .height(120.dp)
-            .clip(ToolsCardShape)
-            .background(ToolsCardSurface)
-            .border(width = 1.dp, color = ToolsCardBorder, shape = ToolsCardShape)
-            .clickable(onClick = {})
-    ) {
-        Image(
-            painter = painterResource(id = imageRes),
-            contentDescription = null,
-            contentScale = ContentScale.FillBounds,
-            modifier = Modifier.fillMaxSize()
-        )
-
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .fillMaxWidth()
-                .height(71.dp)
-                .background(ToolsCardSurface)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(start = 11.dp, end = 11.dp, top = 11.dp, bottom = 9.dp)
-            ) {
-                Text(
-                    text = title,
-                    color = Color.White,
-                    fontSize = 16.sp,
-                    lineHeight = 15.sp,
-                    fontWeight = FontWeight.Normal
-                )
-
-                Spacer(modifier = Modifier.height(6.dp))
-
-                detailLines.forEach { line ->
-                    Text(
-                        text = line.text,
-                        color = line.color,
-                        fontSize = 12.sp,
-                        lineHeight = 15.sp,
-                        fontWeight = FontWeight.Normal
-                    )
-                }
-            }
-        }
     }
 }
 
@@ -320,11 +262,6 @@ private fun ReminderIconItem(
 private data class ToolIconItem(
     val label: String,
     @param:DrawableRes val imageRes: Int,
-)
-
-private data class ToolCardDetail(
-    val text: String,
-    val color: Color,
 )
 
 @Preview(showBackground = true, backgroundColor = 0xFF000000)

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,13 +35,25 @@ private val SuggestionCardBorderColor = Color(0xFF363636)
 private val SuggestionCardBottomColor = Color(0xFF16151A)
 private val SuggestionCardSubtitleColor = Color(0xFF989898)
 
+enum class SleepSuggestionCardTextStyle {
+    Subtitle,
+    Details,
+}
+
+data class SleepSuggestionCardDetailLine(
+    val text: String,
+    val color: Color,
+)
+
 @Composable
 fun SleepSuggestionCard(
     title: String,
-    subtitle: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     @DrawableRes backgroundImageResId: Int,
+    subtitle: String? = null,
+    textStyle: SleepSuggestionCardTextStyle = SleepSuggestionCardTextStyle.Subtitle,
+    detailLines: List<SleepSuggestionCardDetailLine> = emptyList(),
 ) {
     Box(
         modifier = modifier
@@ -60,7 +73,7 @@ fun SleepSuggestionCard(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .fillMaxWidth()
-                .height(71.dp)
+                .height(80.dp)
                 .clip(RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp))
                 .background(SuggestionCardBottomColor)
         ) {
@@ -73,22 +86,42 @@ fun SleepSuggestionCard(
                     text = title,
                     color = Color.White,
                     fontSize = 16.sp,
-                    lineHeight = 15.sp,
+                    lineHeight = 20.sp,
                     fontWeight = FontWeight.Normal,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Text(
-                    text = subtitle,
-                    color = SuggestionCardSubtitleColor,
-                    fontSize = 12.sp,
-                    lineHeight = 15.sp,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .padding(top = 3.dp)
-                )
+                when (textStyle) {
+                    SleepSuggestionCardTextStyle.Subtitle -> {
+                        subtitle?.let {
+                            Text(
+                                text = it,
+                                color = SuggestionCardSubtitleColor,
+                                fontSize = 12.sp,
+                                lineHeight = 16.sp,
+                                fontWeight = FontWeight.Normal,
+                                modifier = Modifier
+                                    .fillMaxWidth(0.9f)
+                                    .padding(top = 3.dp)
+                            )
+                        }
+                    }
+
+                    SleepSuggestionCardTextStyle.Details -> {
+                        Spacer(modifier = Modifier.height(3.dp))
+
+                        detailLines.forEach { line ->
+                            Text(
+                                text = line.text,
+                                color = line.color,
+                                fontSize = 12.sp,
+                                lineHeight = 16.sp,
+                                fontWeight = FontWeight.Normal
+                            )
+                        }
+                    }
+                }
             }
         }
     }
