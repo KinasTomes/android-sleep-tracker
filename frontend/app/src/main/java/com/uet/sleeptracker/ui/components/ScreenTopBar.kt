@@ -31,12 +31,14 @@ import androidx.compose.ui.unit.sp
 fun ScreenTopBar(
     mainTitle: String,
     subTitle: String? = null,
+    subTitleContent: (@Composable () -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
     modifier: Modifier = Modifier,
     horizontalPadding: Dp = 8.dp,
     contentHeight: Dp = 64.dp,
 ) {
     val textSize = 20.sp
+    val hasSubTitle = subTitle != null || subTitleContent != null
 
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
@@ -48,7 +50,7 @@ fun ScreenTopBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
-                verticalArrangement = if (subTitle != null) Arrangement.spacedBy(2.dp) else Arrangement.Center,
+                verticalArrangement = if (hasSubTitle) Arrangement.spacedBy(2.dp) else Arrangement.Center,
                 horizontalAlignment = Alignment.Start,
                 modifier = Modifier.weight(1f)
             ) {
@@ -61,7 +63,9 @@ fun ScreenTopBar(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                if (subTitle != null) {
+                if (subTitleContent != null) {
+                    subTitleContent()
+                } else if (subTitle != null) {
                     Text(
                         text = subTitle,
                         color = Color.White.copy(alpha = 0.6f),

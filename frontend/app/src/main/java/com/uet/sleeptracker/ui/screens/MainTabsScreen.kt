@@ -7,9 +7,15 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,12 +24,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.uet.sleeptracker.R
 import com.uet.sleeptracker.ui.components.ScreenTopBar
 import com.uet.sleeptracker.ui.components.SleepBottomNavTab
 import com.uet.sleeptracker.ui.components.SleepBottomNavigation
 import com.uet.sleeptracker.ui.components.SleepIconType
 import com.uet.sleeptracker.ui.components.SleepTopActionIcon
+import com.uet.sleeptracker.ui.screens.energy.EnergyScreen
 import com.uet.sleeptracker.ui.screens.home.HomeScreen
 import com.uet.sleeptracker.ui.screens.home.HomeSlideUpPanel
 import androidx.compose.ui.tooling.preview.Preview
@@ -76,6 +87,10 @@ fun MainTabsScreen(
                             HomeScreen(modifier = Modifier.fillMaxSize())
                         }
 
+                        SleepBottomNavTab.Energy -> {
+                            EnergyScreen(modifier = Modifier.fillMaxSize())
+                        }
+
                         SleepBottomNavTab.Tools -> {
                             ToolsScreen(
                                 modifier = Modifier.fillMaxSize(),
@@ -105,6 +120,7 @@ fun MainTabsScreen(
                 onTabSelected = { tab ->
                     selectedTab = when (tab) {
                         SleepBottomNavTab.MySleep,
+                        SleepBottomNavTab.Energy,
                         SleepBottomNavTab.Tools -> tab
 
                         else -> selectedTab
@@ -122,10 +138,47 @@ private fun MainTabsTopBar(
     onProfileClick: () -> Unit,
 ) {
     val isTools = selectedTab == SleepBottomNavTab.Tools
+    val isEnergy = selectedTab == SleepBottomNavTab.Energy
 
     ScreenTopBar(
-        mainTitle = if (isTools) "Tools" else "My Sleep",
-        subTitle = if (isTools) null else "May 17-30",
+        mainTitle = when {
+            isTools -> "Tools"
+            isEnergy -> "My energy schedule"
+            else -> "My Sleep"
+        },
+        subTitle = when {
+            isTools || isEnergy -> null
+            else -> "May 17-30"
+        },
+        subTitleContent = if (isEnergy) {
+            {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "Great",
+                        color = Color.White.copy(alpha = 0.6f),
+                        fontSize = 20.sp,
+                        lineHeight = 20.sp,
+                        fontWeight = FontWeight.Normal
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Icon(
+                        painter = painterResource(id = R.drawable.lightning),
+                        contentDescription = null,
+                        tint = Color.Unspecified,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text(
+                        text = "76%",
+                        color = Color(0xFF00EBAC),
+                        fontSize = 20.sp,
+                        lineHeight = 20.sp,
+                        fontWeight = FontWeight.Normal
+                    )
+                }
+            }
+        } else {
+            null
+        },
         actions = {
             SleepTopActionIcon(
                 type = SleepIconType.Profile,

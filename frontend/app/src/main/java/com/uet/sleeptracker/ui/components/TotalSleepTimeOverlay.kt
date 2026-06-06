@@ -27,8 +27,6 @@ fun TotalSleepTimeOverlay(
 ) {
     Box(
         modifier = modifier
-            .width(415.dp)
-            .height(677.dp)
     ) {
         // Main overlay box
         Box(
@@ -133,6 +131,7 @@ fun TotalSleepTimeOverlay(
 @Composable
 fun TotalSleepTimePreview() {
     TotalSleepTimeOverlay(
+//        modifier = Modifier.width(415.dp).height(677.dp),
         startTime = "23:10",
         endTime = "4:45"
     )
