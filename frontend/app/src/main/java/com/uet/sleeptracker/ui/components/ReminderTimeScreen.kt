@@ -1,4 +1,4 @@
-package com.uet.sleeptracker.ui.screens.home
+package com.uet.sleeptracker.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,11 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -34,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.uet.sleeptracker.ui.screens.home.MaterialCheckIcon
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 
 data class ReminderChoiceItem(
@@ -55,6 +52,7 @@ fun ReminderTimeScreen(
     sectionLabel: String,
     options: List<ReminderChoiceItem>,
     initialSelectedIndex: Int,
+    type: Int = 0,
     onCloseClick: () -> Unit = {},
 ) {
     ReminderChoiceTemplate(
@@ -64,6 +62,7 @@ fun ReminderTimeScreen(
         sectionLabel = sectionLabel,
         options = options,
         initialSelectedIndex = initialSelectedIndex,
+        type = type,
         onCloseClick = onCloseClick
     )
 }
@@ -76,6 +75,7 @@ fun ReminderChoiceTemplate(
     sectionLabel: String,
     options: List<ReminderChoiceItem>,
     initialSelectedIndex: Int,
+    type: Int = 0,
     onCloseClick: () -> Unit = {},
 ) {
     val safeInitialSelectedIndex = initialSelectedIndex.coerceIn(0, (options.lastIndex).coerceAtLeast(0))
@@ -94,23 +94,10 @@ fun ReminderChoiceTemplate(
                 .padding(innerPadding)
                 .background(ReminderScreenColor)
         ) {
-            PeaksTopBar(
+            ToolDetailTopBar(
                 title = headerTitle,
-                trailingContent = {
-                    IconButton(
-                        onClick = onCloseClick,
-                        modifier = Modifier
-                            .size(36.dp)
-                            .background(Color(0xFF2C2C2E), CircleShape)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Close,
-                            contentDescription = "Close",
-                            tint = Color.White,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                }
+                onBackClick = onCloseClick,
+                type = type
             )
 
             Text(
@@ -210,7 +197,7 @@ private fun ReminderTimeOptionRow(
     }
 }
 
-internal fun buildReminderChoiceItems(
+fun buildReminderChoiceItems(
     labels: List<String>,
     highlightedLabel: String? = null,
     highlightedSupportingLabel: String = "recommended",
@@ -225,7 +212,7 @@ internal fun buildReminderChoiceItems(
     }
 }
 
-internal fun buildDefaultReminderChoiceItems(
+fun buildDefaultReminderChoiceItems(
     highlightedLabel: String? = null,
 ): List<ReminderChoiceItem> {
     return buildReminderChoiceItems(
@@ -234,7 +221,7 @@ internal fun buildDefaultReminderChoiceItems(
     )
 }
 
-internal fun findInitialReminderChoiceIndex(
+fun findInitialReminderChoiceIndex(
     options: List<ReminderChoiceItem>,
     selectedLabel: String,
 ): Int {

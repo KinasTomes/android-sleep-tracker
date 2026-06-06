@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.dp
 import com.uet.sleeptracker.R
 import com.uet.sleeptracker.ui.components.SleepPrimaryButton
+import com.uet.sleeptracker.ui.components.ToolDetailTopBar
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 private val EveningRoutineScreenColor = Color(0xFF121212)
 private val EveningRoutineDividerColor = Color(0xFF1A1A1D)
@@ -63,24 +64,10 @@ fun EveningRoutineScreen(
                 .padding(innerPadding)
                 .background(EveningRoutineScreenColor)
         ) {
-            PeaksTopBar(
+            ToolDetailTopBar(
                 title = "Evening Routine",
-                trailingContent = {
-                    IconButton(
-                        onClick = onCloseClick,
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFF2C2C2E))
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Close,
-                            contentDescription = "Close",
-                            tint = Color.White,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                }
+                onBackClick = onCloseClick,
+                type = 1
             )
 
             EveningRoutineHero()

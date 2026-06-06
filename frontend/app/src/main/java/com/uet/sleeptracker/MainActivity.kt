@@ -16,17 +16,17 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.compose.ui.Modifier
 import com.uet.sleeptracker.ui.components.SleepBottomNavTab
+import com.uet.sleeptracker.ui.components.buildReminderChoiceItems
+import com.uet.sleeptracker.ui.components.buildDefaultReminderChoiceItems
+import com.uet.sleeptracker.ui.components.findInitialReminderChoiceIndex
+import com.uet.sleeptracker.ui.components.ReminderTimeScreen
 import com.uet.sleeptracker.ui.navigation.onboardingNavGraph
 import com.uet.sleeptracker.ui.screens.MainTabsScreen
 import com.uet.sleeptracker.ui.screens.home.CaffeineCutoffScreen
 import com.uet.sleeptracker.ui.screens.home.CaffeineLearnMoreScreen
-import com.uet.sleeptracker.ui.screens.home.buildReminderChoiceItems
-import com.uet.sleeptracker.ui.screens.home.buildDefaultReminderChoiceItems
 import com.uet.sleeptracker.ui.screens.home.EveningRoutineScreen
 import com.uet.sleeptracker.ui.screens.home.EveningRoutineSettingsScreen
-import com.uet.sleeptracker.ui.screens.home.findInitialReminderChoiceIndex
 import com.uet.sleeptracker.ui.screens.home.PeaksAndDipsScreen
-import com.uet.sleeptracker.ui.screens.home.ReminderTimeScreen
 import com.uet.sleeptracker.ui.screens.notifications.NotificationMenuScreen
 import com.uet.sleeptracker.ui.screens.notifications.NotificationsScreen
 import com.uet.sleeptracker.ui.screens.settings.*
@@ -180,7 +180,52 @@ class MainActivity : ComponentActivity() {
                     ) {
                         EnvironmentCheckScreen(
                             onRemindMeClick = { navController.popBackStack() },
-                            onNotNowClick = { navController.popBackStack() }
+                            onNotNowClick = { navController.popBackStack() },
+                            onReminderTimeClick = { navController.navigate("environment_check_reminder_time") }
+                        )
+                    }
+                    composable(
+                        route = "environment_check_reminder_time",
+                        enterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        exitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popEnterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popExitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        }
+                    ) {
+                        val reminderChoices = buildReminderChoiceItems(
+                            labels = listOf("15 minutes", "30 minutes", "1 hour"),
+                            highlightedLabel = "30 minutes"
+                        )
+
+                        ReminderTimeScreen(
+                            headerTitle = "Environment Check",
+                            screenTitle = "Reminder Time",
+                            sectionLabel = "BEFORE MELATONIN WINDOW",
+                            options = reminderChoices,
+                            initialSelectedIndex = findInitialReminderChoiceIndex(
+                                options = reminderChoices,
+                                selectedLabel = "30 minutes"
+                            ),
+                            onCloseClick = { navController.popBackStack() }
                         )
                     }
                     composable(
@@ -361,6 +406,7 @@ class MainActivity : ComponentActivity() {
                                 options = reminderChoices,
                                 selectedLabel = selectedTime
                             ),
+                            type = 1,
                             onCloseClick = { navController.popBackStack() }
                         )
                     }
@@ -436,6 +482,7 @@ class MainActivity : ComponentActivity() {
                                 options = reminderChoices,
                                 selectedLabel = "10h"
                             ),
+                            type = 1,
                             onCloseClick = { navController.popBackStack() }
                         )
                     }

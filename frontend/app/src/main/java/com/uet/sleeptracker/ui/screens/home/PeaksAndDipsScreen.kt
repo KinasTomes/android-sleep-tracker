@@ -43,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
+import com.uet.sleeptracker.ui.components.ToolDetailTopBar
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 
 private val PeaksScreenColor = Color(0xFF121212)
@@ -70,24 +71,10 @@ fun PeaksAndDipsScreen(
                 .padding(innerPadding)
                 .background(PeaksScreenColor)
         ) {
-            PeaksTopBar(
+            ToolDetailTopBar(
                 title = "Your Peaks And Dips",
-                trailingContent = {
-                    IconButton(
-                        onClick = onCloseClick,
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFF2C2C2E))
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Close,
-                            contentDescription = "Close",
-                            tint = Color.White,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                }
+                onBackClick = onCloseClick,
+                type = 1
             )
 
             // Body

@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -49,13 +48,12 @@ import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
 import com.uet.sleeptracker.ui.components.SleepPrimaryButton
 import com.uet.sleeptracker.ui.components.SleepPrimaryOutlinedButton
+import com.uet.sleeptracker.ui.components.ToolDetailTopBar
 import com.uet.sleeptracker.ui.theme.SleepPrimary
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 
 private val EnvironmentCheckBackground = Color(0xFF010101)
-private val EnvironmentCheckTopBar = Color(0xFF111111)
 private val EnvironmentCheckDivider = Color(0xFF141414)
-private val EnvironmentCheckTopDivider = Color(0xFF363636)
 private val EnvironmentCheckMuted = Color(0xFF989898)
 private val EnvironmentCheckReminderMuted = Color(0xFFBABABA)
 private val EnvironmentCheckToggleThumb = Color(0xFF8AD2CE)
@@ -71,6 +69,7 @@ fun EnvironmentCheckScreen(
     onReminderTimeClick: () -> Unit = {},
     onRemindMeClick: () -> Unit = {},
     onNotNowClick: () -> Unit = {},
+    onBackClick: () -> Unit = {},
 ) {
     var remindersEnabled by remember { mutableStateOf(initialRemindersEnabled) }
 
@@ -85,7 +84,10 @@ fun EnvironmentCheckScreen(
                 .padding(innerPadding)
                 .background(EnvironmentCheckBackground)
         ) {
-            EnvironmentCheckTopBar()
+            ToolDetailTopBar(
+                title = "Environment Check",
+                onBackClick = onBackClick
+            )
 
             Column(
                 modifier = Modifier
@@ -94,7 +96,7 @@ fun EnvironmentCheckScreen(
             ) {
                 EnvironmentCheckHero()
 
-                Spacer(modifier = Modifier.height(50.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
                 Text(
                     text = "Benefits",
@@ -105,18 +107,18 @@ fun EnvironmentCheckScreen(
                     modifier = Modifier.padding(horizontal = 24.dp)
                 )
 
-                Spacer(modifier = Modifier.height(43.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Column(
                     modifier = Modifier.padding(horizontal = 24.dp),
-                    verticalArrangement = Arrangement.spacedBy(23.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     EnvironmentCheckBenefit("Increase sleep quality")
                     EnvironmentCheckBenefit("Get to sleep faster")
                     EnvironmentCheckBenefit("Wake up less often")
                 }
 
-                Spacer(modifier = Modifier.height(59.dp))
+                Spacer(modifier = Modifier.height(36.dp))
 
                 Text(
                     text = "How does this work?",
@@ -127,7 +129,7 @@ fun EnvironmentCheckScreen(
                     modifier = Modifier.padding(horizontal = 24.dp)
                 )
 
-                Spacer(modifier = Modifier.height(41.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
                     text = "Do a quick environment check before going to bed to ensure you fall, and stay, asleep. The three key factor are temperature, light, and bed associations. We’ll send a reminder to do a check right before bed.",
@@ -139,7 +141,7 @@ fun EnvironmentCheckScreen(
                     modifier = Modifier.padding(horizontal = 24.dp)
                 )
 
-                Spacer(modifier = Modifier.height(84.dp))
+                Spacer(modifier = Modifier.height(40.dp))
 
                 Text(
                     text = "The fix",
@@ -150,11 +152,11 @@ fun EnvironmentCheckScreen(
                     modifier = Modifier.padding(horizontal = 24.dp)
                 )
 
-                Spacer(modifier = Modifier.height(48.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Column(
                     modifier = Modifier.padding(horizontal = 24.dp),
-                    verticalArrangement = Arrangement.spacedBy(35.dp)
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     EnvironmentCheckFixItem(
                         number = "1",
@@ -170,7 +172,7 @@ fun EnvironmentCheckScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(92.dp))
+                Spacer(modifier = Modifier.height(40.dp))
 
                 Text(
                     text = "How does this work?",
@@ -181,11 +183,11 @@ fun EnvironmentCheckScreen(
                     modifier = Modifier.padding(horizontal = 24.dp)
                 )
 
-                Spacer(modifier = Modifier.height(41.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Column(
                     modifier = Modifier.padding(horizontal = 24.dp),
-                    verticalArrangement = Arrangement.spacedBy(26.dp)
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     EnvironmentCheckExplanation(
                         title = "Temperature.",
@@ -201,7 +203,7 @@ fun EnvironmentCheckScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(101.dp))
+                Spacer(modifier = Modifier.height(40.dp))
 
                 Text(
                     text = "Settings",
@@ -212,7 +214,7 @@ fun EnvironmentCheckScreen(
                     modifier = Modifier.padding(horizontal = 24.dp)
                 )
 
-                Spacer(modifier = Modifier.height(44.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 HorizontalDivider(
                     color = EnvironmentCheckDivider,
@@ -245,7 +247,7 @@ fun EnvironmentCheckScreen(
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
 
-                Spacer(modifier = Modifier.height(114.dp))
+                Spacer(modifier = Modifier.height(48.dp))
 
                 SleepPrimaryButton(
                     text = "REMIND ME",
@@ -263,7 +265,7 @@ fun EnvironmentCheckScreen(
                         .padding(horizontal = 24.dp)
                 )
 
-                Spacer(modifier = Modifier.height(23.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 SleepPrimaryOutlinedButton(
                     text = "NOT NOW",
@@ -281,40 +283,9 @@ fun EnvironmentCheckScreen(
                         .padding(horizontal = 24.dp)
                 )
 
-                Spacer(modifier = Modifier.height(48.dp))
+                Spacer(modifier = Modifier.height(32.dp))
             }
         }
-    }
-}
-
-@Composable
-private fun EnvironmentCheckTopBar() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(EnvironmentCheckTopBar)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .height(56.dp),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            Text(
-                text = "Environment Check",
-                color = Color.White,
-                fontSize = 16.sp,
-                lineHeight = 18.sp,
-                fontWeight = FontWeight.Normal,
-                modifier = Modifier.padding(start = 24.dp)
-            )
-        }
-
-        HorizontalDivider(
-            color = EnvironmentCheckTopDivider,
-            thickness = 1.dp
-        )
     }
 }
 
