@@ -13,7 +13,8 @@ import logging
 import uuid
 from datetime import datetime, timedelta, timezone
 
-from app.db.session import async_session_factory
+from app.cache.energy_cache import close_redis
+from app.db.session import async_session_factory, engine
 from app.models.habit import Habit, HabitLog
 from app.models.user import User
 from app.tasks.worker import celery_app
@@ -28,7 +29,15 @@ def dispatch_daily_nudges(user_id: str):
     Called once per user per day. Creates HabitLog entries for each nudge
     and schedules FCM sends at the exact circadian-optimized times.
     """
-    asyncio.run(_dispatch_daily_nudges_async(user_id))
+    asyncio.run(_run_and_dispose(_dispatch_daily_nudges_async(user_id)))
+
+
+async def _run_and_dispose(coro):
+    try:
+        return await coro
+    finally:
+        await close_redis()
+        await engine.dispose()
 
 
 async def _dispatch_daily_nudges_async(user_id: str):
@@ -123,9 +132,9 @@ def send_scheduled_nudge(
     Triggered by countdown timer from dispatch_daily_nudges.
     Updates HabitLog status: pending → delivered (or skipped if too late).
     """
-    asyncio.run(
+    asyncio.run(_run_and_dispose(
         _send_scheduled_nudge_async(log_id, user_id, habit_id, habit_name, message, priority)
-    )
+    ))
 
 
 async def _send_scheduled_nudge_async(
@@ -185,7 +194,7 @@ def dispatch_all_users_nudges():
     Should be triggered by Celery beat at midnight UTC.
     Fans out individual dispatch_daily_nudges tasks.
     """
-    asyncio.run(_dispatch_all_users_async())
+    asyncio.run(_run_and_dispose(_dispatch_all_users_async()))
 
 
 async def _dispatch_all_users_async():

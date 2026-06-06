@@ -17,6 +17,13 @@ async def get_redis() -> redis.Redis:
     return _redis
 
 
+async def close_redis() -> None:
+    global _redis
+    if _redis is not None:
+        await _redis.aclose()
+        _redis = None
+
+
 def _cache_key(user_id: uuid.UUID, date: datetime) -> str:
     return f"energy:{user_id}:{date.strftime('%Y-%m-%d')}"
 

@@ -36,6 +36,13 @@ class Settings(BaseSettings):
     HARMONIC_AMPLITUDES: list[float] = [0.97, 0.22, 0.07, 0.03, 0.001]
     CIRCADIAN_PERIOD: float = 24.2  # Natural circadian period (hours)
 
+        # Chronos-2 Sleep Prediction
+    CHRONOS_MODEL_ID: str = "amazon/chronos-2"
+    CHRONOS_PREDICTION_CACHE_TTL: int = 43200  # 12 hours
+    CHRONOS_MIN_HISTORY_NIGHTS: int = 3        # minimum nights to predict
+    CHRONOS_HISTORY_WINDOW: int = 14           # nights of history to use
+    CHRONOS_DEVICE: str = "cpu"                # "cpu" or "cuda"
+
     # Firebase Cloud Messaging
     FCM_CREDENTIALS_PATH: str = ""  # Path to Firebase service account JSON
 

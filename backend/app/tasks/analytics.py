@@ -2,11 +2,11 @@ import asyncio
 import uuid
 from datetime import datetime, timezone
 
-from app.db.session import async_session_factory
+from app.cache.energy_cache import close_redis, invalidate_energy_cache
+from app.db.session import async_session_factory, engine
 from app.services.calibration import calibrate_snop
 from app.services.energy_schedule import get_user_energy_schedule
 from app.tasks.worker import celery_app
-from app.cache.energy_cache import invalidate_energy_cache
 
 
 
@@ -17,7 +17,16 @@ def recalculate_energy(user_id: str):
     Called after new sleep data is ingested. Runs on dedicated
     analytics worker to avoid competing with storage inserts.
     """
-    asyncio.run(_recalculate_async(user_id))
+    asyncio.run(_run_and_dispose(_recalculate_async(user_id)))
+
+
+async def _run_and_dispose(coro):
+    try:
+        return await coro
+    finally:
+        await close_redis()
+        await engine.dispose()
+
 
 async def _recalculate_async(user_id: str):
     uid = uuid.UUID(user_id)
@@ -44,7 +53,7 @@ def batch_recalculate(user_ids: list[str]):
 @celery_app.task(name="tasks.analytics.calibrate_snop", queue="analytics")
 def calibrate_snop_task(user_id: str):
     """Standalone SNOP calibration task."""
-    asyncio.run(_calibrate_async(user_id))
+    asyncio.run(_run_and_dispose(_calibrate_async(user_id)))
 
 
 async def _calibrate_async(user_id: str):
