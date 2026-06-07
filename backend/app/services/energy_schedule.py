@@ -40,6 +40,7 @@ async def get_user_energy_schedule(
     # 1. Check cache
     cached = await get_cached_energy(user_id, date)
     if cached:
+        cached.is_cached = True
         return cached
 
     user = await db.get(User, user_id)
