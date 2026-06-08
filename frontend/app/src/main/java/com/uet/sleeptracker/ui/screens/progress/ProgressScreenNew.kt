@@ -1,8 +1,8 @@
 package com.uet.sleeptracker.ui.screens.progress
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,23 +22,27 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.uet.sleeptracker.R
 import com.uet.sleeptracker.ui.components.MissingSleepProgressBar
 import com.uet.sleeptracker.ui.components.SleepProgressBar
 import com.uet.sleeptracker.ui.components.SleepWindow
+import com.uet.sleeptracker.ui.theme.SleepPrimary
 
 private val Bg = Color(0xFF010101)
 private val Line = Color(0xFF242424)
@@ -72,6 +76,12 @@ fun ProgressScreenNew(modifier: Modifier = Modifier) {
             val chartViewportWidth = (maxWidth + ChartLeftOverflow)
                 .coerceAtLeast(0.dp)
 
+            ProgressRangeSelector(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 18.dp)
+            )
+
             SleepChart(
                 modifier = Modifier
                     .offset(x = -ChartLeftOverflow, y = 70.dp)
@@ -85,15 +95,16 @@ fun ProgressScreenNew(modifier: Modifier = Modifier) {
             )
         }
 
+        Spacer(modifier = Modifier.height(40.dp))
+
         Text(
             text = "All sleep times",
             color = Color.White,
-            fontSize = 28.sp,
-            letterSpacing = (-1.4).sp,
+            fontSize = 22.sp,
             modifier = Modifier.padding(start = 19.dp, bottom = 28.dp)
         )
 
-        SleepRecordItem("Last night (Sunday)", "00:00 - 06:45", "")
+        SleepRecordItem("Last night (Sunday)", "00:00 - 06:45", "6h 45m")
         SleepRecordItem("Saturday night", "01:43 - 07:04", "6h 45m")
         SleepRecordItem("Friday night", "23:10 - 04:45", "5h 21m")
         SleepRecordItem("Thursday night", "23:32 - 07:30", "5h 35m")
@@ -110,7 +121,7 @@ fun ProgressScreenNew(modifier: Modifier = Modifier) {
         Text(
             text = "DATA SOURCE",
             color = Color(0xFFBABABA),
-            fontSize = 13.sp,
+            fontSize = 14.sp,
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color(0xFF17151D))
@@ -120,16 +131,14 @@ fun ProgressScreenNew(modifier: Modifier = Modifier) {
         Text(
             text = "RISE Nightstand Detection",
             color = Color.White,
-            fontSize = 24.sp,
-            letterSpacing = (-1.2).sp,
+            fontSize = 20.sp,
             modifier = Modifier.padding(start = 16.dp, top = 28.dp)
         )
 
         Text(
             text = "Phone movement",
             color = Muted,
-            fontSize = 20.sp,
-            letterSpacing = (-1).sp,
+            fontSize = 16.sp,
             modifier = Modifier.padding(start = 16.dp, top = 4.dp)
         )
 
@@ -147,8 +156,7 @@ fun ProgressScreenNew(modifier: Modifier = Modifier) {
             Text(
                 text = "Manually added",
                 color = Muted,
-                fontSize = 20.sp,
-                letterSpacing = (-1).sp,
+                fontSize = 16.sp,
                 modifier = Modifier.padding(start = 20.dp)
             )
         }
@@ -162,10 +170,59 @@ fun ProgressScreenNew(modifier: Modifier = Modifier) {
         Text(
             text = "We only show the last two weeks of sleep because\nthis time period has the greatest impact on how you\nfeel and perform today.",
             color = Muted,
-            fontSize = 20.sp,
-            lineHeight = 28.sp,
-            letterSpacing = (-1).sp,
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
             modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@Composable
+private fun ProgressRangeSelector(modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 22.dp)
+            .height(48.dp)
+            .clip(RoundedCornerShape(24.dp))
+            .background(Color(0xFF2B2B2B)),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        ProgressRangeButton(
+            text = "Sleep Times",
+            selected = true,
+            modifier = Modifier.weight(1f)
+        )
+        ProgressRangeButton(
+            text = "Sleep Debt",
+            selected = false,
+            modifier = Modifier.weight(1f)
+        )
+        ProgressRangeButton(
+            text = "Sleep Quality",
+            selected = false,
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+@Composable
+private fun ProgressRangeButton(
+    text: String,
+    selected: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .background(if (selected) SleepPrimary else Color.Transparent),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            color = Color.White,
+            fontSize = 14.sp
         )
     }
 }
@@ -177,7 +234,7 @@ private fun SleepChart(modifier: Modifier = Modifier) {
         ChartDay("TUE", "8h", "0m", "23:00", "07:00", "21:30", true),
         ChartDay("WED", "8h", "0m", "23:00", "07:00", "21:30", true),
         ChartDay("THU", "8h", "0m", "23:00", "07:00", "21:30", true),
-        ChartDay("FRI", "8h", "30m", "23:00", "07:30", "22:50", true),
+        ChartDay("FRI", "8h", "30m", "23:30", "08:00", "22:35", true),
         ChartDay("SAT", "7h", "0m", "23:00", "06:00", "21:30", false),
         ChartDay("SUN", "6h", "0m", "00:00", "06:00", "21:40", false),
         ChartDay("MON", "7h", "21m", "23:22", "06:43", "22:00", false),
@@ -345,12 +402,20 @@ private fun SleepRecordItem(title: String, time: String, duration: String) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(title, color = Color.White, fontSize = 20.sp)
-                Text(time, color = Muted, fontSize = 20.sp, letterSpacing = (-1).sp)
+                Text(title, color = Color.White, fontSize = 16.sp)
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(time, color = Muted, fontSize = 14.sp)
             }
 
-            Text(duration, color = Muted, fontSize = 20.sp, letterSpacing = (-1).sp)
-            Text("›", color = Color.White, fontSize = 34.sp, modifier = Modifier.padding(start = 18.dp))
+            Text(duration, color = Muted, fontSize = 14.sp)
+            Icon(
+                painter = painterResource(id = R.drawable.right),
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier
+                    .padding(start = 18.dp)
+                    .size(24.dp)
+            )
         }
     }
 }
@@ -364,24 +429,32 @@ private fun SeedDataCard(modifier: Modifier = Modifier) {
     ) {
         Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                ManualIcon(size = 28.dp)
+                Image(
+                    painter = painterResource(id = R.drawable.add_sleep),
+                    contentDescription = "Add sleep",
+                    modifier = Modifier.size(28.dp)
+                )
                 Text(
                     text = "We’re using seed data",
                     color = Color.White,
-                    fontSize = 24.sp,
-                    letterSpacing = (-1.2).sp,
+                    fontSize = 18.sp,
                     modifier = Modifier
                         .weight(1f)
                         .padding(start = 14.dp)
                 )
-                Text("›", color = Color.White, fontSize = 32.sp)
+                Icon(
+                    painter = painterResource(id = R.drawable.right),
+                    contentDescription = "Go",
+                    tint = Color.White,
+                    modifier = Modifier.size(28.dp)
+                )
             }
 
             Text(
-                text = "In these initial stages, we’re learning on the sleep\npattern you’ve provided in your profile to seed our\ninsights and predictions.",
+                text = "In these initial stages, we’re learning on the\nsleep pattern you’ve provided in your profile\nto seed our insights and predictions.",
                 color = Color.White,
-                fontSize = 20.sp,
-                lineHeight = 28.sp,
+                fontSize = 16.sp,
+                lineHeight = 24.sp,
                 modifier = Modifier.padding(top = 22.dp)
             )
         }
@@ -389,26 +462,12 @@ private fun SeedDataCard(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun ProfileIcon(modifier: Modifier = Modifier) {
-    Canvas(modifier = modifier.size(41.dp)) {
-        drawCircle(Color(0xFF915DFF), style = Stroke(width = 2.dp.toPx()))
-        drawCircle(Color(0xFF915DFF), radius = 4.dp.toPx(), center = Offset(size.width / 2, 14.dp.toPx()), style = Stroke(2.dp.toPx()))
-        drawArc(Color(0xFF915DFF), 210f, 120f, false, style = Stroke(2.dp.toPx()))
-    }
-}
-
-@Composable
-private fun ManualIcon(modifier: Modifier = Modifier, size: Dp = 64.dp) {
-    Box(
-        modifier = modifier
-            .size(size)
-            .border(2.dp, Color(0xFFFF8A00))
-            .border(2.dp, Color(0xFF915DFF))
-            .padding(8.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        ProfileIcon(modifier = Modifier.size(size * 0.55f))
-    }
+private fun ManualIcon(modifier: Modifier = Modifier, size: Dp = 48.dp) {
+    Image(
+        painter = painterResource(id = R.drawable.manually_added),
+        contentDescription = "Manually added",
+        modifier = modifier.size(size)
+    )
 }
 
 private data class ChartDay(
@@ -448,7 +507,7 @@ private fun normalizeChartMinutes(time: String): Int {
     return if (hour < ChartStartHour) rawMinutes + 24 * 60 else rawMinutes
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFF010101, widthDp = 476, heightDp = 2000)
+@Preview(showBackground = true, backgroundColor = 0xFF010101, widthDp = 1080, heightDp = 2000)
 @Composable
 private fun ProgressScreenPreview() {
     ProgressScreenNew()
