@@ -43,7 +43,7 @@ LUMI_Backend/
 | Sleep Debt | Sum of (SNOP - actual_sleep) over 14-day sliding window. Warning threshold: 5 hours |
 | Process S | Homeostatic sleep pressure (adenosine). τ_r ≈ 18.2h (awake), τ_d ≈ 4.2h (asleep) |
 | Process C | Circadian pacemaker, 5-harmonic sinusoidal. Amplitudes: 0.97, 0.22, 0.07, 0.03, 0.001 |
-| Energy Schedule | 24h graph from Φ(t) = H(t) - A_c·x(t), A_c = 0.1333. Identifies Wake Zone, Morning/Evening Peaks, Afternoon Dip, Melatonin Window |
+| Energy Schedule | 24h graph from Φ(t) = H(t) - A_c·x(t), A_c = 0.1333. Identifies Wake Zone, Wake Window, Morning/Evening Peaks, Afternoon Dip, Wind Down, Melatonin Window |
 | Nudges | Science-based micro-interventions scheduled against the user's circadian phases |
 
 ## Database Schema (TimescaleDB)

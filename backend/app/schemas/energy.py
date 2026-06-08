@@ -10,7 +10,7 @@ class EnergyPoint(BaseModel):
 
 
 class EnergyZone(BaseModel):
-    zone_type: str  # "wake", "morning_peak", "afternoon_dip", "evening_peak", "melatonin_window"
+    zone_type: str  # "wake", "wake_window", "morning_peak", "afternoon_dip", "evening_peak", "wind_down", "melatonin_window"
     start_time: datetime
     end_time: datetime
 

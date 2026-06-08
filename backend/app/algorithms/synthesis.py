@@ -8,11 +8,13 @@ from app.algorithms.process_s import compute_process_s
 from app.core.config import settings
 
 A_C = settings.A_C  # 0.1333
+WAKE_WINDOW_SLEEP_PRESSURE_THRESHOLD = 0.60
+WIND_DOWN_DURATION_MINUTES = 120
 
 
 @dataclass
 class EnergyZone:
-    zone_type: str  # "wake", "morning_peak", "afternoon_dip", "evening_peak", "melatonin_window"
+    zone_type: str  # "wake", "wake_window", "morning_peak", "afternoon_dip", "evening_peak", "wind_down", "melatonin_window"
     start_minute: int
     end_minute: int
 
@@ -72,7 +74,7 @@ def compute_energy_schedule(
     energy_normalized = _normalize_energy(energy)
 
     # Classify zones — pass C(k) for dynamic melatonin window
-    zones = _classify_zones(energy_normalized, t_hours, c)
+    zones = _classify_zones(energy_normalized, t_hours, c, h)
 
     # Generate nudges with adaptive prioritization
     nudges = _generate_nudges(zones, wake_time, sleep_debt_mins, snop_hours, enabled_habit_ids)
@@ -118,6 +120,7 @@ def _classify_zones(
     energy: np.ndarray,
     t_hours: np.ndarray,
     c_values: np.ndarray,
+    h_values: np.ndarray,
 ) -> list[EnergyZone]:
     """Classify time periods into physiological zones based on energy curve.
 
@@ -125,6 +128,7 @@ def _classify_zones(
         energy: normalized energy values [0-100]
         t_hours: time points in hours
         c_values: Process C circadian signal (used for melatonin window)
+        h_values: Process S sleep pressure signal (used for wake window)
     """
     zones = []
 
@@ -134,6 +138,11 @@ def _classify_zones(
 
     # Wake zone: first 90 minutes (sleep inertia)
     zones.append(EnergyZone("wake", 0, 90))
+
+    # Wake window: max healthy awake span before adenosine-driven
+    # sleep pressure rises beyond the sustainable alertness threshold.
+    wake_window_end = _compute_wake_window_end(h_values)
+    zones.append(EnergyZone("wake_window", 0, wake_window_end))
 
     # Morning peak: highest peak in first 8 hours
     morning_peaks = [p for p in peaks if 90 < t_hours[p] * 60 < 480]
@@ -162,8 +171,12 @@ def _classify_zones(
         end = min(1440, best_minute + 30)
         zones.append(EnergyZone("evening_peak", start, end))
 
-    # Melatonin window (DLMO): dynamically computed from circadian phase
+    # Wind-down is the buffer before the sleep window opens.
     melatonin_start, melatonin_end = _compute_melatonin_window(c_values, t_hours)
+    wind_down_start, wind_down_end = _compute_wind_down_window(melatonin_start)
+    zones.append(EnergyZone("wind_down", wind_down_start, wind_down_end))
+
+    # Melatonin window (DLMO): dynamically computed from circadian phase.
     zones.append(EnergyZone("melatonin_window", melatonin_start, melatonin_end))
 
     return zones
@@ -208,6 +221,34 @@ def _compute_melatonin_window(
     return start_minute, end_minute
 
 
+def _compute_wake_window_end(h_values: np.ndarray) -> int:
+    """Compute the end of the healthy wake window from Process S.
+
+    Wake Window is the maximum span the body and brain can remain awake
+    healthily before adenosine accumulation creates excessive sleep pressure.
+    A threshold of 0.60 maps a rested adult to roughly 16-17 hours awake with
+    the configured Process S rise constant, while sleep debt shortens it.
+    """
+    threshold_hits = np.where(h_values >= WAKE_WINDOW_SLEEP_PRESSURE_THRESHOLD)[0]
+    if len(threshold_hits) == 0:
+        return 1440
+
+    return min(1440, int(threshold_hits[0]) * 5)
+
+
+def _compute_wind_down_window(melatonin_start_minute: int) -> tuple[int, int]:
+    """Compute the preparation buffer before the melatonin sleep window.
+
+    Wind-down is not an alertness boost. It is the 1-2 hour transition where
+    light, heart rate, and activity should decrease before the sleep window.
+    """
+    start_minute = melatonin_start_minute - WIND_DOWN_DURATION_MINUTES
+    if start_minute < 0:
+        start_minute += 1440
+
+    return start_minute, melatonin_start_minute
+
+
 def _find_peaks(data: np.ndarray) -> list[int]:
     """Simple peak finding using first derivative sign change."""
     peaks = []
@@ -249,6 +290,7 @@ def _generate_nudges(
     morning_peak = zone_map.get("morning_peak")
     afternoon_dip = zone_map.get("afternoon_dip")
     evening_peak = zone_map.get("evening_peak")
+    wind_down = zone_map.get("wind_down")
     melatonin = zone_map.get("melatonin_window")
 
     # ── Wake Zone nudges (0-90 min after waking) ──────────────────────
@@ -289,9 +331,9 @@ def _generate_nudges(
         raw_nudges.append({"minute": evening_peak.start_minute + 30, "message": "Good window for social activities, creative work, or planning tomorrow", "nudge_type": "social_creative"})
 
     # ── Wind Down & Melatonin Window nudges ───────────────────────────
-    if melatonin:
-        raw_nudges.append({"minute": melatonin.start_minute - 30, "message": "Start reducing blue light — enable night mode, dim screens to protect melatonin", "nudge_type": "blue_light"})
-        raw_nudges.append({"minute": melatonin.start_minute, "message": "Melatonin production starting — begin your wind down: light reading, breathing exercises, no screens", "nudge_type": "wind_down"})
+    if wind_down:
+        raw_nudges.append({"minute": wind_down.start_minute, "message": "Start reducing blue light — enable night mode, dim screens to prepare melatonin production", "nudge_type": "blue_light"})
+        raw_nudges.append({"minute": wind_down.start_minute, "message": "Wind-down window started — lower lights, slow your pace, and prepare your body for sleep", "nudge_type": "wind_down"})
 
     # Adapt priorities based on sleep debt
     prioritized = adapt_nudge_priorities(raw_nudges, sleep_debt_mins, snop_hours)

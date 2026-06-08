@@ -107,32 +107,41 @@ HABITS = [
         "habit_id": "blue_light",
         "name": "Blue Light Reduction",
         "description": "Enable night mode, dim screens to protect melatonin production.",
-        "zone_type": "melatonin_window",
+        "zone_type": "wind_down",
         "default_priority": 5,
     },
     {
         "habit_id": "wind_down",
         "name": "Wind Down Routine",
         "description": "Begin your wind down: light reading, breathing exercises, no screens.",
-        "zone_type": "melatonin_window",
+        "zone_type": "wind_down",
         "default_priority": 5,
     },
 ]
 
 
 async def seed_habits(db: AsyncSession) -> int:
-    """Insert all 16 habits into the database if they don't already exist.
+    """Insert or refresh all 16 habits in the database.
 
-    Returns the number of newly inserted habits.
+    Returns the number of newly inserted or updated habits.
     """
-    inserted = 0
+    changed = 0
     for habit_data in HABITS:
         existing = await db.get(Habit, habit_data["habit_id"])
         if existing is None:
             db.add(Habit(**habit_data))
-            inserted += 1
+            changed += 1
+            continue
 
-    if inserted > 0:
+        habit_changed = False
+        for field, value in habit_data.items():
+            if getattr(existing, field) != value:
+                setattr(existing, field, value)
+                habit_changed = True
+        if habit_changed:
+            changed += 1
+
+    if changed > 0:
         await db.flush()
 
-    return inserted
+    return changed

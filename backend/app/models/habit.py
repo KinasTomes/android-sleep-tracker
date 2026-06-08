@@ -15,7 +15,7 @@ class Habit(Base):
     habit_id: Mapped[str] = mapped_column(String(50), primary_key=True)  # e.g. "light_exposure"
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
-    zone_type: Mapped[str] = mapped_column(String(50), nullable=False)  # wake/morning_peak/afternoon_dip/evening_peak/melatonin_window
+    zone_type: Mapped[str] = mapped_column(String(50), nullable=False)  # wake/wake_window/morning_peak/afternoon_dip/evening_peak/wind_down/melatonin_window
     default_priority: Mapped[int] = mapped_column(Integer, nullable=False, default=3)  # 1-5, 5=highest
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 

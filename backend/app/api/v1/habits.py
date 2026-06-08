@@ -127,6 +127,6 @@ async def get_habit_logs(
 async def seed_habits_endpoint(
     db: AsyncSession = Depends(get_db),
 ):
-    """Seed all 16 science-based habits into the database (admin utility)."""
+    """Seed or refresh all 16 science-based habits in the database."""
     count = await seed_habits(db)
     return {"seeded": count}
