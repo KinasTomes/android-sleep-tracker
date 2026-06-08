@@ -303,7 +303,7 @@ async def get_sound(
         description=sound.description,
         category=sound.category,
         duration_seconds=sound.duration_seconds,
-        file_url=sound.file_url,
-        thumbnail_url=sound.thumbnail_url,
+        file_url=s3_service.generate_presigned_url(sound.file_url),
+        thumbnail_url=s3_service.generate_presigned_url(sound.thumbnail_url),
         is_favorite=fav is not None,
     )

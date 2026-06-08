@@ -33,6 +33,7 @@ async def get_cached_energy(user_id: uuid.UUID, date: datetime) -> EnergySchedul
     data = await r.get(_cache_key(user_id, date))
     if data:
         parsed = json.loads(data)
+        parsed["is_cached"] = True
         return EnergyScheduleResponse.model_validate(parsed)
     return None
 

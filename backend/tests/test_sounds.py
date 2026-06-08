@@ -1,5 +1,4 @@
 import inspect
-from datetime import datetime, timezone
 
 import pytest
 
@@ -9,7 +8,7 @@ from tests.conftest import FakeDb, FakeResult, TEST_USER_ID
 
 
 def test_presigned_url_helper_has_route_friendly_signature():
-    signature = inspect.signature(sounds_api.generate_presigned_url)
+    signature = inspect.signature(sounds_api.s3_service.generate_presigned_url)
     params = list(signature.parameters)
 
     assert params[0] == "object_key"
@@ -46,7 +45,7 @@ async def test_get_single_sound_returns_presigned_urls(monkeypatch):
     def fake_presign(object_key, expiration=3600):
         return f"https://cdn.example.test/{object_key}?signed=1"
 
-    monkeypatch.setattr(sounds_api, "generate_presigned_url", fake_presign)
+    monkeypatch.setattr(sounds_api.s3_service, "generate_presigned_url", fake_presign)
 
     response = await sounds_api.get_sound("white_noise", user_id=TEST_USER_ID, db=SoundDb(sound))
 
