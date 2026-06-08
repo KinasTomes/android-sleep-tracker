@@ -39,6 +39,7 @@ import com.uet.sleeptracker.ui.screens.energy.EnergyScheduleScreen
 import com.uet.sleeptracker.ui.screens.home.HomeScreen
 import com.uet.sleeptracker.ui.screens.home.HomeSlideUpPanel
 import androidx.compose.ui.tooling.preview.Preview
+import com.uet.sleeptracker.ui.screens.progress.ProgressScreenNew
 import com.uet.sleeptracker.ui.screens.tools.ToolsScreen
 import com.uet.sleeptracker.ui.theme.SleepBackground
 import com.uet.sleeptracker.ui.theme.SleepPrimary
@@ -109,6 +110,10 @@ fun MainTabsScreen(
                             )
                         }
 
+                        SleepBottomNavTab.Stats -> {
+                            ProgressScreenNew(modifier = Modifier.fillMaxSize())
+                        }
+
                         else -> {
                             HomeScreen(modifier = Modifier.fillMaxSize())
                         }
@@ -131,7 +136,8 @@ fun MainTabsScreen(
                     selectedTab = when (tab) {
                         SleepBottomNavTab.MySleep,
                         SleepBottomNavTab.Energy,
-                        SleepBottomNavTab.Tools -> tab
+                        SleepBottomNavTab.Tools,
+                        SleepBottomNavTab.Stats -> tab
 
                         else -> selectedTab
                     }
@@ -149,14 +155,17 @@ private fun MainTabsTopBar(
 ) {
     val isTools = selectedTab == SleepBottomNavTab.Tools
     val isEnergy = selectedTab == SleepBottomNavTab.Energy
+    val isProgress = selectedTab == SleepBottomNavTab.Stats
 
     ScreenTopBar(
         mainTitle = when {
             isTools -> "Tools"
             isEnergy -> "My energy schedule"
+            isProgress -> "My Progress"
             else -> "My Sleep"
         },
         subTitle = when {
+            isProgress -> "May 26 - June 8"
             isTools || isEnergy -> null
             else -> "May 17-30"
         },
