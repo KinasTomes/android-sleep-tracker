@@ -90,13 +90,15 @@ fun EnergyScheduleScreen(
     }
 
     val timelineData = state.timelineData
-    val sleepStartY = state.sleepStartTime.toTimelineY()
+    val timelineStartTime = state.sleepStartTime.toTimelineStartTime(hoursBefore = 2)
+    val timelineLabels = buildEnergyTimelineLabels(timelineStartTime)
+    val sleepStartY = state.sleepStartTime.toTimelineY(timelineStartTime)
     val totalSleepTitleY = (sleepStartY.value - TotalSleepTimeTitleOffset).dp
     val totalSleepValueY = totalSleepTitleY + 33.dp
     val phaseLayouts = timelineData.phases.map { phase ->
         EnergyPhaseLayout(
             phase = phase,
-            y = phase.startTime.toTimelineY(),
+            y = phase.startTime.toTimelineY(timelineStartTime),
             height = phase.durationMinutes.toTimelineHeight()
         )
     }.withMinimumPhaseSpacing()
@@ -105,9 +107,9 @@ fun EnergyScheduleScreen(
     val sleepNeedY = if (melatoninLayout != null) {
         melatoninLayout.y + melatoninLayout.height + 16.dp
     } else {
-        timelineData.sleepNeedTime.toTimelineY()
+        timelineData.sleepNeedTime.toTimelineY(timelineStartTime)
     }
-    val wakeWindowY = state.wakeWindowStartTime.toTimelineY()
+    val wakeWindowY = state.wakeWindowStartTime.toTimelineY(timelineStartTime)
     val wakeWindowDuration = calculateDurationMinutes(state.wakeWindowStartTime, state.wakeWindowEndTime)
     val wakeWindowHeight = wakeWindowDuration.toTimelineHeight()
     val contentHeight = maxOf(
@@ -146,7 +148,10 @@ fun EnergyScheduleScreen(
                         .height(contentHeight.dp)
                         .background(Color.Black)
                 ) {
-                    EnergyTimelineGridBackground(height = contentHeight.dp)
+                    EnergyTimelineGridBackground(
+                        height = contentHeight.dp,
+                        labels = timelineLabels
+                    )
 
                     if (showTopBar) {
                         EnergyTopBar(
@@ -237,7 +242,9 @@ fun EnergyScheduleScreen(
                     EnergyTimelineRuler(
                         modifier = Modifier.zIndex(10f),
                         height = contentHeight.dp,
-                        currentTime = state.currentTime
+                        labels = timelineLabels,
+                        currentTime = state.currentTime,
+                        timelineStartTime = timelineStartTime
                     )
                 }
             }
@@ -300,15 +307,7 @@ private fun EnergyTopBar(
     }
 }
 
-private val EnergyTimelineLabels = listOf(
-    "21", "22", "23", "00", "01", "02", "03", "04", "05", "06",
-    "07", "08", "09", "09", "10", "11", "12", "13", "14", "15",
-    "16", "17", "18", "19", "20", "21", "22", "23", "00", "01",
-    "02", "03", "04", "05", "06", "07", "08", "09", "10", "11",
-    "12", "13"
-)
-
-private const val TotalSleepTimeTitleOffset = 213f
+private const val TotalSleepTimeTitleOffset = 96f
 private fun List<EnergyPhaseLayout>.withMinimumPhaseSpacing(): List<EnergyPhaseLayout> {
     var previousBottom = Float.NEGATIVE_INFINITY
 
@@ -325,7 +324,8 @@ private fun List<EnergyPhaseLayout>.withMinimumPhaseSpacing(): List<EnergyPhaseL
 
 @Composable
 private fun EnergyTimelineGridBackground(
-    height: Dp
+    height: Dp,
+    labels: List<String>
 ) {
     Canvas(
         modifier = Modifier
@@ -335,7 +335,7 @@ private fun EnergyTimelineGridBackground(
         val hourGap = 119.dp.toPx()
         val startY = 103.dp.toPx()
 
-        EnergyTimelineLabels.indices.forEach { index ->
+        labels.indices.forEach { index ->
             val y = startY + index * hourGap
 
             drawLine(
@@ -352,7 +352,9 @@ private fun EnergyTimelineGridBackground(
 private fun EnergyTimelineRuler(
     modifier: Modifier = Modifier,
     height: Dp,
-    currentTime: EnergyTimelineTime
+    labels: List<String>,
+    currentTime: EnergyTimelineTime,
+    timelineStartTime: EnergyTimelineTime
 ) {
     Canvas(
         modifier = modifier
@@ -362,7 +364,7 @@ private fun EnergyTimelineRuler(
         val hourGap = 119.dp.toPx()
         val startY = 103.dp.toPx()
 
-        EnergyTimelineLabels.indices.forEach { index ->
+        labels.indices.forEach { index ->
             val y = startY + index * hourGap
 
             drawLine(
@@ -388,7 +390,7 @@ private fun EnergyTimelineRuler(
         }
     }
 
-    EnergyTimelineLabels.forEachIndexed { index, label ->
+    labels.forEachIndexed { index, label ->
         Text(
             text = label,
             color = Color.White,
@@ -413,7 +415,7 @@ private fun EnergyTimelineRuler(
             .fillMaxSize()
             .height(height)
     ) {
-        val currentTimeY = currentTime.toTimelineY().toPx()
+        val currentTimeY = currentTime.toTimelineY(timelineStartTime).toPx()
 
         if (currentTimeY in 0f..height.toPx()) {
             drawLine(

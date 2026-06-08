@@ -1,5 +1,6 @@
 package com.uet.sleeptracker.ui.screens.energy
 
+import android.annotation.SuppressLint
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -46,7 +47,6 @@ data class EnergyTimelineUiModel(
 )
 
 internal const val EnergyTimelineContentHeight = 5000f
-private const val EnergyTimelineStartHour = 21
 private const val EnergyTimelineStartY = 103f
 private const val EnergyTimelineHourHeight = 119f
 private const val EnergyPhaseMinHeight = 64f
@@ -58,23 +58,56 @@ internal data class EnergyPhaseLayout(
     val height: Dp
 )
 
-internal fun EnergyTimelineTime.toTimelineY(): Dp {
-    return (EnergyTimelineStartY + toTimelineMinutes() / 60f * EnergyTimelineHourHeight).dp
+internal fun EnergyTimelineTime.toTimelineY(timelineStartTime: EnergyTimelineTime): Dp {
+    return (EnergyTimelineStartY + toTimelineMinutes(timelineStartTime) / 60f * EnergyTimelineHourHeight).dp
 }
 
 internal fun Int.toTimelineHeight(): Dp {
     return (this / 60f * EnergyTimelineHourHeight).coerceAtLeast(EnergyPhaseMinHeight).dp
 }
 
-private fun EnergyTimelineTime.toTimelineMinutes(): Int {
-    val timelineStartMinutes = EnergyTimelineStartHour * 60
-    var absoluteMinutes = dayOffset * 24 * 60 + hour * 60 + minute
+internal fun EnergyTimelineTime.toTimelineStartTime(hoursBefore: Int): EnergyTimelineTime {
+    val flooredAbsoluteMinutes = dayOffset * 24 * 60 + hour * 60
+    return energyTimelineTimeFromAbsoluteMinutes(flooredAbsoluteMinutes - hoursBefore * 60)
+}
+
+@SuppressLint("DefaultLocale")
+internal fun buildEnergyTimelineLabels(
+    timelineStartTime: EnergyTimelineTime,
+    count: Int = 42
+): List<String> {
+    val startAbsoluteMinutes = timelineStartTime.toAbsoluteMinutes()
+
+    return List(count) { index ->
+        val hour = Math.floorMod((startAbsoluteMinutes + index * 60) / 60, 24)
+        String.format("%02d", hour)
+    }
+}
+
+private fun EnergyTimelineTime.toTimelineMinutes(timelineStartTime: EnergyTimelineTime): Int {
+    var absoluteMinutes = toAbsoluteMinutes()
+    val timelineStartMinutes = timelineStartTime.toAbsoluteMinutes()
 
     while (absoluteMinutes < timelineStartMinutes) {
         absoluteMinutes += 24 * 60
     }
 
     return absoluteMinutes - timelineStartMinutes
+}
+
+private fun EnergyTimelineTime.toAbsoluteMinutes(): Int {
+    return dayOffset * 24 * 60 + hour * 60 + minute
+}
+
+private fun energyTimelineTimeFromAbsoluteMinutes(absoluteMinutes: Int): EnergyTimelineTime {
+    val dayOffset = Math.floorDiv(absoluteMinutes, 24 * 60)
+    val minuteOfDay = Math.floorMod(absoluteMinutes, 24 * 60)
+
+    return EnergyTimelineTime(
+        hour = minuteOfDay / 60,
+        minute = minuteOfDay % 60,
+        dayOffset = dayOffset
+    )
 }
 
 internal fun defaultEnergyPhases(): List<EnergyPhaseUiModel> = listOf(
