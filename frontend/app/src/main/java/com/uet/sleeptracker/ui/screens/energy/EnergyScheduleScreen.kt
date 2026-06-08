@@ -90,13 +90,16 @@ fun EnergyScheduleScreen(
     }
 
     val timelineData = state.timelineData
+    val sleepStartY = state.sleepStartTime.toTimelineY()
+    val totalSleepTitleY = (sleepStartY.value - TotalSleepTimeTitleOffset).dp
+    val totalSleepValueY = totalSleepTitleY + 33.dp
     val phaseLayouts = timelineData.phases.map { phase ->
         EnergyPhaseLayout(
             phase = phase,
             y = phase.startTime.toTimelineY(),
             height = phase.durationMinutes.toTimelineHeight()
         )
-    }
+    }.withMinimumPhaseSpacing()
     val phaseLayoutById = phaseLayouts.associateBy { it.phase.id }
     val melatoninLayout = phaseLayoutById["melatonin_window"]
     val sleepNeedY = if (melatoninLayout != null) {
@@ -104,10 +107,12 @@ fun EnergyScheduleScreen(
     } else {
         timelineData.sleepNeedTime.toTimelineY()
     }
-    val wakeWindowY = timelineData.wakeWindowTime.toTimelineY()
+    val wakeWindowY = state.wakeWindowStartTime.toTimelineY()
+    val wakeWindowDuration = calculateDurationMinutes(state.wakeWindowStartTime, state.wakeWindowEndTime)
+    val wakeWindowHeight = wakeWindowDuration.toTimelineHeight()
     val contentHeight = maxOf(
         EnergyTimelineContentHeight,
-        wakeWindowY.value + 220f,
+        wakeWindowY.value + wakeWindowHeight.value + 100f,
         sleepNeedY.value + 100f,
         phaseLayouts.maxOfOrNull { it.y.value + it.height.value + 120f } ?: EnergyTimelineContentHeight
     )
@@ -156,21 +161,27 @@ fun EnergyScheduleScreen(
                         color = Color.White,
                         fontSize = 28.sp,
                         letterSpacing = (-1).sp,
-                        modifier = Modifier.offset(x = 54.dp, y = 247.dp)
+                        modifier = Modifier.offset(x = 54.dp, y = totalSleepTitleY)
                     )
 
                     Text(
-                        text = state.sleepTimeText,
+                        text = state.totalSleepTimeText,
                         color = Color(0xFF848484),
                         fontSize = 28.sp,
                         letterSpacing = (-1).sp,
-                        modifier = Modifier.offset(x = 54.dp, y = 280.dp)
+                        modifier = Modifier.offset(x = 54.dp, y = totalSleepValueY)
                     )
 
+                    val sleepDurationMinutes = calculateDurationMinutes(state.sleepStartTime, state.sleepEndTime)
+                    val sleepHeight = sleepDurationMinutes.toTimelineHeight()
+
                     TotalSleepTimeOverlay(
-                        modifier = Modifier.offset(x = 56.dp, y = 350.dp),
+                        modifier = Modifier.offset(x = 56.dp, y = sleepStartY),
                         sleepIcon = sleepIcon,
-                        editIcon = editIcon
+                        editIcon = editIcon,
+                        startTime = state.sleepStartTime.formatTime(),
+                        endTime = state.sleepEndTime.formatTime(),
+                        height = sleepHeight
                     )
 
                     phaseLayouts.forEach { phaseLayout ->
@@ -210,7 +221,7 @@ fun EnergyScheduleScreen(
                         modifier = Modifier
                             .offset(x = 0.dp, y = wakeWindowY)
                             .width(52.dp)
-                            .height(110.dp)
+                            .height(wakeWindowHeight)
                             .background(Color(0xFF222222))
                     )
 
@@ -219,7 +230,8 @@ fun EnergyScheduleScreen(
                             .offset(x = 0.dp, y = wakeWindowY)
                             .zIndex(11f),
                         alarmTimeText = state.alarmTimeText,
-                        activeDays = state.alarmActiveDays
+                        activeDays = state.alarmActiveDays,
+                        height = wakeWindowHeight
                     )
 
                     EnergyTimelineRuler(
@@ -295,6 +307,21 @@ private val EnergyTimelineLabels = listOf(
     "02", "03", "04", "05", "06", "07", "08", "09", "10", "11",
     "12", "13"
 )
+
+private const val TotalSleepTimeTitleOffset = 213f
+private fun List<EnergyPhaseLayout>.withMinimumPhaseSpacing(): List<EnergyPhaseLayout> {
+    var previousBottom = Float.NEGATIVE_INFINITY
+
+    return sortedBy { it.y.value }.map { layout ->
+        val resolvedY = maxOf(
+            layout.y.value,
+            previousBottom + EnergyPhaseMinSpacing
+        )
+
+        previousBottom = resolvedY + layout.height.value
+        layout.copy(y = resolvedY.dp)
+    }
+}
 
 @Composable
 private fun EnergyTimelineGridBackground(
@@ -642,17 +669,18 @@ private fun TotalSleepTimeOverlay(
     sleepIcon: Painter,
     editIcon: Painter,
     startTime: String = "23:10",
-    endTime: String = "4:45"
+    endTime: String = "4:45",
+    height: Dp = 677.dp
 ) {
     Box(
         modifier = modifier
             .width(415.dp)
-            .height(677.dp)
+            .height(height)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(671.dp)
+                .height(height - 6.dp)
                 .offset(y = 3.dp)
                 .background(
                     Color(0x73721CFD),
@@ -767,18 +795,19 @@ private fun ActivityCard(
 private fun WakeWindowBlock(
     modifier: Modifier = Modifier,
     alarmTimeText: String,
-    activeDays: List<Int>
+    activeDays: List<Int>,
+    height: Dp = 110.dp
 ) {
     Box(
         modifier = modifier
             .width(476.dp)
-            .height(180.dp)
+            .height(height + 70.dp)
     ) {
         Canvas(modifier = Modifier.matchParentSize()) {
             val lineStart = 0f
             val lineEnd = 469.dp.toPx()
             val grayColor = Color(0xFF353535)
-            val strokeThickness = 6f
+            val strokeThickness = 3f
 
             // Top boundary line of the wake window (shifted down slightly to avoid clipping)
             drawLine(
@@ -789,7 +818,7 @@ private fun WakeWindowBlock(
             )
 
             // Bottom boundary line of the wake window
-            val bottomY = 110.dp.toPx()
+            val bottomY = height.toPx()
             drawLine(
                 color = grayColor,
                 start = Offset(lineStart, bottomY),
@@ -802,7 +831,7 @@ private fun WakeWindowBlock(
             text = "Wake window",
             color = Color(0xFF848484),
             fontSize = 18.sp,
-            modifier = Modifier.offset(x = 179.dp, y = 103.dp)
+            modifier = Modifier.offset(x = 179.dp, y = height - 7.dp)
         )
 
         AlarmTimePicker(

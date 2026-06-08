@@ -50,6 +50,7 @@ private const val EnergyTimelineStartHour = 21
 private const val EnergyTimelineStartY = 103f
 private const val EnergyTimelineHourHeight = 119f
 private const val EnergyPhaseMinHeight = 64f
+internal const val EnergyPhaseMinSpacing = 4f
 
 internal data class EnergyPhaseLayout(
     val phase: EnergyPhaseUiModel,
@@ -76,56 +77,55 @@ private fun EnergyTimelineTime.toTimelineMinutes(): Int {
     return absoluteMinutes - timelineStartMinutes
 }
 
-private fun defaultEnergyPhases(): List<EnergyPhaseUiModel> = listOf(
+internal fun defaultEnergyPhases(): List<EnergyPhaseUiModel> = listOf(
     EnergyPhaseUiModel(
         id = "grogginess",
         title = "Grogginess",
-        startTime = EnergyTimelineTime(hour = 4, minute = 44, dayOffset = 1),
-        durationMinutes = 88,
+        startTime = EnergyTimelineTime(hour = 6, minute = 45, dayOffset = 1),
+        durationMinutes = 97,
         style = EnergyPhaseStyle.Grogginess
     ),
     EnergyPhaseUiModel(
         id = "morning_peak",
         title = "Morning Peak",
-        startTime = EnergyTimelineTime(hour = 7, minute = 20, dayOffset = 1),
-        durationMinutes = 366,
-        subtitle = "40m longer",
+        startTime = EnergyTimelineTime(hour = 8, minute = 22, dayOffset = 1),
+        durationMinutes = 251,
+        subtitle = "12m longer",
         style = EnergyPhaseStyle.Standard
     ),
     EnergyPhaseUiModel(
         id = "afternoon_dip",
         title = "Afternoon dip",
-        startTime = EnergyTimelineTime(hour = 13, minute = 27, dayOffset = 1),
-        durationMinutes = 255,
-        subtitle = "12m earlier",
+        startTime = EnergyTimelineTime(hour = 12, minute = 33, dayOffset = 1),
+        durationMinutes = 247,
+        subtitle = "5m earlier",
         style = EnergyPhaseStyle.Standard
     ),
     EnergyPhaseUiModel(
         id = "evening_peak",
         title = "Evening peak",
-        startTime = EnergyTimelineTime(hour = 17, minute = 45, dayOffset = 1),
-        durationMinutes = 237,
+        startTime = EnergyTimelineTime(hour = 16, minute = 40, dayOffset = 1),
+        durationMinutes = 243,
         style = EnergyPhaseStyle.EveningPeak
     ),
     EnergyPhaseUiModel(
         id = "wind_down",
         title = "Wind-down",
-        startTime = EnergyTimelineTime(hour = 21, minute = 45, dayOffset = 1),
-        durationMinutes = 79,
-        subtitle = "2m earlier",
+        startTime = EnergyTimelineTime(hour = 20, minute = 43, dayOffset = 1),
+        durationMinutes = 67,
         style = EnergyPhaseStyle.Standard
     ),
     EnergyPhaseUiModel(
         id = "melatonin_window",
         title = "Melatonin Window",
-        startTime = EnergyTimelineTime(hour = 23, minute = 7, dayOffset = 1),
-        durationMinutes = 58,
-        subtitle = "18m earlier",
+        startTime = EnergyTimelineTime(hour = 21, minute = 50, dayOffset = 1),
+        durationMinutes = 60,
+        subtitle = "5m earlier",
         style = EnergyPhaseStyle.Melatonin
     )
 )
 
-private fun defaultEnergyActivities(): List<EnergyActivityMarkerUiModel> = listOf(
+internal fun defaultEnergyActivities(): List<EnergyActivityMarkerUiModel> = listOf(
     EnergyActivityMarkerUiModel(
         title = "Avoid caffeine",
         phaseId = "afternoon_dip",
