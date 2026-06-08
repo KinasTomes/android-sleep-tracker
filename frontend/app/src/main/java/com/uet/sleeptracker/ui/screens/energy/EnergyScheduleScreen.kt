@@ -13,10 +13,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,32 +39,57 @@ import com.uet.sleeptracker.ui.components.AlarmTimePicker
 import com.uet.sleeptracker.ui.components.MelatoninWindow
 import java.util.Calendar
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun EnergyScheduleScreen(
-    modifier: Modifier = Modifier,
     profileIcon: Painter,
     lightningIcon: Painter,
     sleepIcon: Painter,
     editIcon: Painter,
     windDownImage: Painter,
     caffeineImage: Painter,
-    energyPercent: String = "76%",
-    sleepTimeText: String = "5h 35m",
-    alarmTimeText: String = "06:00 Tomorrow",
-    alarmActiveDays: List<Int> = listOf(1, 2, 3, 4, 5, 6, 7),
-    timelineData: EnergyTimelineUiModel = EnergyTimelineUiModel(),
+    modifier: Modifier = Modifier,
+    viewModel: EnergyScheduleViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
     showTopBar: Boolean = true
 ) {
-    var currentTimelineTime by remember { mutableStateOf(currentEnergyTimelineTime()) }
+    val state by viewModel.uiState.collectAsState()
 
+    EnergyScheduleScreen(
+        state = state,
+        onCurrentTimeChange = { viewModel.updateCurrentTime(it) },
+        profileIcon = profileIcon,
+        lightningIcon = lightningIcon,
+        sleepIcon = sleepIcon,
+        editIcon = editIcon,
+        windDownImage = windDownImage,
+        caffeineImage = caffeineImage,
+        modifier = modifier,
+        showTopBar = showTopBar
+    )
+}
+
+@Composable
+fun EnergyScheduleScreen(
+    state: EnergyScheduleUiState,
+    onCurrentTimeChange: (EnergyTimelineTime) -> Unit,
+    profileIcon: Painter,
+    lightningIcon: Painter,
+    sleepIcon: Painter,
+    editIcon: Painter,
+    windDownImage: Painter,
+    caffeineImage: Painter,
+    modifier: Modifier = Modifier,
+    showTopBar: Boolean = true
+) {
     LaunchedEffect(Unit) {
         while (true) {
-            currentTimelineTime = currentEnergyTimelineTime()
-            delay(60_000)
+            onCurrentTimeChange(currentEnergyTimelineTime())
+            delay(60_000.milliseconds)
         }
     }
 
+    val timelineData = state.timelineData
     val phaseLayouts = timelineData.phases.map { phase ->
         EnergyPhaseLayout(
             phase = phase,
@@ -75,7 +98,12 @@ fun EnergyScheduleScreen(
         )
     }
     val phaseLayoutById = phaseLayouts.associateBy { it.phase.id }
-    val sleepNeedY = timelineData.sleepNeedTime.toTimelineY()
+    val melatoninLayout = phaseLayoutById["melatonin_window"]
+    val sleepNeedY = if (melatoninLayout != null) {
+        melatoninLayout.y + melatoninLayout.height + 16.dp
+    } else {
+        timelineData.sleepNeedTime.toTimelineY()
+    }
     val wakeWindowY = timelineData.wakeWindowTime.toTimelineY()
     val contentHeight = maxOf(
         EnergyTimelineContentHeight,
@@ -119,7 +147,7 @@ fun EnergyScheduleScreen(
                         EnergyTopBar(
                             profileIcon = profileIcon,
                             lightningIcon = lightningIcon,
-                            energyPercent = energyPercent
+                            energyPercent = state.energyPercent
                         )
                     }
 
@@ -132,7 +160,7 @@ fun EnergyScheduleScreen(
                     )
 
                     Text(
-                        text = sleepTimeText,
+                        text = state.sleepTimeText,
                         color = Color(0xFF848484),
                         fontSize = 28.sp,
                         letterSpacing = (-1).sp,
@@ -178,16 +206,26 @@ fun EnergyScheduleScreen(
                         )
                     }
 
+                    Box(
+                        modifier = Modifier
+                            .offset(x = 0.dp, y = wakeWindowY)
+                            .width(52.dp)
+                            .height(110.dp)
+                            .background(Color(0xFF222222))
+                    )
+
                     WakeWindowBlock(
-                        modifier = Modifier.offset(x = 0.dp, y = wakeWindowY),
-                        alarmTimeText = alarmTimeText,
-                        activeDays = alarmActiveDays
+                        modifier = Modifier
+                            .offset(x = 0.dp, y = wakeWindowY)
+                            .zIndex(11f),
+                        alarmTimeText = state.alarmTimeText,
+                        activeDays = state.alarmActiveDays
                     )
 
                     EnergyTimelineRuler(
                         modifier = Modifier.zIndex(10f),
                         height = contentHeight.dp,
-                        currentTime = currentTimelineTime
+                        currentTime = state.currentTime
                     )
                 }
             }
@@ -301,21 +339,21 @@ private fun EnergyTimelineRuler(
             val y = startY + index * hourGap
 
             drawLine(
-                color = Color.White,
+                color = Color(0xFF888888),
                 start = Offset(19.dp.toPx(), y - 60.dp.toPx()),
                 end = Offset(35.dp.toPx(), y - 60.dp.toPx()),
                 strokeWidth = 1.25.dp.toPx()
             )
 
             drawLine(
-                color = Color.White,
+                color = Color(0xFF353535),
                 start = Offset(19.dp.toPx(), y - 28.dp.toPx()),
                 end = Offset(27.dp.toPx(), y - 28.dp.toPx()),
                 strokeWidth = 1.25.dp.toPx()
             )
 
             drawLine(
-                color = Color.White,
+                color = Color(0xFF353535),
                 start = Offset(19.dp.toPx(), y + 28.dp.toPx()),
                 end = Offset(27.dp.toPx(), y + 28.dp.toPx()),
                 strokeWidth = 1.25.dp.toPx()
@@ -736,12 +774,29 @@ private fun WakeWindowBlock(
             .width(476.dp)
             .height(180.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .width(56.dp)
-                .height(110.dp)
-                .background(Color(0xFF222222))
-        )
+        Canvas(modifier = Modifier.matchParentSize()) {
+            val lineStart = 0f
+            val lineEnd = 469.dp.toPx()
+            val grayColor = Color(0xFF353535)
+            val strokeThickness = 6f
+
+            // Top boundary line of the wake window (shifted down slightly to avoid clipping)
+            drawLine(
+                color = grayColor,
+                start = Offset(lineStart, strokeThickness / 2),
+                end = Offset(lineEnd, strokeThickness / 2),
+                strokeWidth = strokeThickness
+            )
+
+            // Bottom boundary line of the wake window
+            val bottomY = 110.dp.toPx()
+            drawLine(
+                color = grayColor,
+                start = Offset(lineStart, bottomY),
+                end = Offset(lineEnd, bottomY),
+                strokeWidth = strokeThickness
+            )
+        }
 
         Text(
             text = "Wake window",
@@ -751,7 +806,7 @@ private fun WakeWindowBlock(
         )
 
         AlarmTimePicker(
-            modifier = Modifier.offset(x = 51.dp, y = (-19).dp),
+            modifier = Modifier.offset(x = 54.dp, y = (-19).dp),
             timeText = alarmTimeText,
             activeDays = activeDays
         )
@@ -768,13 +823,16 @@ private fun WakeWindowBlock(
 private fun EnergyScheduleScreenPreview() {
     MaterialTheme {
         EnergyScheduleScreen(
+            state = EnergyScheduleUiState(
+                alarmActiveDays = listOf(1, 2, 3, 4, 5, 6, 7)
+            ),
+            onCurrentTimeChange = {},
             profileIcon = ColorPainter(Color(0xFF721BFD)),
             lightningIcon = ColorPainter(Color(0xFF00EBAC)),
             sleepIcon = ColorPainter(Color.White),
             editIcon = ColorPainter(Color.White),
             windDownImage = ColorPainter(Color(0xFF8D59FC)),
-            caffeineImage = ColorPainter(Color(0xFFFF4F7B)),
-            alarmActiveDays = listOf(1, 2, 3, 4, 5, 6, 7)
+            caffeineImage = ColorPainter(Color(0xFFFF4F7B))
         )
     }
 }

@@ -46,7 +46,7 @@ fun AlarmTimePicker(
 
     Box(
         modifier = modifier
-            .width(418.dp)
+            .width(400.dp)
             .height(74.dp)
     ) {
         // Ellipse dot
@@ -54,7 +54,7 @@ fun AlarmTimePicker(
             modifier = Modifier
                 .size(8.dp)
                 .align(Alignment.CenterStart)
-                .offset(x = (-16).dp)
+                .offset(x = (-4).dp)
                 .background(
                     color = Color(0xFFD9D9D9),
                     shape = CircleShape
@@ -71,7 +71,7 @@ fun AlarmTimePicker(
             modifier = Modifier
                 .size(16.dp)
                 .align(Alignment.CenterStart)
-                .offset(x = (-12).dp)
+                .offset(x = 0.dp)
         ) {
             val path = Path().apply {
                 moveTo(size.width * 0.2f, size.height * 0.15f)
@@ -90,7 +90,7 @@ fun AlarmTimePicker(
         Row(
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .width(403.dp)
+                .width(385.dp)
                 .height(74.dp)
                 .background(
                     color = Color(0xFF222328),
