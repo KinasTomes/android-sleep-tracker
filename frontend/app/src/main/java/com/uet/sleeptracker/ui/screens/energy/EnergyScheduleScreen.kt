@@ -12,12 +12,20 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
@@ -31,6 +39,8 @@ import androidx.compose.ui.zIndex
 import com.uet.sleeptracker.R
 import com.uet.sleeptracker.ui.components.AlarmTimePicker
 import com.uet.sleeptracker.ui.components.MelatoninWindow
+import java.util.Calendar
+import kotlinx.coroutines.delay
 
 @Composable
 fun EnergyScheduleScreen(
@@ -45,8 +55,35 @@ fun EnergyScheduleScreen(
     sleepTimeText: String = "5h 35m",
     alarmTimeText: String = "06:00 Tomorrow",
     alarmActiveDays: List<Int> = listOf(1, 2, 3, 4, 5, 6, 7),
+    timelineData: EnergyTimelineUiModel = EnergyTimelineUiModel(),
     showTopBar: Boolean = true
 ) {
+    var currentTimelineTime by remember { mutableStateOf(currentEnergyTimelineTime()) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            currentTimelineTime = currentEnergyTimelineTime()
+            delay(60_000)
+        }
+    }
+
+    val phaseLayouts = timelineData.phases.map { phase ->
+        EnergyPhaseLayout(
+            phase = phase,
+            y = phase.startTime.toTimelineY(),
+            height = phase.durationMinutes.toTimelineHeight()
+        )
+    }
+    val phaseLayoutById = phaseLayouts.associateBy { it.phase.id }
+    val sleepNeedY = timelineData.sleepNeedTime.toTimelineY()
+    val wakeWindowY = timelineData.wakeWindowTime.toTimelineY()
+    val contentHeight = maxOf(
+        EnergyTimelineContentHeight,
+        wakeWindowY.value + 220f,
+        sleepNeedY.value + 100f,
+        phaseLayouts.maxOfOrNull { it.y.value + it.height.value + 120f } ?: EnergyTimelineContentHeight
+    )
+
     BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
@@ -59,7 +96,7 @@ fun EnergyScheduleScreen(
         Box(
             modifier = Modifier
                 .width(maxWidth)
-                .height(((5000f - hiddenTopBarHeight) * scale).dp)
+                .height(((contentHeight - hiddenTopBarHeight) * scale).dp)
                 .background(Color.Black)
         ) {
             Box(
@@ -73,10 +110,10 @@ fun EnergyScheduleScreen(
                     modifier = Modifier
                         .offset(y = (-hiddenTopBarHeight).dp)
                         .width(476.dp)
-                        .height(5000.dp)
+                        .height(contentHeight.dp)
                         .background(Color.Black)
                 ) {
-                    EnergyTimelineGridBackground()
+                    EnergyTimelineGridBackground(height = contentHeight.dp)
 
                     if (showTopBar) {
                         EnergyTopBar(
@@ -108,95 +145,49 @@ fun EnergyScheduleScreen(
                         editIcon = editIcon
                     )
 
-                    EnergySectionCard(
-                        modifier = Modifier.offset(x = 0.dp, y = 1023.dp),
-                        title = "Grogginess",
-                        height = 174.dp,
-                        background = Color(0xB316151A)
-                    )
-
-                    EnergySectionCard(
-                        modifier = Modifier.offset(x = 0.dp, y = 1332.dp),
-                        title = "Morning Peak",
-                        subtitle = "40m longer",
-                        height = 726.dp,
-                        dotColor = Color(0xFFFF5A8A)
-                    )
-
-                    EnergySectionCard(
-                        modifier = Modifier.offset(x = 0.dp, y = 2061.dp),
-                        title = "Afternoon dip",
-                        subtitle = "12m earlier",
-                        height = 505.dp,
-                        dotColor = Color(0xFF721BFD)
-                    )
-
-                    EnergySectionCard(
-                        modifier = Modifier.offset(x = (-9).dp, y = 2572.dp),
-                        title = "Evening peak",
-                        height = 470.dp,
-                        width = 364.dp,
-                        background = Color(0xFF333333)
-                    )
-
-                    EnergySectionCard(
-                        modifier = Modifier.offset(x = 0.dp, y = 3048.dp),
-                        title = "Wind-down",
-                        subtitle = "2m earlier",
-                        height = 156.dp,
-                        dotColor = Color(0xFF721BFD)
-                    )
-
-                    EnergyMelatoninWindow(
-                        modifier = Modifier.offset(x = 0.dp, y = 3210.dp)
-                    )
+                    phaseLayouts.forEach { phaseLayout ->
+                        EnergyPhaseBlock(phaseLayout = phaseLayout)
+                    }
 
                     Text(
                         text = "Sleep need",
                         color = Color.White,
                         fontSize = 20.sp,
-                        modifier = Modifier.offset(x = 66.dp, y = 3349.dp)
+                        modifier = Modifier.offset(x = 66.dp, y = sleepNeedY)
                     )
 
                     Text(
-                        text = "7h 45m",
+                        text = timelineData.sleepNeedText,
                         color = Color.White,
                         fontSize = 12.sp,
-                        modifier = Modifier.offset(x = 66.dp, y = 3374.dp)
+                        modifier = Modifier.offset(x = 66.dp, y = sleepNeedY + 25.dp)
                     )
 
-                    ActivityCard(
-                        modifier = Modifier.offset(x = 349.dp, y = 2014.dp),
-                        image = caffeineImage,
-                        title = "Avoid caffeine"
-                    )
-
-                    ActivityCard(
-                        modifier = Modifier.offset(x = 349.dp, y = 2694.dp),
-                        image = windDownImage,
-                        title = "Peak activities"
-                    )
-
-                    ActivityCard(
-                        modifier = Modifier.offset(x = 349.dp, y = 3062.dp),
-                        image = windDownImage,
-                        title = "Wind-down\nactivities"
-                    )
-
-                    ActivityCard(
-                        modifier = Modifier.offset(x = 349.dp, y = 3229.dp),
-                        image = windDownImage,
-                        title = "Wind-down\nactivities"
-                    )
+                    timelineData.activities.forEach { activity ->
+                        val phaseLayout = phaseLayoutById[activity.phaseId] ?: return@forEach
+                        ActivityCard(
+                            modifier = Modifier.offset(
+                                x = 349.dp,
+                                y = phaseLayout.y + activity.yOffset
+                            ),
+                            image = when (activity.imageType) {
+                                EnergyActivityImageType.Caffeine -> caffeineImage
+                                EnergyActivityImageType.WindDown -> windDownImage
+                            },
+                            title = activity.title
+                        )
+                    }
 
                     WakeWindowBlock(
-                        modifier = Modifier.offset(x = 0.dp, y = 4132.dp),
+                        modifier = Modifier.offset(x = 0.dp, y = wakeWindowY),
                         alarmTimeText = alarmTimeText,
                         activeDays = alarmActiveDays
                     )
 
                     EnergyTimelineRuler(
-                        modifier = Modifier.zIndex(10f)
+                        modifier = Modifier.zIndex(10f),
+                        height = contentHeight.dp,
+                        currentTime = currentTimelineTime
                     )
                 }
             }
@@ -268,11 +259,13 @@ private val EnergyTimelineLabels = listOf(
 )
 
 @Composable
-private fun EnergyTimelineGridBackground() {
+private fun EnergyTimelineGridBackground(
+    height: Dp
+) {
     Canvas(
         modifier = Modifier
             .fillMaxSize()
-            .height(5000.dp)
+            .height(height)
     ) {
         val hourGap = 119.dp.toPx()
         val startY = 103.dp.toPx()
@@ -292,12 +285,14 @@ private fun EnergyTimelineGridBackground() {
 
 @Composable
 private fun EnergyTimelineRuler(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    height: Dp,
+    currentTime: EnergyTimelineTime
 ) {
     Canvas(
         modifier = modifier
             .fillMaxSize()
-            .height(5000.dp)
+            .height(height)
     ) {
         val hourGap = 119.dp.toPx()
         val startY = 103.dp.toPx()
@@ -344,9 +339,164 @@ private fun EnergyTimelineRuler(
         modifier = Modifier
             .offset(x = 52.dp, y = 104.dp)
             .width(4.dp)
-            .height(5000.dp)
+            .height(height)
             .background(Color.Black)
     )
+
+    Canvas(
+        modifier = modifier
+            .fillMaxSize()
+            .height(height)
+    ) {
+        val currentTimeY = currentTime.toTimelineY().toPx()
+
+        if (currentTimeY in 0f..height.toPx()) {
+            drawLine(
+                color = Color.White,
+                start = Offset(52.dp.toPx(), currentTimeY),
+                end = Offset(469.dp.toPx(), currentTimeY),
+                strokeWidth = 1.4.dp.toPx()
+            )
+
+            drawCircle(
+                color = Color.White,
+                radius = 3.dp.toPx(),
+                center = Offset(54.dp.toPx(), currentTimeY)
+            )
+        }
+    }
+}
+
+private fun currentEnergyTimelineTime(): EnergyTimelineTime {
+    val calendar = Calendar.getInstance()
+
+    return EnergyTimelineTime(
+        hour = calendar.get(Calendar.HOUR_OF_DAY),
+        minute = calendar.get(Calendar.MINUTE),
+        dayOffset = 1
+    )
+}
+
+@Composable
+private fun EnergyPhaseBlock(
+    phaseLayout: EnergyPhaseLayout
+) {
+    val phase = phaseLayout.phase
+
+    when (phase.style) {
+        EnergyPhaseStyle.Melatonin -> {
+            EnergyMelatoninWindow(
+                modifier = Modifier.offset(x = 0.dp, y = phaseLayout.y),
+                height = phaseLayout.height,
+                title = phase.title,
+                subtitle = phase.subtitle
+            )
+        }
+
+        EnergyPhaseStyle.EveningPeak -> {
+            EnergySectionCard(
+                modifier = Modifier.offset(x = (-9).dp, y = phaseLayout.y),
+                title = phase.title,
+                height = phaseLayout.height,
+                width = 364.dp,
+                background = Color(0xFF333333)
+            )
+        }
+
+        EnergyPhaseStyle.Grogginess -> {
+            GrogginessWaveCard(
+                modifier = Modifier.offset(x = 0.dp, y = phaseLayout.y),
+                title = phase.title,
+                height = phaseLayout.height
+            )
+        }
+
+        EnergyPhaseStyle.Standard -> {
+            EnergySectionCard(
+                modifier = Modifier.offset(x = 0.dp, y = phaseLayout.y),
+                title = phase.title,
+                subtitle = phase.subtitle,
+                height = phaseLayout.height,
+                dotColor = if (phase.id == "morning_peak") {
+                    Color(0xFFFF5A8A)
+                } else {
+                    Color(0xFF721BFD)
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun GrogginessWaveCard(
+    modifier: Modifier = Modifier,
+    title: String,
+    width: Dp = 355.dp,
+    height: Dp
+) {
+    val shape = RoundedCornerShape(12.dp)
+
+    Box(
+        modifier = modifier
+            .width(width)
+            .height(height)
+            .clip(shape)
+            .background(Color(0xB316151A))
+            .border(
+                width = 2.dp,
+                color = Color(0xFF363636),
+                shape = shape
+            )
+    ) {
+        Canvas(modifier = Modifier.matchParentSize()) {
+            val spacing = 28.dp.toPx()
+            val amplitude = 18.dp.toPx()
+            val waveLength = 92.dp.toPx()
+            val strokeWidth = 1.25.dp.toPx()
+            val diagonalSpan = size.width + size.height
+
+            rotate(
+                degrees = 120f,
+                pivot = Offset(size.width / 2f, size.height / 2f)
+            ) {
+                var baseY = -diagonalSpan
+
+                while (baseY < diagonalSpan * 1.5f) {
+                    val path = Path().apply {
+                        moveTo(-diagonalSpan, baseY)
+
+                        var x = -diagonalSpan
+                        while (x < diagonalSpan * 1.5f) {
+                            cubicTo(
+                                x + waveLength * 0.25f,
+                                baseY - amplitude,
+                                x + waveLength * 0.75f,
+                                baseY + amplitude,
+                                x + waveLength,
+                                baseY
+                            )
+                            x += waveLength
+                        }
+                    }
+
+                    drawPath(
+                        path = path,
+                        color = Color.White.copy(alpha = 0.16f),
+                        style = Stroke(width = strokeWidth)
+                    )
+
+                    baseY += spacing
+                }
+            }
+        }
+
+        Text(
+            text = title,
+            color = Color.White,
+            fontSize = 20.sp,
+            modifier = Modifier.offset(x = 77.dp, y = 18.dp)
+        )
+    }
 }
 
 @Composable
@@ -400,16 +550,19 @@ private fun EnergySectionCard(
 
 @Composable
 private fun EnergyMelatoninWindow(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    height: Dp,
+    title: String,
+    subtitle: String?
 ) {
     Box(
         modifier = modifier
             .width(355.dp)
-            .height(115.dp)
+            .height(height)
     ) {
         MelatoninWindow(
             sizeN = 355.dp,
-            heightM = 115.dp
+            heightM = height
         )
 
         Image(
@@ -421,25 +574,27 @@ private fun EnergyMelatoninWindow(
         )
 
         Text(
-            text = "Melatonin Window",
+            text = title,
             color = Color.White,
             fontSize = 20.sp,
             modifier = Modifier.offset(x = 77.dp, y = 18.dp)
         )
 
-        Box(
-            modifier = Modifier
-                .offset(x = 77.dp, y = 45.dp)
-                .size(10.dp)
-                .background(Color(0xFF721BFD), CircleShape)
-        )
+        if (subtitle != null) {
+            Box(
+                modifier = Modifier
+                    .offset(x = 77.dp, y = 45.dp)
+                    .size(10.dp)
+                    .background(Color(0xFF721BFD), CircleShape)
+            )
 
-        Text(
-            text = "18m earlier",
-            color = Color.White,
-            fontSize = 12.sp,
-            modifier = Modifier.offset(x = 92.dp, y = 39.dp)
-        )
+            Text(
+                text = subtitle,
+                color = Color.White,
+                fontSize = 12.sp,
+                modifier = Modifier.offset(x = 92.dp, y = 39.dp)
+            )
+        }
     }
 }
 

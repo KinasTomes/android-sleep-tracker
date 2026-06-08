@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -34,7 +35,7 @@ import com.uet.sleeptracker.ui.components.SleepBottomNavTab
 import com.uet.sleeptracker.ui.components.SleepBottomNavigation
 import com.uet.sleeptracker.ui.components.SleepIconType
 import com.uet.sleeptracker.ui.components.SleepTopActionIcon
-import com.uet.sleeptracker.ui.screens.energy.EnergyScreen
+import com.uet.sleeptracker.ui.screens.energy.EnergyScheduleScreen
 import com.uet.sleeptracker.ui.screens.home.HomeScreen
 import com.uet.sleeptracker.ui.screens.home.HomeSlideUpPanel
 import androidx.compose.ui.tooling.preview.Preview
@@ -88,7 +89,16 @@ fun MainTabsScreen(
                         }
 
                         SleepBottomNavTab.Energy -> {
-                            EnergyScreen(modifier = Modifier.fillMaxSize())
+                            EnergyScheduleScreen(
+                                modifier = Modifier.fillMaxSize(),
+                                profileIcon = ColorPainter(Color.Transparent),
+                                lightningIcon = painterResource(id = R.drawable.lightning),
+                                sleepIcon = painterResource(id = R.drawable.zzz),
+                                editIcon = painterResource(id = R.drawable.scissor),
+                                windDownImage = painterResource(id = R.drawable.evening),
+                                caffeineImage = painterResource(id = R.drawable.ceffeine),
+                                showTopBar = false
+                            )
                         }
 
                         SleepBottomNavTab.Tools -> {
