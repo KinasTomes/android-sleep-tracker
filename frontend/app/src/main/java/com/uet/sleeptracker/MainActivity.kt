@@ -33,6 +33,8 @@ import com.uet.sleeptracker.ui.screens.settings.*
 import com.uet.sleeptracker.ui.screens.tools.SmartAlarmSettingScreen
 import com.uet.sleeptracker.ui.screens.tools.SmartAlarmScheduleScreen
 import com.uet.sleeptracker.ui.screens.tools.EnvironmentCheckScreen
+import com.uet.sleeptracker.ui.screens.tools.BrainDumpScreen
+import com.uet.sleeptracker.ui.screens.tools.BrainDumpSettingsScreen
 import com.uet.sleeptracker.ui.screens.tools.SleepQualityScreen
 import com.uet.sleeptracker.ui.theme.SleepBackground
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
@@ -69,7 +71,117 @@ class MainActivity : ComponentActivity() {
                             onEveningRoutineClick = { navController.navigate("evening_routine") },
                             onSmartAlarmClick = { navController.navigate("smart_alarm_settings") },
                             onSleepQualityClick = { navController.navigate("sleep_quality") },
-                            onPrepBedroomClick = { navController.navigate("environment_check") }
+                            onPrepBedroomClick = { navController.navigate("environment_check") },
+                            onBrainDumpClick = { navController.navigate("brain_dump") }
+                        )
+                    }
+                    composable(
+                        route = "brain_dump",
+                        enterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        exitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popEnterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popExitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        }
+                    ) {
+                        BrainDumpScreen(
+                            onCloseClick = { navController.popBackStack() },
+                            onSetReminderClick = { navController.navigate("brain_dump_settings") }
+                        )
+                    }
+                    composable(
+                        route = "brain_dump_settings",
+                        enterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        exitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popEnterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popExitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        }
+                    ) {
+                        BrainDumpSettingsScreen(
+                            onCloseClick = { navController.popBackStack() },
+                            onReminderTimeClick = { navController.navigate("brain_dump_reminder_time") }
+                        )
+                    }
+                    composable(
+                        route = "brain_dump_reminder_time",
+                        enterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        exitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popEnterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popExitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        }
+                    ) {
+                        val reminderChoices = buildReminderChoiceItems(
+                            labels = listOf("15 minutes", "30 minutes", "1 hour", "2 hours"),
+                            highlightedLabel = "15 minutes"
+                        )
+
+                        ReminderTimeScreen(
+                            headerTitle = "Brain Dump",
+                            screenTitle = "Reminder time",
+                            sectionLabel = "AFTER WAKE",
+                            options = reminderChoices,
+                            initialSelectedIndex = findInitialReminderChoiceIndex(
+                                options = reminderChoices,
+                                selectedLabel = "15 minutes"
+                            ),
+                            type = 1,
+                            onCloseClick = { navController.popBackStack() }
                         )
                     }
                     composable(

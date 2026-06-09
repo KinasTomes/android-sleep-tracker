@@ -43,6 +43,7 @@ fun ToolsScreen(
     onSmartAlarmClick: () -> Unit = {},
     onSleepQualityClick: () -> Unit = {},
     onPrepBedroomClick: () -> Unit = {},
+    onBrainDumpClick: () -> Unit = {},
 ) {
     val verticalScrollState = rememberScrollState()
     val horizontalScrollState = rememberScrollState()
@@ -110,7 +111,7 @@ fun ToolsScreen(
                 title = "Write a brain dump",
                 subtitle = "Ease your mind before\nbed",
                 backgroundImageResId = R.drawable.write_a_brain_dump,
-                onClick = {},
+                onClick = onBrainDumpClick,
                 modifier = Modifier.weight(1f)
             )
             SleepSuggestionCard(
