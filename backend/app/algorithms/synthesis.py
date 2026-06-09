@@ -6,10 +6,20 @@ import numpy as np
 from app.algorithms.process_c import compute_process_c
 from app.algorithms.process_s import compute_process_s
 from app.core.config import settings
+from app.services.energy_personalization import ZoneAdjustmentProfile
 
 A_C = settings.A_C  # 0.1333
+GROGGINESS_DURATION_MINUTES = 90
 WAKE_WINDOW_SLEEP_PRESSURE_THRESHOLD = 0.60
 WIND_DOWN_DURATION_MINUTES = 120
+PRIMARY_DISPLAY_ZONE_TYPES = {
+    "wake",
+    "morning_peak",
+    "afternoon_dip",
+    "evening_peak",
+    "wind_down",
+    "melatonin_window",
+}
 
 
 @dataclass
@@ -43,6 +53,7 @@ def compute_energy_schedule(
     sleep_debt_mins: float = 0.0,
     snop_hours: float = 8.0,
     enabled_habit_ids: set[str] | None = None,
+    adjustment_profile: ZoneAdjustmentProfile | None = None,
 ) -> EnergySchedule:
     """Compute 24-hour energy schedule from wake time.
 
@@ -55,6 +66,7 @@ def compute_energy_schedule(
         sleep_debt_mins: current cumulative sleep debt in minutes
         snop_hours: user's personalized SNOP in hours
         enabled_habit_ids: set of enabled habit IDs (None = all enabled)
+        adjustment_profile: optional personalized offsets and priority boosts
 
     Returns:
         EnergySchedule with 1440 energy points, zones, and nudges
@@ -74,10 +86,18 @@ def compute_energy_schedule(
     energy_normalized = _normalize_energy(energy)
 
     # Classify zones — pass C(k) for dynamic melatonin window
-    zones = _classify_zones(energy_normalized, t_hours, c, h)
+    profile = adjustment_profile or ZoneAdjustmentProfile()
+    zones = _classify_zones(energy_normalized, t_hours, c, h, profile)
 
     # Generate nudges with adaptive prioritization
-    nudges = _generate_nudges(zones, wake_time, sleep_debt_mins, snop_hours, enabled_habit_ids)
+    nudges = _generate_nudges(
+        zones,
+        wake_time,
+        sleep_debt_mins,
+        snop_hours,
+        enabled_habit_ids,
+        profile,
+    )
 
     # Energy Potential Score: how much peak energy capacity remains
     potential = _compute_energy_potential(h_at_wake)
@@ -121,6 +141,7 @@ def _classify_zones(
     t_hours: np.ndarray,
     c_values: np.ndarray,
     h_values: np.ndarray,
+    adjustment_profile: ZoneAdjustmentProfile,
 ) -> list[EnergyZone]:
     """Classify time periods into physiological zones based on energy curve.
 
@@ -129,6 +150,7 @@ def _classify_zones(
         t_hours: time points in hours
         c_values: Process C circadian signal (used for melatonin window)
         h_values: Process S sleep pressure signal (used for wake window)
+        adjustment_profile: personalized zone offsets and duration changes
     """
     zones = []
 
@@ -136,20 +158,23 @@ def _classify_zones(
     peaks = _find_peaks(energy)
     troughs = _find_peaks(-energy)
 
-    # Wake zone: first 90 minutes (sleep inertia)
-    zones.append(EnergyZone("wake", 0, 90))
+    # Wake zone: first 90 minutes (sleep inertia / grogginess)
+    zones.append(EnergyZone("wake", 0, GROGGINESS_DURATION_MINUTES))
 
     # Wake window: max healthy awake span before adenosine-driven
     # sleep pressure rises beyond the sustainable alertness threshold.
-    wake_window_end = _compute_wake_window_end(h_values)
+    wake_window_end = _compute_wake_window_end(
+        h_values,
+        adjustment_profile.wake_window_pressure_threshold,
+    )
     zones.append(EnergyZone("wake_window", 0, wake_window_end))
 
     # Morning peak: highest peak in first 8 hours
-    morning_peaks = [p for p in peaks if 90 < t_hours[p] * 60 < 480]
+    morning_peaks = [p for p in peaks if GROGGINESS_DURATION_MINUTES < t_hours[p] * 60 < 480]
     if morning_peaks:
         best_idx = max(morning_peaks, key=lambda p: energy[p])
-        best_minute = best_idx * 5
-        start = max(0, best_minute - 30)
+        best_minute = best_idx * 5 + adjustment_profile.circadian_offset_mins
+        start = max(GROGGINESS_DURATION_MINUTES, best_minute - 30)
         end = min(1440, best_minute + 30)
         zones.append(EnergyZone("morning_peak", start, end))
 
@@ -157,29 +182,44 @@ def _classify_zones(
     afternoon_troughs = [t for t in troughs if 300 < t_hours[t] * 60 < 540]
     if afternoon_troughs:
         worst = min(afternoon_troughs, key=lambda t: energy[t])
-        worst_minute = worst * 5
-        start = max(0, worst_minute - 60)
-        end = min(1440, worst_minute + 60)
+        worst_minute = (
+            worst * 5
+            + adjustment_profile.circadian_offset_mins
+            + adjustment_profile.afternoon_dip_offset_mins
+        )
+        duration = 120 + adjustment_profile.afternoon_dip_duration_delta_mins
+        half_duration = duration // 2
+        start = max(0, worst_minute - half_duration)
+        end = min(1440, worst_minute + half_duration)
         zones.append(EnergyZone("afternoon_dip", start, end))
 
     # Evening peak: second highest peak in hours 10-16
     evening_peaks = [p for p in peaks if 600 < t_hours[p] * 60 < 960]
     if evening_peaks:
         best_idx = max(evening_peaks, key=lambda p: energy[p])
-        best_minute = best_idx * 5
+        best_minute = best_idx * 5 + adjustment_profile.circadian_offset_mins
         start = max(0, best_minute - 30)
         end = min(1440, best_minute + 30)
         zones.append(EnergyZone("evening_peak", start, end))
 
     # Wind-down is the buffer before the sleep window opens.
     melatonin_start, melatonin_end = _compute_melatonin_window(c_values, t_hours)
-    wind_down_start, wind_down_end = _compute_wind_down_window(melatonin_start)
+    sleep_window_offset = (
+        adjustment_profile.circadian_offset_mins
+        + adjustment_profile.sleep_window_offset_mins
+    )
+    melatonin_start = _clamp_minute(melatonin_start + sleep_window_offset)
+    melatonin_end = _clamp_minute(melatonin_end + sleep_window_offset)
+    wind_down_start, wind_down_end = _compute_wind_down_window(
+        melatonin_start,
+        adjustment_profile.wind_down_duration_mins,
+    )
     zones.append(EnergyZone("wind_down", wind_down_start, wind_down_end))
 
     # Melatonin window (DLMO): dynamically computed from circadian phase.
     zones.append(EnergyZone("melatonin_window", melatonin_start, melatonin_end))
 
-    return zones
+    return _resolve_display_zone_overlaps(zones)
 
 
 def _compute_melatonin_window(
@@ -221,7 +261,10 @@ def _compute_melatonin_window(
     return start_minute, end_minute
 
 
-def _compute_wake_window_end(h_values: np.ndarray) -> int:
+def _compute_wake_window_end(
+    h_values: np.ndarray,
+    threshold: float = WAKE_WINDOW_SLEEP_PRESSURE_THRESHOLD,
+) -> int:
     """Compute the end of the healthy wake window from Process S.
 
     Wake Window is the maximum span the body and brain can remain awake
@@ -229,24 +272,31 @@ def _compute_wake_window_end(h_values: np.ndarray) -> int:
     A threshold of 0.60 maps a rested adult to roughly 16-17 hours awake with
     the configured Process S rise constant, while sleep debt shortens it.
     """
-    threshold_hits = np.where(h_values >= WAKE_WINDOW_SLEEP_PRESSURE_THRESHOLD)[0]
+    threshold = float(np.clip(threshold, 0.40, WAKE_WINDOW_SLEEP_PRESSURE_THRESHOLD))
+    threshold_hits = np.where(h_values >= threshold)[0]
     if len(threshold_hits) == 0:
         return 1440
 
     return min(1440, int(threshold_hits[0]) * 5)
 
 
-def _compute_wind_down_window(melatonin_start_minute: int) -> tuple[int, int]:
+def _compute_wind_down_window(
+    melatonin_start_minute: int,
+    duration_mins: int = WIND_DOWN_DURATION_MINUTES,
+) -> tuple[int, int]:
     """Compute the preparation buffer before the melatonin sleep window.
 
     Wind-down is not an alertness boost. It is the 1-2 hour transition where
     light, heart rate, and activity should decrease before the sleep window.
     """
-    start_minute = melatonin_start_minute - WIND_DOWN_DURATION_MINUTES
-    if start_minute < 0:
-        start_minute += 1440
+    duration_mins = int(np.clip(duration_mins, 90, 120))
+    start_minute = max(0, melatonin_start_minute - duration_mins)
 
     return start_minute, melatonin_start_minute
+
+
+def _clamp_minute(value: int) -> int:
+    return max(0, min(1440, int(value)))
 
 
 def _find_peaks(data: np.ndarray) -> list[int]:
@@ -258,12 +308,33 @@ def _find_peaks(data: np.ndarray) -> list[int]:
     return peaks
 
 
+def _resolve_display_zone_overlaps(zones: list[EnergyZone]) -> list[EnergyZone]:
+    """Keep display zones non-overlapping while preserving wake_window as meta."""
+    display_zones = sorted(
+        [z for z in zones if z.zone_type in PRIMARY_DISPLAY_ZONE_TYPES],
+        key=lambda z: (z.start_minute, z.end_minute),
+    )
+    meta_zones = [z for z in zones if z.zone_type not in PRIMARY_DISPLAY_ZONE_TYPES]
+
+    resolved: list[EnergyZone] = []
+    cursor = 0
+    for zone in display_zones:
+        start = max(cursor, zone.start_minute)
+        end = max(start, zone.end_minute)
+        if end > start:
+            resolved.append(EnergyZone(zone.zone_type, start, end))
+            cursor = end
+
+    return [*meta_zones, *resolved]
+
+
 def _generate_nudges(
     zones: list[EnergyZone],
     wake_time: datetime,
     sleep_debt_mins: float = 0.0,
     snop_hours: float = 8.0,
     enabled_habit_ids: set[str] | None = None,
+    adjustment_profile: ZoneAdjustmentProfile | None = None,
 ) -> list[NudgeEvent]:
     """Generate science-based nudge events mapped to circadian phases.
 
@@ -278,6 +349,7 @@ def _generate_nudges(
         sleep_debt_mins: current cumulative sleep debt in minutes
         snop_hours: user's personalized SNOP in hours
         enabled_habit_ids: set of enabled habit IDs (None = all enabled)
+        adjustment_profile: optional personalized priority boosts
     """
     from app.services.habit_adaptation import adapt_nudge_priorities
 
@@ -337,6 +409,11 @@ def _generate_nudges(
 
     # Adapt priorities based on sleep debt
     prioritized = adapt_nudge_priorities(raw_nudges, sleep_debt_mins, snop_hours)
+    if adjustment_profile:
+        prioritized = _apply_personalized_priorities(
+            prioritized,
+            adjustment_profile.nudge_priority_adjustments,
+        )
 
     # Filter by user preferences
     if enabled_habit_ids is not None:
@@ -354,3 +431,24 @@ def _generate_nudges(
     ]
 
     return nudges
+
+
+def _apply_personalized_priorities(
+    nudges: list[dict],
+    priority_adjustments: dict[str, int],
+) -> list[dict]:
+    if not priority_adjustments:
+        return nudges
+
+    adjusted = []
+    for nudge in nudges:
+        boost = priority_adjustments.get(nudge["nudge_type"], 0)
+        if boost:
+            nudge = {
+                **nudge,
+                "priority": max(1, min(5, nudge["priority"] + boost)),
+            }
+        adjusted.append(nudge)
+
+    adjusted.sort(key=lambda n: (-n["priority"], n["minute"]))
+    return adjusted

@@ -6,14 +6,14 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.algorithms.process_c import estimate_phase_from_sleep_times
-from app.algorithms.process_s import compute_process_s
-from app.algorithms.sleep_debt import compute_sleep_debt, format_sleep_debt
+from app.algorithms.sleep_debt import compute_sleep_debt
 from app.algorithms.synthesis import compute_energy_schedule
 from app.cache.energy_cache import get_cached_energy, set_cached_energy
 from app.models.habit import UserHabitPreference
 from app.models.sleep_session import SleepSession
 from app.models.user import User
 from app.schemas.energy import EnergyScheduleResponse
+from app.services.energy_personalization import build_zone_adjustment_profile
 from app.services.exertion import compute_exertion_score, exertion_snop_adjustment
 
 
@@ -94,15 +94,25 @@ async def get_user_energy_schedule(
     else:
         wake_time = date.replace(hour=7, minute=0)  # default 7 AM
 
-    # 9. Run synthesis with adaptive nudge prioritization
+    # 9. Build personalized zone adjustment profile from user history
+    adjustment_profile = build_zone_adjustment_profile(
+        user=user,
+        sessions=list(sessions),
+        target_date=date,
+        sleep_debt_mins=debt_mins,
+        exertion_score=exertion,
+    )
+
+    # 10. Run synthesis with adaptive nudge prioritization
     schedule = compute_energy_schedule(
         wake_time, h_at_wake, phi,
         sleep_debt_mins=debt_mins,
         snop_hours=user.snop_hours,
         enabled_habit_ids=enabled_habit_ids,
+        adjustment_profile=adjustment_profile,
     )
 
-    # 9. Build response
+    # 11. Build response
     from app.schemas.energy import EnergyPoint, EnergyZone, NudgeEvent
 
     points = []
@@ -139,7 +149,7 @@ async def get_user_energy_schedule(
         is_cached=False,
     )
 
-    # 10. Cache
+    # 12. Cache
     await set_cached_energy(user_id, date, response)
 
     return response
