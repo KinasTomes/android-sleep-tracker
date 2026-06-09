@@ -97,7 +97,7 @@ fun SleepQualityScreen(
                 Text(
                     text = "Recent check-ins",
                     color = Color.White,
-                    fontSize = 22.sp,
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Normal,
                     modifier = Modifier.padding(start = 21.dp, top = 46.dp, bottom = 34.dp)
                 )
@@ -309,7 +309,7 @@ private fun SleepQualityReminderToggleRow(
         modifier = Modifier
             .fillMaxWidth()
             .height(90.dp)
-            .padding(start = 21.dp, end = 42.dp),
+            .padding(start = 21.dp, end = 20.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -317,14 +317,14 @@ private fun SleepQualityReminderToggleRow(
             Text(
                 text = "Morning reminder",
                 color = Color.White,
-                fontSize = 18.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Normal
             )
             Spacer(modifier = Modifier.height(5.dp))
             Text(
                 text = "after sleep inertia",
                 color = SleepQualityMutedTextColor,
-                fontSize = 16.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Normal
             )
         }

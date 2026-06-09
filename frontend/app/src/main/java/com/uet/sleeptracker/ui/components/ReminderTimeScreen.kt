@@ -111,21 +111,11 @@ fun ReminderChoiceTemplate(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(28.dp)
-                    .background(ReminderSectionColor),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                Text(
-                    text = sectionLabel,
-                    color = ReminderMutedTextColor,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier.padding(start = 21.dp)
-                )
-            }
+            SectionLabelBand(
+                text = sectionLabel,
+                backgroundColor = ReminderSectionColor,
+                textColor = ReminderMutedTextColor
+            )
 
             options.forEachIndexed { index, option ->
                 ReminderTimeOptionRow(

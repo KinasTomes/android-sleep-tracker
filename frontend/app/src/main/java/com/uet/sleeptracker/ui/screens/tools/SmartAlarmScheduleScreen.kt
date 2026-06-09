@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
 import com.uet.sleeptracker.ui.components.AlarmDayChip
 import com.uet.sleeptracker.ui.components.AlarmPillToggle
+import com.uet.sleeptracker.ui.components.SectionLabelBand
 import com.uet.sleeptracker.ui.components.SleepTimeRulerPicker
 import com.uet.sleeptracker.ui.components.ToolDetailTopBar
 import com.uet.sleeptracker.ui.components.scaleDp
@@ -151,17 +152,11 @@ fun SmartAlarmScheduleScreen(
 
                     Spacer(modifier = Modifier.height(40.dp))
 
-                    Text(
+                    SectionLabelBand(
                         text = "SCIENCE TO FEEL LESS GROGGY",
-                        color = Color.White,
-                        fontSize = 16.sp,
-                        lineHeight = 15.sp,
-                        fontWeight = FontWeight.Normal,
-                        modifier = Modifier
-                            .padding(horizontal = 19.dp)
-                            .background(SmartAlarmScheduleHeaderBand)
-                            .fillMaxWidth()
-                            .padding(start = 15.dp, top = 8.dp, bottom = 8.dp)
+                        backgroundColor = SmartAlarmScheduleHeaderBand,
+                        textColor = Color.White,
+                        modifier = Modifier.padding(horizontal = 19.dp)
                     )
 
                     SmartAlarmNavigationRow(
@@ -255,7 +250,7 @@ private fun SmartAlarmHero(
                 color = titleColor,
                 fontSize = 24.sp,
                 lineHeight = 26.sp,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Normal
             )
 
             when {
@@ -313,7 +308,7 @@ private fun SmartAlarmNavigationRow(
                 indication = null,
                 onClick = onClick
             )
-            .padding(horizontal = 34.dp),
+            .padding(start = 40.dp, end = 28.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
@@ -322,7 +317,7 @@ private fun SmartAlarmNavigationRow(
             Text(
                 text = title,
                 color = Color.White,
-                fontSize = 20.sp,
+                fontSize = 16.sp,
                 lineHeight = 24.sp,
                 fontWeight = FontWeight.Normal
             )
@@ -330,7 +325,7 @@ private fun SmartAlarmNavigationRow(
             Text(
                 text = subtitle,
                 color = SmartAlarmScheduleMuted,
-                fontSize = 16.sp,
+                fontSize = 14.sp,
                 lineHeight = 20.sp,
                 fontWeight = FontWeight.Normal
             )
@@ -340,7 +335,7 @@ private fun SmartAlarmNavigationRow(
             Text(
                 text = trailingText,
                 color = SmartAlarmScheduleMuted,
-                fontSize = 20.sp,
+                fontSize = 14.sp,
                 lineHeight = 24.sp,
                 fontWeight = FontWeight.Normal
             )
