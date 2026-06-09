@@ -53,6 +53,7 @@ fun MainTabsScreen(
     onCaffeineCutoffClick: () -> Unit = {},
     onEveningRoutineClick: () -> Unit = {},
     onSmartAlarmClick: () -> Unit = {},
+    onSleepQualityClick: () -> Unit = {},
     onPrepBedroomClick: () -> Unit = {},
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(SleepBottomNavTab.MySleep) }
@@ -106,6 +107,7 @@ fun MainTabsScreen(
                             ToolsScreen(
                                 modifier = Modifier.fillMaxSize(),
                                 onSmartAlarmClick = onSmartAlarmClick,
+                                onSleepQualityClick = onSleepQualityClick,
                                 onPrepBedroomClick = onPrepBedroomClick
                             )
                         }

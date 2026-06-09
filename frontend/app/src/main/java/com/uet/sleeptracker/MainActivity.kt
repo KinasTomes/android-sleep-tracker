@@ -33,6 +33,7 @@ import com.uet.sleeptracker.ui.screens.settings.*
 import com.uet.sleeptracker.ui.screens.tools.SmartAlarmSettingScreen
 import com.uet.sleeptracker.ui.screens.tools.SmartAlarmScheduleScreen
 import com.uet.sleeptracker.ui.screens.tools.EnvironmentCheckScreen
+import com.uet.sleeptracker.ui.screens.tools.SleepQualityScreen
 import com.uet.sleeptracker.ui.theme.SleepBackground
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 import androidx.compose.runtime.mutableStateListOf
@@ -67,7 +68,39 @@ class MainActivity : ComponentActivity() {
                             onCaffeineCutoffClick = { navController.navigate("caffeine_cutoff") },
                             onEveningRoutineClick = { navController.navigate("evening_routine") },
                             onSmartAlarmClick = { navController.navigate("smart_alarm_settings") },
+                            onSleepQualityClick = { navController.navigate("sleep_quality") },
                             onPrepBedroomClick = { navController.navigate("environment_check") }
+                        )
+                    }
+                    composable(
+                        route = "sleep_quality",
+                        enterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        exitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popEnterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popExitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        }
+                    ) {
+                        SleepQualityScreen(
+                            onCloseClick = { navController.popBackStack() }
                         )
                     }
                     composable(

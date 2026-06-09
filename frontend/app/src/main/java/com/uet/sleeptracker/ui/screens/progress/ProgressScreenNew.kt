@@ -53,11 +53,13 @@ private val TimeScaleHeight = 260.dp
 private val ChartLeftOverflow = 10.dp
 private val ChartGridStartY = 31.dp
 private val ChartHourHeight = 21.dp
+private val ChartGridHeight = ChartHourHeight * 11
 private val ChartColumnWidth = 60.dp
 private val ChartHoursLabelY = 284.dp
 private val ChartMinutesLabelY = 303.dp
 private val ChartDayLabelY = 328.dp
-private const val ChartStartHour = 21
+private const val DefaultChartStartHour = 21
+private const val DefaultChartEndHour = 32
 
 @Composable
 fun ProgressScreenNew(modifier: Modifier = Modifier) {
@@ -75,6 +77,8 @@ fun ProgressScreenNew(modifier: Modifier = Modifier) {
         ) {
             val chartViewportWidth = (maxWidth + ChartLeftOverflow)
                 .coerceAtLeast(0.dp)
+            val chartDays = progressChartDays()
+            val timeRange = calculateChartTimeRange(chartDays)
 
             ProgressRangeSelector(
                 modifier = Modifier
@@ -83,15 +87,18 @@ fun ProgressScreenNew(modifier: Modifier = Modifier) {
             )
 
             SleepChart(
+                days = chartDays,
+                timeRange = timeRange,
                 modifier = Modifier
                     .offset(x = -ChartLeftOverflow, y = 70.dp)
                     .width(chartViewportWidth)
             )
 
             TimeScale(
+                timeRange = timeRange,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(top = 93.dp)
+                    .padding(top = 70.dp)
             )
         }
 
@@ -228,24 +235,12 @@ private fun ProgressRangeButton(
 }
 
 @Composable
-private fun SleepChart(modifier: Modifier = Modifier) {
+private fun SleepChart(
+    days: List<ChartDay>,
+    timeRange: ChartTimeRange,
+    modifier: Modifier = Modifier
+) {
     val chartScrollState = rememberScrollState()
-    val days = listOf(
-        ChartDay("TUE", "8h", "0m", "23:00", "07:00", "21:30", true),
-        ChartDay("WED", "8h", "0m", "23:00", "07:00", "21:30", true),
-        ChartDay("THU", "8h", "0m", "23:00", "07:00", "21:30", true),
-        ChartDay("FRI", "8h", "30m", "23:30", "08:00", "22:35", true),
-        ChartDay("SAT", "7h", "0m", "23:00", "06:00", "21:30", false),
-        ChartDay("SUN", "6h", "0m", "00:00", "06:00", "21:40", false),
-        ChartDay("MON", "7h", "21m", "23:22", "06:43", "22:00", false),
-        ChartDay("TUE", "7h", "28m", "00:32", "07:59", "21:50", false),
-        ChartDay("WED", "6h", "0m", "00:37", "06:57", "21:50", false),
-        ChartDay("THU", "7h", "57m", "23:32", "07:30", "21:50", false),
-        ChartDay("FRI", "5h", "35m", "23:10", "04:45", "21:50", false),
-        ChartDay("SAT", "5h", "21m", "01:43", "07:04", "22:10", false),
-        ChartDay("SUN", "6h", "45m", "00:00", "06:45", "22:00", false),
-        ChartDay("MON", "--h", "--m", "23:00", "07:00", "22:00", false, showSleepBar = false)
-    )
     val dayContentWidth = ChartColumnWidth * days.size + 4.dp
     val scrollContentWidth = dayContentWidth + TimeScaleWidth
 
@@ -267,8 +262,8 @@ private fun SleepChart(modifier: Modifier = Modifier) {
                 .height(ChartHeight)
         ) {
             Canvas(modifier = Modifier.matchParentSize()) {
-                repeat(12) { index ->
-                    val y = ChartGridStartY.toPx() + index * ChartHourHeight.toPx()
+                repeat(timeRange.hourCount + 1) { index ->
+                    val y = timeRange.yForHourIndex(index).toPx()
                     drawLine(
                         color = Line,
                         start = Offset(0f, y),
@@ -286,7 +281,7 @@ private fun SleepChart(modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.Top
             ) {
                 days.forEach { day ->
-                    ChartColumn(day)
+                    ChartColumn(day, timeRange)
                 }
             }
         }
@@ -294,10 +289,10 @@ private fun SleepChart(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun ChartColumn(day: ChartDay) {
-    val barTop = day.startY()
-    val barHeight = day.barHeight()
-    val sleepWindowTop = day.sleepWindowTopY()
+private fun ChartColumn(day: ChartDay, timeRange: ChartTimeRange) {
+    val barTop = day.startY(timeRange)
+    val barHeight = day.barHeight(timeRange)
+    val sleepWindowTop = day.sleepWindowTopY(timeRange)
 
     Box(
         modifier = Modifier
@@ -328,7 +323,7 @@ private fun ChartColumn(day: ChartDay) {
 
         Text(
             day.hours,
-            color = Color.White,
+            color = Color.White.copy(alpha = .6f),
             fontSize = 16.sp,
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -337,7 +332,7 @@ private fun ChartColumn(day: ChartDay) {
         )
         Text(
             day.minutes,
-            color = Color.White,
+            color = Color.White.copy(alpha = .6f),
             fontSize = 16.sp,
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -346,7 +341,7 @@ private fun ChartColumn(day: ChartDay) {
         )
         Text(
             day.label,
-            color = Color.White,
+            color = Color.White.copy(alpha = .8f),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             letterSpacing = (-1).sp,
@@ -359,16 +354,19 @@ private fun ChartColumn(day: ChartDay) {
 }
 
 @Composable
-private fun TimeScale(modifier: Modifier = Modifier) {
+private fun TimeScale(
+    modifier: Modifier = Modifier,
+    timeRange: ChartTimeRange = ChartTimeRange.default()
+) {
     Box(
         modifier = modifier
             .width(TimeScaleWidth)
-            .height(TimeScaleHeight)
+            .height(ChartHeight)
             .background(Color(0x4D010101), RoundedCornerShape(8.dp))
     ) {
         Canvas(modifier = Modifier.matchParentSize()) {
-            repeat(6) { index ->
-                val y = 29.dp.toPx() + index * (ChartHourHeight * 2).toPx()
+            timeRange.tickHours.forEach { hour ->
+                val y = timeRange.yForHour(hour).toPx()
                 drawLine(
                     color = Color.White,
                     start = Offset(size.width - 10.dp.toPx(), y),
@@ -378,15 +376,15 @@ private fun TimeScale(modifier: Modifier = Modifier) {
             }
         }
 
-        listOf("21", "23", "01", "03", "05", "07").forEachIndexed { index, label ->
+        timeRange.labelHours.forEach { hour ->
             Text(
-                text = label,
+                text = formatChartHour(hour),
                 color = Color.White,
-                fontSize = 16.sp,
+                fontSize = 14.sp,
                 lineHeight = 15.sp,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .offset(y = (index * 42).dp)
+                    .offset(y = timeRange.labelYForHour(hour))
                     .padding(end = 2.dp)
             )
         }
@@ -483,31 +481,103 @@ private data class ChartDay(
     val missing: Boolean,
     val showSleepBar: Boolean = true
 ) {
-    fun startY(): Dp = timeToChartY(startTime)
-    fun sleepWindowTopY(): Dp = timeToChartY(sleepWindowTopTime)
+    fun startY(timeRange: ChartTimeRange): Dp = timeRange.yForTime(startTime)
+    fun sleepWindowTopY(timeRange: ChartTimeRange): Dp = timeRange.yForTime(sleepWindowTopTime)
 
-    fun barHeight(): Dp {
-        val startMinutes = normalizeChartMinutes(startTime)
-        var endMinutes = normalizeChartMinutes(endTime)
+    fun barHeight(timeRange: ChartTimeRange): Dp {
+        val startMinutes = toSleepTimelineMinutes(startTime)
+        var endMinutes = toSleepTimelineMinutes(endTime)
         if (endMinutes <= startMinutes) {
             endMinutes += 24 * 60
         }
-        return ((endMinutes - startMinutes) / 60f * ChartHourHeight.value).dp
+        return ((endMinutes - startMinutes) / 60f * timeRange.hourHeight.value).dp
     }
 }
 
-private fun timeToChartY(time: String): Dp {
-    val minutes = normalizeChartMinutes(time)
-    val chartStartMinutes = ChartStartHour * 60
-    return (ChartGridStartY.value + (minutes - chartStartMinutes) / 60f * ChartHourHeight.value).dp
+private fun progressChartDays(): List<ChartDay> = listOf(
+    ChartDay("TUE", "8h", "0m", "23:00", "07:00", "21:30", true),
+    ChartDay("WED", "8h", "0m", "23:00", "07:00", "21:30", true),
+    ChartDay("THU", "8h", "0m", "23:00", "07:00", "21:30", true),
+    ChartDay("FRI", "8h", "30m", "23:30", "08:00", "22:35", true),
+    ChartDay("SAT", "7h", "0m", "23:00", "06:00", "21:30", false),
+    ChartDay("SUN", "6h", "0m", "00:00", "06:00", "21:40", false),
+    ChartDay("MON", "7h", "21m", "23:22", "06:43", "22:00", false),
+    ChartDay("TUE", "7h", "28m", "00:32", "07:59", "21:50", false),
+    ChartDay("WED", "6h", "0m", "00:37", "06:57", "21:50", false),
+    ChartDay("THU", "7h", "57m", "23:32", "07:30", "21:50", false),
+    ChartDay("FRI", "5h", "35m", "20:30", "09:30", "21:50", false),
+    ChartDay("SAT", "5h", "21m", "01:43", "07:04", "22:10", false),
+    ChartDay("SUN", "6h", "45m", "00:00", "06:45", "22:00", false),
+    ChartDay("MON", "--h", "--m", "23:00", "07:00", "22:00", false, showSleepBar = false)
+)
+
+private data class ChartTimeRange(
+    val startHour: Int,
+    val endHour: Int
+) {
+    val hourCount: Int = endHour - startHour
+    val hourHeight: Dp = ChartGridHeight / hourCount.toFloat()
+    val labelHours: List<Int> = (startHour..endHour).filter { it % 2 != 0 }
+    val tickHours: List<Int> = (startHour..endHour).filter { it % 2 == 0 }
+
+    fun yForHourIndex(index: Int): Dp = ChartGridStartY + hourHeight * index
+
+    fun yForHour(hour: Int): Dp = yForHourIndex(hour - startHour)
+
+    fun labelYForHour(hour: Int): Dp = labelCenterYForHour(hour) - 8.dp
+
+    private fun labelCenterYForHour(hour: Int): Dp = yForHour(hour)
+
+    fun yForTime(time: String): Dp {
+        val minutes = toSleepTimelineMinutes(time)
+        val chartStartMinutes = startHour * 60
+        return ChartGridStartY + hourHeight * ((minutes - chartStartMinutes) / 60f)
+    }
+
+    companion object {
+        fun default(): ChartTimeRange = ChartTimeRange(DefaultChartStartHour, DefaultChartEndHour)
+    }
 }
 
-private fun normalizeChartMinutes(time: String): Int {
+private fun calculateChartTimeRange(days: List<ChartDay>): ChartTimeRange {
+    val visibleDays = days.filter { it.showSleepBar }
+    if (visibleDays.isEmpty()) {
+        return ChartTimeRange.default()
+    }
+
+    val earliestStart = visibleDays.minOf {
+        toSleepTimelineMinutes(it.startTime)
+    }
+    val latestEnd = visibleDays.maxOf {
+        toSleepTimelineMinutes(it.endTime)
+    }
+    val startHour = minOf(
+        DefaultChartStartHour,
+        floorHour(earliestStart)
+    )
+    val endHour = maxOf(
+        DefaultChartEndHour,
+        ceilHour(latestEnd)
+    )
+
+    return ChartTimeRange(startHour, endHour)
+}
+
+private fun toSleepTimelineMinutes(time: String): Int {
     val parts = time.split(":")
-    val hour = parts.getOrNull(0)?.toIntOrNull() ?: ChartStartHour
+    val hour = parts.getOrNull(0)?.toIntOrNull() ?: DefaultChartStartHour
     val minute = parts.getOrNull(1)?.toIntOrNull() ?: 0
     val rawMinutes = hour * 60 + minute
-    return if (hour < ChartStartHour) rawMinutes + 24 * 60 else rawMinutes
+    return if (hour < 12) rawMinutes + 24 * 60 else rawMinutes
+}
+
+private fun floorHour(minutes: Int): Int = minutes / 60
+
+private fun ceilHour(minutes: Int): Int = (minutes + 59) / 60
+
+private fun formatChartHour(hour: Int): String {
+    val normalizedHour = hour % 24
+    return normalizedHour.toString().padStart(2, '0')
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFF010101, widthDp = 476, heightDp = 2000)

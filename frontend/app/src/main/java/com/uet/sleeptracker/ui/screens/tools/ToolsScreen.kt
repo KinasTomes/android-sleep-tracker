@@ -41,6 +41,7 @@ private val ToolsMutedText = Color(0xFF989898)
 fun ToolsScreen(
     modifier: Modifier = Modifier,
     onSmartAlarmClick: () -> Unit = {},
+    onSleepQualityClick: () -> Unit = {},
     onPrepBedroomClick: () -> Unit = {},
 ) {
     val verticalScrollState = rememberScrollState()
@@ -78,7 +79,7 @@ fun ToolsScreen(
                     SleepSuggestionCardDetailLine("Monitor progress by", ToolsMutedText),
                     SleepSuggestionCardDetailLine("tracking how you feel", ToolsMutedText)
                 ),
-                onClick = {}
+                onClick = onSleepQualityClick
             )
         }
 

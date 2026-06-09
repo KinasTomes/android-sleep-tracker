@@ -1,6 +1,8 @@
 package com.uet.sleeptracker.ui.components
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.material3.Icon
+import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -8,8 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.uet.sleeptracker.R
 
 @Composable
 fun SleepWindow(
@@ -38,19 +42,16 @@ fun SleepWindow(
                 strokeWidth = stroke,
                 cap = StrokeCap.Round
             )
-
-            drawCircle(
-                color = Color.White,
-                radius = 6.dp.toPx(),
-                center = Offset(size.width / 2, size.height / 2)
-            )
-
-            drawCircle(
-                color = Color(0xFF010101),
-                radius = 6.dp.toPx(),
-                center = Offset(size.width / 2 + 4.dp.toPx(), size.height / 2 - 3.dp.toPx())
-            )
         }
+
+        Icon(
+            painter = painterResource(id = R.drawable.moon),
+            contentDescription = null,
+            tint = Color.White,
+            modifier = Modifier
+                .align(Alignment.Center)
+                .size(16.dp)
+        )
     }
 }
 
