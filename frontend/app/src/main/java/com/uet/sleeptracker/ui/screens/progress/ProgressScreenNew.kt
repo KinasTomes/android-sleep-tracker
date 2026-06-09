@@ -331,16 +331,18 @@ private fun ChartColumn(day: ChartDay) {
             color = Color.White,
             fontSize = 16.sp,
             modifier = Modifier
-                .align(Alignment.TopCenter)
+                .align(Alignment.TopStart)
                 .offset(y = ChartHoursLabelY)
+                .padding(start = 8.dp)
         )
         Text(
             day.minutes,
             color = Color.White,
             fontSize = 16.sp,
             modifier = Modifier
-                .align(Alignment.TopCenter)
+                .align(Alignment.TopStart)
                 .offset(y = ChartMinutesLabelY)
+                .padding(start = 8.dp)
         )
         Text(
             day.label,
@@ -349,8 +351,9 @@ private fun ChartColumn(day: ChartDay) {
             fontWeight = FontWeight.Bold,
             letterSpacing = (-1).sp,
             modifier = Modifier
-                .align(Alignment.TopCenter)
+                .align(Alignment.TopStart)
                 .offset(y = ChartDayLabelY)
+                .padding(start = 8.dp)
         )
     }
 }
@@ -402,12 +405,12 @@ private fun SleepRecordItem(title: String, time: String, duration: String) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(title, color = Color.White, fontSize = 16.sp)
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(time, color = Muted, fontSize = 14.sp)
+                Text(title, color = Color.White, fontSize = 18.sp)
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(time, color = Muted, fontSize = 16.sp)
             }
 
-            Text(duration, color = Muted, fontSize = 14.sp)
+            Text(duration, color = Muted, fontSize = 16.sp)
             Icon(
                 painter = painterResource(id = R.drawable.right),
                 contentDescription = null,
@@ -507,7 +510,7 @@ private fun normalizeChartMinutes(time: String): Int {
     return if (hour < ChartStartHour) rawMinutes + 24 * 60 else rawMinutes
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFF010101, widthDp = 1080, heightDp = 2000)
+@Preview(showBackground = true, backgroundColor = 0xFF010101, widthDp = 476, heightDp = 2000)
 @Composable
 private fun ProgressScreenPreview() {
     ProgressScreenNew()

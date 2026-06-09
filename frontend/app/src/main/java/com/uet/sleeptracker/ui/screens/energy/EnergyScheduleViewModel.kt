@@ -1,5 +1,6 @@
 package com.uet.sleeptracker.ui.screens.energy
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -71,7 +72,7 @@ data class EnergyScheduleUiState(
     val wakeWindowStartTime: EnergyTimelineTime = EnergyTimelineTime(hour = 5, minute = 37, dayOffset = 2),
     val wakeWindowEndTime: EnergyTimelineTime = EnergyTimelineTime(hour = 6, minute = 37, dayOffset = 2),
 
-    // 6. AlarmTimePicker time (eg. 6h 5p -> formatted as 06:05 Tomorrow)
+    // 6. AlarmTimePicker time (e.g. 6h 5p -> formatted as 06:05 Tomorrow)
     val alarmTime: EnergyTimelineTime = EnergyTimelineTime(hour = 6, minute = 5, dayOffset = 2),
     val alarmActiveDays: List<Int> = listOf(1, 2, 3, 4, 5, 6, 7),
 
@@ -98,6 +99,7 @@ data class EnergyScheduleUiState(
         }
 
     val alarmTimeText: String
+        @SuppressLint("DefaultLocale")
         get() = String.format("%02d:%02d Tomorrow", alarmTime.hour, alarmTime.minute)
 
     val timelineData: EnergyTimelineUiModel
@@ -110,6 +112,7 @@ data class EnergyScheduleUiState(
         )
 }
 
+@SuppressLint("DefaultLocale")
 internal fun EnergyTimelineTime.formatTime(): String {
     return String.format("%d:%02d", hour, minute)
 }

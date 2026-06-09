@@ -235,14 +235,14 @@ internal fun SheetToolItem(
                     text = title,
                     color = titleColor,
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.Normal
                 )
                 if (subtitle != null) {
-                    Spacer(modifier = Modifier.height(2.dp))
+                    Spacer(modifier = Modifier.height(1.dp))
                     Text(
                         text = subtitle,
                         color = Color.White.copy(alpha = 0.5f),
-                        fontSize = 14.sp
+                        fontSize = 16.sp
                     )
                 }
             }
@@ -256,13 +256,13 @@ internal fun SheetToolItem(
                 Icon(
                     painter = painterResource(id = R.drawable.bell),
                     contentDescription = "Reminder",
-                    tint = Color.White.copy(alpha = 0.6f),
+                    tint = Color.White,
                     modifier = Modifier.size(18.dp)
                 )
                 Icon(
                     painter = painterResource(id = R.drawable.right),
                     contentDescription = null,
-                    tint = Color.White.copy(alpha = 0.4f),
+                    tint = Color.White,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -325,7 +325,7 @@ internal fun SheetHeader(
                     tint = Color.White,
                     modifier = Modifier.size(16.dp)
                 )
-                Text(text = "08:00", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                Text(text = "08:00", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.W400)
             }
 
             // Plus Button
@@ -372,14 +372,14 @@ internal fun ColumnScope.SheetExpandedContent(
                 Column(modifier = Modifier.fillMaxWidth()) {
                     SheetToolItem(
                         icon = {
-                            Box(
+                            Icon(
+                                painter = painterResource(R.drawable.paeks_n_dips),
+                                contentDescription = "Peaks & dips icon",
+                                tint = Color.Unspecified,
                                 modifier = Modifier
                                     .size(32.dp)
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(Brush.linearGradient(listOf(Color(0xFFF97316), Color(0xFF8B5CF6))))
-                            ) {
-                                Text("〰️", color = Color.White, modifier = Modifier.align(Alignment.Center), fontSize = 12.sp)
-                            }
+                            )
                         },
                         title = "Peaks & dips",
                         subtitle = "09:00",
@@ -390,13 +390,14 @@ internal fun ColumnScope.SheetExpandedContent(
 
                     SheetToolItem(
                         icon = {
-                            Box(
+                            Icon(
+                                painter = painterResource(R.drawable.ceffeine),
+                                contentDescription = "Avoid caffeine icon",
+                                tint = Color.Unspecified,
                                 modifier = Modifier
                                     .size(32.dp)
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(Color(0xFF78350F)),
-                                contentAlignment = Alignment.Center
-                            ) { Text("☕", fontSize = 14.sp) }
+                            )
                         },
                         title = "Avoid caffeine",
                         subtitle = "12:45",
@@ -407,13 +408,14 @@ internal fun ColumnScope.SheetExpandedContent(
 
                     SheetToolItem(
                         icon = {
-                            Box(
+                            Icon(
+                                painter = painterResource(R.drawable.evening),
+                                contentDescription = "Evening routine icon",
+                                tint = Color.Unspecified,
                                 modifier = Modifier
                                     .size(32.dp)
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(Color(0xFF6B21A8)),
-                                contentAlignment = Alignment.Center
-                            ) { Text("📋", fontSize = 14.sp) }
+                            )
                         },
                         title = "Evening routine",
                         subtitle = "20:35–22:45",
@@ -424,13 +426,14 @@ internal fun ColumnScope.SheetExpandedContent(
 
                     SheetToolItem(
                         icon = {
-                            Box(
+                            Icon(
+                                painter = painterResource(R.drawable.melatonin_window),
+                                contentDescription = "Melatonin window icon",
+                                tint = Color.Unspecified,
                                 modifier = Modifier
                                     .size(32.dp)
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(Color(0xFF1E1B4B)),
-                                contentAlignment = Alignment.Center
-                            ) { Text("🌙", fontSize = 14.sp) }
+                            )
                         },
                         title = "Melatonin window",
                         subtitle = "22:45–00:15",

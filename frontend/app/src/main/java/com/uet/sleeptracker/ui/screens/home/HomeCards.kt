@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.Image
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -55,14 +56,14 @@ internal fun DebtSummary(
             Text(
                 text = "$displayedValue debt",
                 color = Color.White,
-                fontSize = 16.sp,
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Normal
             )
         }
         Text(
             text = "Since yesterday",
             color = Color.White.copy(alpha = 0.75f),
-            fontSize = 16.sp
+            fontSize = 18.sp
         )
     }
 }
@@ -91,19 +92,20 @@ internal fun EnergyPotentialCard(
                 Text(
                     text = "Energy Potential",
                     color = Color.White,
-                    fontSize = 16.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Normal
                 )
-                Text(
-                    text = ">",
-                    color = Color.White.copy(alpha = 0.4f),
-                    fontSize = 16.sp
+                Icon(
+                    painter = painterResource(R.drawable.right),
+                    tint = Color.White,
+                    contentDescription = "Add time",
+                    modifier = Modifier.size(16.dp)
                 )
             }
             Text(
                 text = value,
                 color = Color(0xFF2DD4BF),
-                fontSize = 16.sp,
+                fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold
             )
         }
@@ -165,7 +167,7 @@ internal fun LastNightCard(
                         text = totalSleepTime,
                         color = Color.White,
                         fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.Normal
                     )
                     Text(
                         text = "Total Sleep Time",
@@ -179,13 +181,14 @@ internal fun LastNightCard(
                 ) {
                     Text(
                         text = sleepTimeRange,
-                        color = Color.White,
+                        color = Color.White.copy(alpha = .5f),
                         fontSize = 14.sp
                     )
-                    Text(
-                        text = ">",
-                        color = Color.White.copy(alpha = 0.4f),
-                        fontSize = 18.sp
+                    Icon(
+                        painter = painterResource(R.drawable.right),
+                        tint = Color.White,
+                        contentDescription = "Add time",
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             }
@@ -253,10 +256,11 @@ internal fun NapsTodayCard(
                     color = Color.White.copy(alpha = 0.5f),
                     fontSize = 14.sp
                 )
-                Text(
-                    text = ">",
-                    color = Color.White.copy(alpha = 0.4f),
-                    fontSize = 18.sp
+                Icon(
+                    painter = painterResource(R.drawable.right),
+                    tint = Color.White,
+                    contentDescription = "Add time",
+                    modifier = Modifier.size(24.dp)
                 )
             }
         }
@@ -271,10 +275,10 @@ private fun HomeCardsPreview() {
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            DebtSummary(value = "-0h 30m")
+            DebtSummary(value = "-0.8hrs")
             EnergyPotentialCard(value = "Peak Focus")
             LastNightCard(totalSleepTime = "7h 45m", sleepTimeRange = "11:30 PM - 7:15 AM")
-            NapsTodayCard(napsTodayText = "None")
+            NapsTodayCard(napsTodayText = "Add Time")
         }
     }
 }

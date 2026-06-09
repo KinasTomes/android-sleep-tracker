@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.rotate
 
@@ -105,10 +106,11 @@ fun AlarmTimePicker(
                 .padding(start = 8.dp, end = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
+            Icon(
                 painter = alarmIcon,
                 contentDescription = null,
-                modifier = Modifier.size(32.dp)
+                tint = Color.White,
+                modifier = Modifier.size(32.dp),
             )
 
             Spacer(modifier = Modifier.width(18.dp))
@@ -148,9 +150,10 @@ fun AlarmTimePicker(
                 }
             }
 
-            Image(
+            Icon(
                 painter = menuIcon,
                 contentDescription = null,
+                tint = Color.White,
                 modifier = Modifier
                     .size(32.dp)
                     .clickable { onMenuClick() }
