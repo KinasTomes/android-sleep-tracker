@@ -36,6 +36,15 @@ import com.uet.sleeptracker.ui.screens.tools.EnvironmentCheckScreen
 import com.uet.sleeptracker.ui.screens.tools.BrainDumpScreen
 import com.uet.sleeptracker.ui.screens.tools.BrainDumpSettingsScreen
 import com.uet.sleeptracker.ui.screens.tools.SleepQualityScreen
+import com.uet.sleeptracker.ui.screens.tools.AvoidLateMealsScreen
+import com.uet.sleeptracker.ui.screens.tools.AvoidLateMealsSettingsScreen
+import com.uet.sleeptracker.ui.screens.tools.BlueLightGlassesScreen
+import com.uet.sleeptracker.ui.screens.tools.BlueLightGlassesSettingsScreen
+import com.uet.sleeptracker.ui.screens.tools.EarlierWorkoutsScreen
+import com.uet.sleeptracker.ui.screens.tools.EarlierWorkoutsSettingsScreen
+import com.uet.sleeptracker.ui.screens.tools.MelatoninSupplementsScreen
+import com.uet.sleeptracker.ui.screens.tools.MelatoninWindowScreen
+import com.uet.sleeptracker.ui.screens.tools.MelatoninWindowSettingsScreen
 import com.uet.sleeptracker.ui.theme.SleepBackground
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 import androidx.compose.runtime.mutableStateListOf
@@ -72,7 +81,106 @@ class MainActivity : ComponentActivity() {
                             onSmartAlarmClick = { navController.navigate("smart_alarm_settings") },
                             onSleepQualityClick = { navController.navigate("sleep_quality") },
                             onPrepBedroomClick = { navController.navigate("environment_check") },
-                            onBrainDumpClick = { navController.navigate("brain_dump") }
+                            onBrainDumpClick = { navController.navigate("brain_dump") },
+                            onMelatoninWindowClick = { navController.navigate("melatonin_window") },
+                            onMelatoninSupplementsClick = { navController.navigate("melatonin_supplements") },
+                            onBlueLightGlassesClick = { navController.navigate("blue_light_glasses") },
+                            onAvoidLateMealsClick = { navController.navigate("avoid_late_meals") },
+                            onEarlierWorkoutsClick = { navController.navigate("earlier_workouts") },
+                        )
+                    }
+                    composable("melatonin_window") {
+                        MelatoninWindowScreen(
+                            onCloseClick = { navController.popBackStack() },
+                            onSettingsClick = { navController.navigate("melatonin_window_settings") },
+                        )
+                    }
+                    composable("melatonin_window_settings") {
+                        MelatoninWindowSettingsScreen(
+                            onCloseClick = { navController.popBackStack() },
+                            onReminderTimeClick = { navController.navigate("melatonin_window_reminder") },
+                        )
+                    }
+                    composable("melatonin_window_reminder") {
+                        val reminderChoices = buildReminderChoiceItems(
+                            labels = listOf(
+                                "At melatonin window",
+                                "5 minutes",
+                                "15 minutes",
+                                "20 minutes",
+                                "30 minutes",
+                            ),
+                            highlightedLabel = "15 minutes",
+                        )
+                        ReminderTimeScreen(
+                            headerTitle = "Melatonin Window",
+                            screenTitle = "Reminder time",
+                            sectionLabel = "BEFORE MELATONIN WINDOW",
+                            options = reminderChoices,
+                            initialSelectedIndex = findInitialReminderChoiceIndex(
+                                options = reminderChoices,
+                                selectedLabel = "15 minutes",
+                            ),
+                            type = 1,
+                            onCloseClick = { navController.popBackStack() },
+                        )
+                    }
+                    composable("melatonin_supplements") {
+                        MelatoninSupplementsScreen(
+                            onCloseClick = { navController.popBackStack() },
+                            onReminderTimeClick = { navController.navigate("melatonin_supplements_reminder") },
+                            onDoneClick = { navController.popBackStack() },
+                        )
+                    }
+                    composable("melatonin_supplements_reminder") {
+                        val reminderChoices = buildReminderChoiceItems(
+                            labels = listOf("4 hours", "5 hours", "6 hours"),
+                            highlightedLabel = "4 hours",
+                        )
+                        ReminderTimeScreen(
+                            headerTitle = "Melatonin Supplements",
+                            screenTitle = "Reminder time",
+                            sectionLabel = "BEFORE MELATONIN WINDOW",
+                            options = reminderChoices,
+                            initialSelectedIndex = 0,
+                            type = 1,
+                            onCloseClick = { navController.popBackStack() },
+                        )
+                    }
+                    composable("blue_light_glasses") {
+                        BlueLightGlassesScreen(
+                            onCloseClick = { navController.popBackStack() },
+                            onGetStartedClick = { navController.navigate("blue_light_glasses_settings") },
+                        )
+                    }
+                    composable("blue_light_glasses_settings") {
+                        BlueLightGlassesSettingsScreen(
+                            onCloseClick = { navController.popBackStack() },
+                            onDoneClick = { navController.popBackStack("main_tabs", false) },
+                        )
+                    }
+                    composable("avoid_late_meals") {
+                        AvoidLateMealsScreen(
+                            onCloseClick = { navController.popBackStack() },
+                            onGetStartedClick = { navController.navigate("avoid_late_meals_settings") },
+                        )
+                    }
+                    composable("avoid_late_meals_settings") {
+                        AvoidLateMealsSettingsScreen(
+                            onCloseClick = { navController.popBackStack() },
+                            onDoneClick = { navController.popBackStack("main_tabs", false) },
+                        )
+                    }
+                    composable("earlier_workouts") {
+                        EarlierWorkoutsScreen(
+                            onCloseClick = { navController.popBackStack() },
+                            onGetStartedClick = { navController.navigate("earlier_workouts_settings") },
+                        )
+                    }
+                    composable("earlier_workouts_settings") {
+                        EarlierWorkoutsSettingsScreen(
+                            onCloseClick = { navController.popBackStack() },
+                            onDoneClick = { navController.popBackStack("main_tabs", false) },
                         )
                     }
                     composable(

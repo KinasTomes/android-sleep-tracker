@@ -3,6 +3,7 @@ package com.uet.sleeptracker.ui.screens.tools
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,11 @@ fun ToolsScreen(
     onSleepQualityClick: () -> Unit = {},
     onPrepBedroomClick: () -> Unit = {},
     onBrainDumpClick: () -> Unit = {},
+    onMelatoninWindowClick: () -> Unit = {},
+    onMelatoninSupplementsClick: () -> Unit = {},
+    onBlueLightGlassesClick: () -> Unit = {},
+    onAvoidLateMealsClick: () -> Unit = {},
+    onEarlierWorkoutsClick: () -> Unit = {},
 ) {
     val verticalScrollState = rememberScrollState()
     val horizontalScrollState = rememberScrollState()
@@ -140,9 +146,9 @@ fun ToolsScreen(
         ReminderRailSection(
             title = "START AT THE RIGHT TIME",
             items = listOf(
-                ToolIconItem("Melatonin\nwindow", R.drawable.melatonin_window),
-                ToolIconItem("Melatonin\nsupplements", R.drawable.melatonin_supplement),
-                ToolIconItem("Blue light\nglasses", R.drawable.blue_light_glasses)
+                ToolIconItem("Melatonin\nwindow", R.drawable.melatonin_window, onMelatoninWindowClick),
+                ToolIconItem("Melatonin\nsupplements", R.drawable.melatonin_supplement, onMelatoninSupplementsClick),
+                ToolIconItem("Blue light\nglasses", R.drawable.blue_light_glasses, onBlueLightGlassesClick)
             ),
             modifier = Modifier.padding(top = 44.dp),
             scrollState = horizontalScrollState
@@ -152,8 +158,8 @@ fun ToolsScreen(
             title = "STOP AT THE RIGHT TIME",
             items = listOf(
                 ToolIconItem("Caffeine", R.drawable.ceffeine),
-                ToolIconItem("Meals", R.drawable.meals),
-                ToolIconItem("Workouts", R.drawable.workouts),
+                ToolIconItem("Meals", R.drawable.meals, onAvoidLateMealsClick),
+                ToolIconItem("Workouts", R.drawable.workouts, onEarlierWorkoutsClick),
                 ToolIconItem("Alcohol", R.drawable.alcohols)
             ),
             modifier = Modifier.padding(top = 42.dp),
@@ -237,7 +243,9 @@ private fun ReminderIconItem(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.size(width = 88.dp, height = 130.dp),
+        modifier = modifier
+            .size(width = 88.dp, height = 130.dp)
+            .clickable(onClick = item.onClick),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
@@ -264,6 +272,7 @@ private fun ReminderIconItem(
 private data class ToolIconItem(
     val label: String,
     @param:DrawableRes val imageRes: Int,
+    val onClick: () -> Unit = {},
 )
 
 @Preview(showBackground = true, backgroundColor = 0xFF000000)

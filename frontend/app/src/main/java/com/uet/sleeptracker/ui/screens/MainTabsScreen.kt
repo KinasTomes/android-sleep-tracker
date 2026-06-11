@@ -56,6 +56,11 @@ fun MainTabsScreen(
     onSleepQualityClick: () -> Unit = {},
     onPrepBedroomClick: () -> Unit = {},
     onBrainDumpClick: () -> Unit = {},
+    onMelatoninWindowClick: () -> Unit = {},
+    onMelatoninSupplementsClick: () -> Unit = {},
+    onBlueLightGlassesClick: () -> Unit = {},
+    onAvoidLateMealsClick: () -> Unit = {},
+    onEarlierWorkoutsClick: () -> Unit = {},
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(SleepBottomNavTab.MySleep) }
 
@@ -110,7 +115,12 @@ fun MainTabsScreen(
                                 onSmartAlarmClick = onSmartAlarmClick,
                                 onSleepQualityClick = onSleepQualityClick,
                                 onPrepBedroomClick = onPrepBedroomClick,
-                                onBrainDumpClick = onBrainDumpClick
+                                onBrainDumpClick = onBrainDumpClick,
+                                onMelatoninWindowClick = onMelatoninWindowClick,
+                                onMelatoninSupplementsClick = onMelatoninSupplementsClick,
+                                onBlueLightGlassesClick = onBlueLightGlassesClick,
+                                onAvoidLateMealsClick = onAvoidLateMealsClick,
+                                onEarlierWorkoutsClick = onEarlierWorkoutsClick,
                             )
                         }
 
