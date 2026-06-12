@@ -177,10 +177,12 @@ fun ProgressScreenNew(modifier: Modifier = Modifier) {
         Text(
             text = "We only show the last two weeks of sleep because\nthis time period has the greatest impact on how you\nfeel and perform today.",
             color = Muted,
-            fontSize = 16.sp,
-            lineHeight = 24.sp,
+            fontSize = 14.sp,
+            lineHeight = 22.sp,
             modifier = Modifier.padding(16.dp)
         )
+
+        Spacer(modifier = Modifier.height(64.dp))
     }
 }
 

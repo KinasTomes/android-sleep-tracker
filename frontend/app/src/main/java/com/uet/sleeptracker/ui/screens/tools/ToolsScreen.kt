@@ -50,6 +50,12 @@ fun ToolsScreen(
     onBlueLightGlassesClick: () -> Unit = {},
     onAvoidLateMealsClick: () -> Unit = {},
     onEarlierWorkoutsClick: () -> Unit = {},
+    onAvoidLateAlcoholClick: () -> Unit = {},
+    onCaffeineCutoffClick: () -> Unit = {},
+    onEveningRoutineClick: () -> Unit = {},
+    onMorningRoutineClick: () -> Unit = {},
+    onBlueLightControlClick: () -> Unit = {},
+    onPeaksAndDipsClick: () -> Unit = {},
 ) {
     val verticalScrollState = rememberScrollState()
     val horizontalScrollState = rememberScrollState()
@@ -157,10 +163,10 @@ fun ToolsScreen(
         ReminderRailSection(
             title = "STOP AT THE RIGHT TIME",
             items = listOf(
-                ToolIconItem("Caffeine", R.drawable.ceffeine),
+                ToolIconItem("Caffeine", R.drawable.ceffeine, onCaffeineCutoffClick),
                 ToolIconItem("Meals", R.drawable.meals, onAvoidLateMealsClick),
                 ToolIconItem("Workouts", R.drawable.workouts, onEarlierWorkoutsClick),
-                ToolIconItem("Alcohol", R.drawable.alcohols)
+                ToolIconItem("Alcohol", R.drawable.alcohols, onAvoidLateAlcoholClick)
             ),
             modifier = Modifier.padding(top = 42.dp),
             scrollState = rememberScrollState()
@@ -169,10 +175,10 @@ fun ToolsScreen(
         ReminderRailSection(
             title = "OPTIMIZE ROUTINES",
             items = listOf(
-                ToolIconItem("Evening", R.drawable.evening),
-                ToolIconItem("Morning", R.drawable.morning),
-                ToolIconItem("Blue Light", R.drawable.blue_light),
-                ToolIconItem("Peaks & Dips", R.drawable.paeks_n_dips)
+                ToolIconItem("Evening", R.drawable.evening, onEveningRoutineClick),
+                ToolIconItem("Morning", R.drawable.morning, onMorningRoutineClick),
+                ToolIconItem("Blue Light", R.drawable.blue_light, onBlueLightControlClick),
+                ToolIconItem("Peaks & Dips", R.drawable.paeks_n_dips, onPeaksAndDipsClick)
             ),
             modifier = Modifier.padding(top = 42.dp, bottom = 140.dp),
             scrollState = rememberScrollState()

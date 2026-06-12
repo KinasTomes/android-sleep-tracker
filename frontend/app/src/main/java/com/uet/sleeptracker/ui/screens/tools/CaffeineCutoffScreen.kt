@@ -1,10 +1,7 @@
-package com.uet.sleeptracker.ui.screens.home
+package com.uet.sleeptracker.ui.screens.tools
 
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +11,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -43,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
+import com.uet.sleeptracker.ui.components.HabitReminderSettingsRows
 import com.uet.sleeptracker.ui.components.ToolDetailTopBar
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 
@@ -87,16 +84,14 @@ fun CaffeineCutoffScreen(
                 modifier = Modifier.padding(start = 21.dp, end = 21.dp, top = 48.dp, bottom = 34.dp)
             )
 
-            HorizontalDivider(color = CaffeineDividerColor, thickness = 1.dp)
-
-            CaffeineToggleRow(
+            HabitReminderSettingsRows(
+                toggleTitle = "Remind me",
+                toggleSubtitle = "to avoid caffeine",
+                reminderValue = reminderTimeText,
+                reminderSubtitle = "Before melatonin window",
                 checked = reminderEnabled,
-                onCheckedChange = { reminderEnabled = it }
-            )
-
-            CaffeineReminderRow(
-                value = reminderTimeText,
-                onClick = onReminderTimeClick
+                onCheckedChange = { reminderEnabled = it },
+                onReminderTimeClick = onReminderTimeClick,
             )
 
             Spacer(modifier = Modifier.height(68.dp))
@@ -157,110 +152,6 @@ private fun CaffeineHero() {
 }
 
 @Composable
-private fun CaffeineToggleRow(
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(75.dp)
-            .padding(start = 21.dp, end = 21.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column {
-            Text(
-                text = "Remind me",
-                color = Color.White,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Normal
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "to avoid caffeine",
-                color = CaffeineMutedTextColor,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Normal
-            )
-        }
-
-        CaffeineSwitch(
-            checked = checked,
-            onCheckedChange = onCheckedChange
-        )
-    }
-
-    HorizontalDivider(color = CaffeineDividerColor, thickness = 1.dp)
-}
-
-@Composable
-private fun CaffeineReminderRow(
-    value: String,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(74.dp)
-            .clickable(onClick = onClick)
-            .padding(start = 21.dp, end = 21.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row(
-            modifier = Modifier.weight(1f),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.clock),
-                contentDescription = null,
-                tint = Color.Unspecified,
-                modifier = Modifier.size(24.dp)
-            )
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column {
-                Text(
-                    text = "Reminder Time",
-                    color = Color.White,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Normal
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Before melatonin window",
-                    color = CaffeineMutedTextColor,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Normal
-                )
-            }
-        }
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Text(
-                text = value,
-                color = CaffeineMutedTextColor,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Normal
-            )
-            Icon(
-                painter = painterResource(id = R.drawable.right),
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(24.dp)
-            )
-        }
-    }
-
-    HorizontalDivider(color = CaffeineDividerColor, thickness = 1.dp)
-}
-
-@Composable
 private fun CaffeineLearnMoreRow(onClick: () -> Unit) {
     HorizontalDivider(color = CaffeineDividerColor, thickness = 1.dp)
     Row(
@@ -287,47 +178,6 @@ private fun CaffeineLearnMoreRow(onClick: () -> Unit) {
     }
 
     HorizontalDivider(color = CaffeineDividerColor, thickness = 1.dp)
-}
-
-@Composable
-private fun CaffeineSwitch(
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val thumbOffset by animateDpAsState(
-        targetValue = if (checked) 18.dp else 0.dp,
-        animationSpec = tween(durationMillis = 200),
-        label = "CaffeineSwitchOffset"
-    )
-
-    Box(
-        modifier = modifier
-            .width(36.dp)
-            .height(24.dp)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = { onCheckedChange(!checked) }
-            ),
-        contentAlignment = Alignment.CenterStart
-    ) {
-        Box(
-            modifier = Modifier
-                .width(32.dp)
-                .height(16.dp)
-                .align(Alignment.Center)
-                .clip(RoundedCornerShape(8.dp))
-                .background(if (checked) Color(0xFF00EDB9) else Color(0xFF2C2C2E))
-        )
-        Box(
-            modifier = Modifier
-                .offset(x = thumbOffset)
-                .size(20.dp)
-                .clip(CircleShape)
-                .background(if (checked) Color(0xFF7EC7C0) else Color(0xFF76767B))
-        )
-    }
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFF121212, widthDp = 402, heightDp = 874)

@@ -52,6 +52,8 @@ fun MainTabsScreen(
     onPeaksAndDipsClick: () -> Unit = {},
     onCaffeineCutoffClick: () -> Unit = {},
     onEveningRoutineClick: () -> Unit = {},
+    onMorningRoutineClick: () -> Unit = {},
+    onBlueLightControlClick: () -> Unit = {},
     onSmartAlarmClick: () -> Unit = {},
     onSleepQualityClick: () -> Unit = {},
     onPrepBedroomClick: () -> Unit = {},
@@ -61,6 +63,7 @@ fun MainTabsScreen(
     onBlueLightGlassesClick: () -> Unit = {},
     onAvoidLateMealsClick: () -> Unit = {},
     onEarlierWorkoutsClick: () -> Unit = {},
+    onAvoidLateAlcoholClick: () -> Unit = {},
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(SleepBottomNavTab.MySleep) }
 
@@ -121,6 +124,12 @@ fun MainTabsScreen(
                                 onBlueLightGlassesClick = onBlueLightGlassesClick,
                                 onAvoidLateMealsClick = onAvoidLateMealsClick,
                                 onEarlierWorkoutsClick = onEarlierWorkoutsClick,
+                                onAvoidLateAlcoholClick = onAvoidLateAlcoholClick,
+                                onCaffeineCutoffClick = onCaffeineCutoffClick,
+                                onEveningRoutineClick = onEveningRoutineClick,
+                                onMorningRoutineClick = onMorningRoutineClick,
+                                onBlueLightControlClick = onBlueLightControlClick,
+                                onPeaksAndDipsClick = onPeaksAndDipsClick,
                             )
                         }
 

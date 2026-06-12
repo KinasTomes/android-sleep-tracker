@@ -22,11 +22,13 @@ import com.uet.sleeptracker.ui.components.findInitialReminderChoiceIndex
 import com.uet.sleeptracker.ui.components.ReminderTimeScreen
 import com.uet.sleeptracker.ui.navigation.onboardingNavGraph
 import com.uet.sleeptracker.ui.screens.MainTabsScreen
-import com.uet.sleeptracker.ui.screens.home.CaffeineCutoffScreen
-import com.uet.sleeptracker.ui.screens.home.CaffeineLearnMoreScreen
-import com.uet.sleeptracker.ui.screens.home.EveningRoutineScreen
-import com.uet.sleeptracker.ui.screens.home.EveningRoutineSettingsScreen
-import com.uet.sleeptracker.ui.screens.home.PeaksAndDipsScreen
+import com.uet.sleeptracker.ui.screens.tools.CaffeineCutoffScreen
+import com.uet.sleeptracker.ui.screens.tools.CaffeineLearnMoreScreen
+import com.uet.sleeptracker.ui.screens.tools.EveningRoutineScreen
+import com.uet.sleeptracker.ui.screens.tools.EveningRoutineSettingsScreen
+import com.uet.sleeptracker.ui.screens.tools.MorningRoutineScreen
+import com.uet.sleeptracker.ui.screens.tools.MorningRoutineSettingsScreen
+import com.uet.sleeptracker.ui.screens.tools.PeaksAndDipsScreen
 import com.uet.sleeptracker.ui.screens.notifications.NotificationMenuScreen
 import com.uet.sleeptracker.ui.screens.notifications.NotificationsScreen
 import com.uet.sleeptracker.ui.screens.settings.*
@@ -38,8 +40,11 @@ import com.uet.sleeptracker.ui.screens.tools.BrainDumpSettingsScreen
 import com.uet.sleeptracker.ui.screens.tools.SleepQualityScreen
 import com.uet.sleeptracker.ui.screens.tools.AvoidLateMealsScreen
 import com.uet.sleeptracker.ui.screens.tools.AvoidLateMealsSettingsScreen
+import com.uet.sleeptracker.ui.screens.tools.AvoidLateAlcoholScreen
+import com.uet.sleeptracker.ui.screens.tools.AvoidLateAlcoholSettingsScreen
 import com.uet.sleeptracker.ui.screens.tools.BlueLightGlassesScreen
 import com.uet.sleeptracker.ui.screens.tools.BlueLightGlassesSettingsScreen
+import com.uet.sleeptracker.ui.screens.tools.BlueLightControlScreen
 import com.uet.sleeptracker.ui.screens.tools.EarlierWorkoutsScreen
 import com.uet.sleeptracker.ui.screens.tools.EarlierWorkoutsSettingsScreen
 import com.uet.sleeptracker.ui.screens.tools.MelatoninSupplementsScreen
@@ -78,6 +83,8 @@ class MainActivity : ComponentActivity() {
                             onPeaksAndDipsClick = { navController.navigate("peaks_and_dips") },
                             onCaffeineCutoffClick = { navController.navigate("caffeine_cutoff") },
                             onEveningRoutineClick = { navController.navigate("evening_routine") },
+                            onMorningRoutineClick = { navController.navigate("morning_routine") },
+                            onBlueLightControlClick = { navController.navigate("blue_light_control") },
                             onSmartAlarmClick = { navController.navigate("smart_alarm_settings") },
                             onSleepQualityClick = { navController.navigate("sleep_quality") },
                             onPrepBedroomClick = { navController.navigate("environment_check") },
@@ -87,6 +94,7 @@ class MainActivity : ComponentActivity() {
                             onBlueLightGlassesClick = { navController.navigate("blue_light_glasses") },
                             onAvoidLateMealsClick = { navController.navigate("avoid_late_meals") },
                             onEarlierWorkoutsClick = { navController.navigate("earlier_workouts") },
+                            onAvoidLateAlcoholClick = { navController.navigate("avoid_late_alcohol") },
                         )
                     }
                     composable("melatonin_window") {
@@ -167,6 +175,18 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("avoid_late_meals_settings") {
                         AvoidLateMealsSettingsScreen(
+                            onCloseClick = { navController.popBackStack() },
+                            onDoneClick = { navController.popBackStack("main_tabs", false) },
+                        )
+                    }
+                    composable("avoid_late_alcohol") {
+                        AvoidLateAlcoholScreen(
+                            onCloseClick = { navController.popBackStack() },
+                            onGetStartedClick = { navController.navigate("avoid_late_alcohol_settings") },
+                        )
+                    }
+                    composable("avoid_late_alcohol_settings") {
+                        AvoidLateAlcoholSettingsScreen(
                             onCloseClick = { navController.popBackStack() },
                             onDoneClick = { navController.popBackStack("main_tabs", false) },
                         )
@@ -542,6 +562,23 @@ class MainActivity : ComponentActivity() {
                     ) {
                         EveningRoutineSettingsScreen(
                             onCloseClick = { navController.popBackStack() }
+                        )
+                    }
+                    composable("morning_routine") {
+                        MorningRoutineScreen(
+                            onCloseClick = { navController.popBackStack() },
+                            onSettingsClick = { navController.navigate("morning_routine_settings") },
+                        )
+                    }
+                    composable("morning_routine_settings") {
+                        MorningRoutineSettingsScreen(
+                            onCloseClick = { navController.popBackStack() },
+                        )
+                    }
+                    composable("blue_light_control") {
+                        BlueLightControlScreen(
+                            onCloseClick = { navController.popBackStack() },
+                            onDoneClick = { navController.popBackStack("main_tabs", false) },
                         )
                     }
                     composable(

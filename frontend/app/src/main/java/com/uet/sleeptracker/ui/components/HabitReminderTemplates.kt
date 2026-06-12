@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -272,7 +273,7 @@ fun HabitReminderSettingsScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(130.dp)
+                        .height(116.dp)
                         .background(
                             Brush.verticalGradient(
                                 listOf(Color(0xFF0F110E), content.heroGradientEnd)
@@ -286,15 +287,15 @@ fun HabitReminderSettingsScreen(
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .size(42.dp)
+                            .size(40.dp)
                             .clip(RoundedCornerShape(8.dp))
                     )
                     Text(
                         text = content.heroTitle,
                         color = Color.White,
-                        fontSize = 28.sp,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Normal,
-                        modifier = Modifier.padding(start = 18.dp)
+                        modifier = Modifier.padding(start = 20.dp)
                     )
                 }
             }
@@ -400,19 +401,25 @@ private fun HabitToggleRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(90.dp)
-            .padding(start = 21.dp, end = 24.dp),
+            .heightIn(min = 75.dp)
+            .padding(horizontal = 21.dp, vertical = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = title, color = Color.White, fontSize = 18.sp)
+            Text(
+                text = title,
+                color = Color.White,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Normal,
+            )
             Text(
                 text = subtitle,
                 color = HabitMuted,
-                fontSize = 16.sp,
-                lineHeight = 20.sp,
-                modifier = Modifier.padding(top = 6.dp)
+                fontSize = 14.sp,
+                lineHeight = 18.sp,
+                fontWeight = FontWeight.Normal,
+                modifier = Modifier.padding(top = 4.dp)
             )
         }
         HabitSwitch(checked = checked, onCheckedChange = onCheckedChange)
@@ -430,12 +437,15 @@ private fun HabitReminderRow(
         modifier = Modifier
             .fillMaxWidth()
             .then(clickModifier)
-            .height(73.dp)
+            .height(74.dp)
             .padding(start = 21.dp, end = 21.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.weight(1f),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             Icon(
                 painter = painterResource(R.drawable.clock),
                 contentDescription = null,
@@ -447,16 +457,17 @@ private fun HabitReminderRow(
                 Text(text = subtitle, color = HabitMuted, fontSize = 14.sp, modifier = Modifier.padding(top = 4.dp))
             }
         }
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
             Text(text = value, color = HabitMuted, fontSize = 14.sp)
             if (onClick != null) {
                 Icon(
                     painter = painterResource(R.drawable.right),
                     contentDescription = null,
                     tint = Color.White,
-                    modifier = Modifier
-                        .padding(start = 4.dp)
-                        .size(24.dp)
+                    modifier = Modifier.size(24.dp)
                 )
             }
         }
@@ -491,14 +502,14 @@ private fun HabitSwitch(
                 .width(32.dp)
                 .height(16.dp)
                 .clip(RoundedCornerShape(50))
-                .background(if (checked) Color(0xFF01EEB8) else Color(0xFF808080))
+                .background(if (checked) Color(0xFF00EDB9) else Color(0xFF2C2C2E))
         )
         Box(
             modifier = Modifier
                 .offset(x = thumbOffset)
                 .size(20.dp)
                 .clip(CircleShape)
-                .background(if (checked) Color(0xFF7EC7C0) else Color(0xFFBABABA))
+                .background(if (checked) Color(0xFF7EC7C0) else Color(0xFF76767B))
         )
     }
 }
