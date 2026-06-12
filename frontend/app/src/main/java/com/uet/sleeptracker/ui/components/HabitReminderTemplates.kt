@@ -1,5 +1,6 @@
 package com.uet.sleeptracker.ui.components
 
+import android.annotation.SuppressLint
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -105,7 +107,7 @@ fun HabitIntroductionScreen(
                     Image(
                         painter = painterResource(content.heroImageRes),
                         contentDescription = null,
-                        contentScale = ContentScale.Crop,
+                        contentScale = ContentScale.FillBounds,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(400.dp)
@@ -117,14 +119,14 @@ fun HabitIntroductionScreen(
                         Text(
                             text = content.heroTitle,
                             color = Color.White,
-                            fontSize = 28.sp,
+                            fontSize = 24.sp,
                             letterSpacing = 0.sp,
                             fontWeight = FontWeight.Normal,
                         )
                         Text(
                             text = content.heroDescription,
                             color = Color.White.copy(alpha = 0.5f),
-                            fontSize = 18.sp,
+                            fontSize = 16.sp,
                             lineHeight = 28.sp,
                             letterSpacing = 0.sp,
                             fontWeight = FontWeight.Normal,
@@ -140,7 +142,7 @@ fun HabitIntroductionScreen(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .fillMaxWidth()
-                            .padding(horizontal = 24.dp)
+                            .padding(horizontal = 8.dp)
                     )
                 }
 
@@ -168,7 +170,7 @@ fun HabitIntroductionScreen(
                             Text(
                                 text = bullet,
                                 color = Color.White,
-                                fontSize = 18.sp,
+                                fontSize = 16.sp,
                                 lineHeight = 22.sp,
                                 letterSpacing = 0.sp,
                                 fontWeight = FontWeight.Normal,
@@ -310,39 +312,81 @@ fun HabitReminderSettingsScreen(
                 )
             )
 
-            HorizontalDivider(color = HabitDivider, thickness = 1.dp)
-            HabitToggleRow(
-                title = content.toggleTitle,
-                subtitle = content.toggleSubtitle,
+            HabitReminderSettingsRows(
+                toggleTitle = content.toggleTitle,
+                toggleSubtitle = content.toggleSubtitle,
+                reminderValue = content.reminderValue,
+                reminderSubtitle = content.reminderSubtitle,
                 checked = enabled,
                 onCheckedChange = { enabled = it },
+                onReminderTimeClick = onReminderTimeClick,
             )
-            HorizontalDivider(color = HabitDivider, thickness = 1.dp)
-            HabitReminderRow(
-                value = content.reminderValue,
-                subtitle = content.reminderSubtitle,
-                onClick = onReminderTimeClick,
-            )
-            HorizontalDivider(color = HabitDivider, thickness = 1.dp)
 
             if (content.showActions) {
                 Spacer(modifier = Modifier.weight(1f))
-                HabitPrimaryButton(
-                    text = "REMIND ME",
-                    onClick = onRemindMeClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp)
-                )
-                HabitOutlinedButton(
-                    text = "NOT NOW",
-                    onClick = onNotNowClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 12.dp)
+                HabitReminderActionButtons(
+                    onRemindMeClick = onRemindMeClick,
+                    onNotNowClick = onNotNowClick,
                 )
             }
         }
+    }
+}
+
+@Composable
+fun HabitReminderSettingsRows(
+    toggleTitle: String,
+    toggleSubtitle: String,
+    reminderValue: String,
+    reminderSubtitle: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    onReminderTimeClick: (() -> Unit)?,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        HorizontalDivider(color = HabitDivider, thickness = 1.dp)
+        HabitToggleRow(
+            title = toggleTitle,
+            subtitle = toggleSubtitle,
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+        )
+        HorizontalDivider(color = HabitDivider, thickness = 1.dp)
+        HabitReminderRow(
+            value = reminderValue,
+            subtitle = reminderSubtitle,
+            onClick = onReminderTimeClick,
+        )
+        HorizontalDivider(color = HabitDivider, thickness = 1.dp)
+    }
+}
+
+@Composable
+fun HabitReminderActionButtons(
+    onRemindMeClick: () -> Unit,
+    onNotNowClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+    ) {
+        HabitPrimaryButton(
+            text = "REMIND ME",
+            onClick = onRemindMeClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp)
+        )
+        HabitOutlinedButton(
+            text = "NOT NOW",
+            onClick = onNotNowClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp, end = 8.dp, top = 12.dp, bottom = 8.dp)
+        )
     }
 }
 
@@ -419,6 +463,7 @@ private fun HabitReminderRow(
     }
 }
 
+@SuppressLint("UseOfNonLambdaOffsetOverload")
 @Composable
 private fun HabitSwitch(
     checked: Boolean,
@@ -466,16 +511,16 @@ private fun HabitPrimaryButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier.height(80.dp),
-        shape = RoundedCornerShape(20.dp),
+        modifier = modifier.height(64.dp),
+        shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(containerColor = SleepPrimary),
     ) {
         Text(
             text = text,
             style = TextStyle(
                 color = Color.White,
-                fontSize = 20.sp,
-                lineHeight = 22.sp,
+                fontSize = 18.sp,
+                lineHeight = 20.sp,
                 letterSpacing = 0.sp,
                 fontWeight = FontWeight.Normal,
             )
@@ -491,11 +536,20 @@ private fun HabitOutlinedButton(
 ) {
     OutlinedButton(
         onClick = onClick,
-        modifier = modifier.height(80.dp),
-        shape = RoundedCornerShape(20.dp),
+        modifier = modifier.height(64.dp),
+        shape = RoundedCornerShape(8.dp),
         border = BorderStroke(3.dp, SleepPrimary),
         colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
     ) {
-        Text(text = text, color = Color.White, fontSize = 20.sp, letterSpacing = 0.sp)
+        Text(
+            text = text,
+            style = TextStyle(
+                color = Color.White,
+                fontSize = 18.sp,
+                lineHeight = 20.sp,
+                letterSpacing = 0.sp,
+                fontWeight = FontWeight.Normal,
+            )
+        )
     }
 }
