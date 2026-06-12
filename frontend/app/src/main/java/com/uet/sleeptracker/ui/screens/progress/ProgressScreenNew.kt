@@ -3,6 +3,7 @@ package com.uet.sleeptracker.ui.screens.progress
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -62,7 +63,10 @@ private const val DefaultChartStartHour = 21
 private const val DefaultChartEndHour = 32
 
 @Composable
-fun ProgressScreenNew(modifier: Modifier = Modifier) {
+fun ProgressScreenNew(
+    modifier: Modifier = Modifier,
+    onSleepRecordClick: (title: String, startTime: String, endTime: String, duration: String) -> Unit = { _, _, _, _ -> },
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -111,15 +115,19 @@ fun ProgressScreenNew(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(start = 19.dp, bottom = 28.dp)
         )
 
-        SleepRecordItem("Last night (Sunday)", "00:00 - 06:45", "6h 45m")
-        SleepRecordItem("Saturday night", "01:43 - 07:04", "6h 45m")
-        SleepRecordItem("Friday night", "23:10 - 04:45", "5h 21m")
-        SleepRecordItem("Thursday night", "23:32 - 07:30", "5h 35m")
-        SleepRecordItem("Wednesday night", "00:37 - 06:57", "7h 57m")
-        SleepRecordItem("Tuesday night", "00:32 - 07:59", "6h")
-        SleepRecordItem("Monday night", "23:22 - 06:43", "7h 28m")
-        SleepRecordItem("June 1", "23:59 - 06:00", "7h 21m")
-        SleepRecordItem("June 1", "23:59 - 06:00", "6h")
+        progressSleepRecords().forEach { record ->
+            SleepRecordItem(
+                record = record,
+                onClick = {
+                    onSleepRecordClick(
+                        record.editorTitle,
+                        record.startTime,
+                        record.endTime,
+                        record.duration,
+                    )
+                },
+            )
+        }
 
         SeedDataCard(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 22.dp)
@@ -394,23 +402,32 @@ private fun TimeScale(
 }
 
 @Composable
-private fun SleepRecordItem(title: String, time: String, duration: String) {
+private fun SleepRecordItem(
+    record: SleepRecord,
+    onClick: () -> Unit,
+) {
     Column {
         HorizontalDivider(Modifier, DividerDefaults.Thickness, color = Line)
 
         Row(
             modifier = Modifier
+                .fillMaxWidth()
                 .height(81.dp)
+                .clickable(onClick = onClick)
                 .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(title, color = Color.White, fontSize = 18.sp)
+                Text(record.title, color = Color.White, fontSize = 18.sp)
                 Spacer(modifier = Modifier.height(2.dp))
-                Text(time, color = Muted, fontSize = 16.sp)
+                Text(
+                    "${record.startTime} - ${record.endTime}",
+                    color = Muted,
+                    fontSize = 16.sp,
+                )
             }
 
-            Text(duration, color = Muted, fontSize = 16.sp)
+            Text(record.duration, color = Muted, fontSize = 16.sp)
             Icon(
                 painter = painterResource(id = R.drawable.right),
                 contentDescription = null,
@@ -422,6 +439,26 @@ private fun SleepRecordItem(title: String, time: String, duration: String) {
         }
     }
 }
+
+private data class SleepRecord(
+    val title: String,
+    val editorTitle: String,
+    val startTime: String,
+    val endTime: String,
+    val duration: String,
+)
+
+private fun progressSleepRecords(): List<SleepRecord> = listOf(
+    SleepRecord("Last night (Sunday)", "Sunday night", "00:00", "06:45", "6h 45m"),
+    SleepRecord("Saturday night", "Saturday night", "01:43", "07:04", "6h 45m"),
+    SleepRecord("Friday night", "Friday night", "23:10", "04:45", "5h 21m"),
+    SleepRecord("Thursday night", "Thursday night", "23:32", "07:30", "5h 35m"),
+    SleepRecord("Wednesday night", "Wednesday night", "00:37", "06:57", "7h 57m"),
+    SleepRecord("Tuesday night", "Tuesday night", "00:32", "07:59", "6h"),
+    SleepRecord("Monday night", "Monday night", "23:22", "06:43", "7h 28m"),
+    SleepRecord("June 1", "June 1", "23:59", "06:00", "7h 21m"),
+    SleepRecord("June 1", "June 1", "23:59", "06:00", "6h"),
+)
 
 @Composable
 private fun SeedDataCard(modifier: Modifier = Modifier) {

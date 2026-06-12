@@ -64,6 +64,7 @@ fun MainTabsScreen(
     onAvoidLateMealsClick: () -> Unit = {},
     onEarlierWorkoutsClick: () -> Unit = {},
     onAvoidLateAlcoholClick: () -> Unit = {},
+    onSleepRecordClick: (title: String, startTime: String, endTime: String, duration: String) -> Unit = { _, _, _, _ -> },
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(SleepBottomNavTab.MySleep) }
 
@@ -134,7 +135,10 @@ fun MainTabsScreen(
                         }
 
                         SleepBottomNavTab.Stats -> {
-                            ProgressScreenNew(modifier = Modifier.fillMaxSize())
+                            ProgressScreenNew(
+                                modifier = Modifier.fillMaxSize(),
+                                onSleepRecordClick = onSleepRecordClick,
+                            )
                         }
 
                         else -> {

@@ -14,6 +14,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
@@ -23,16 +25,19 @@ fun TotalSleepTimeOverlay(
     modifier: Modifier = Modifier,
     startTime: String = "23:10",
     endTime: String = "4:45",
+    overlayHeight: Dp = 671.dp,
+    timeFontSize: TextUnit = 20.sp,
+    editFontSize: TextUnit = 16.sp,
     onEditClick: () -> Unit = {}
 ) {
     Box(
-        modifier = modifier
+        modifier = modifier.height(overlayHeight + 6.dp)
     ) {
         // Main overlay box
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(671.dp)
+                .height(overlayHeight)
                 .align(Alignment.TopCenter)
                 .offset(y = 3.dp)
                 .background(
@@ -85,7 +90,7 @@ fun TotalSleepTimeOverlay(
         Text(
             text = startTime,
             color = Color.White,
-            fontSize = 20.sp,
+            fontSize = timeFontSize,
             fontWeight = FontWeight.Normal,
             modifier = Modifier.offset(x = 44.dp, y = 15.dp)
         )
@@ -109,7 +114,7 @@ fun TotalSleepTimeOverlay(
             Text(
                 text = "Press to edit sleep time",
                 color = Color(0xFF8F5AFF),
-                fontSize = 16.sp,
+                fontSize = editFontSize,
                 fontWeight = FontWeight.Normal
             )
         }
@@ -118,7 +123,7 @@ fun TotalSleepTimeOverlay(
         Text(
             text = endTime,
             color = Color.White,
-            fontSize = 20.sp,
+            fontSize = timeFontSize,
             fontWeight = FontWeight.Normal,
             modifier = Modifier
                 .align(Alignment.BottomEnd)

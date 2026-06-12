@@ -22,6 +22,7 @@ import com.uet.sleeptracker.ui.components.findInitialReminderChoiceIndex
 import com.uet.sleeptracker.ui.components.ReminderTimeScreen
 import com.uet.sleeptracker.ui.navigation.onboardingNavGraph
 import com.uet.sleeptracker.ui.screens.MainTabsScreen
+import com.uet.sleeptracker.ui.screens.progress.EditSleepScreen
 import com.uet.sleeptracker.ui.screens.tools.CaffeineCutoffScreen
 import com.uet.sleeptracker.ui.screens.tools.CaffeineLearnMoreScreen
 import com.uet.sleeptracker.ui.screens.tools.EveningRoutineScreen
@@ -95,6 +96,28 @@ class MainActivity : ComponentActivity() {
                             onAvoidLateMealsClick = { navController.navigate("avoid_late_meals") },
                             onEarlierWorkoutsClick = { navController.navigate("earlier_workouts") },
                             onAvoidLateAlcoholClick = { navController.navigate("avoid_late_alcohol") },
+                            onSleepRecordClick = { title, startTime, endTime, duration ->
+                                navController.navigate(
+                                    "edit_sleep/${Uri.encode(title)}/${Uri.encode(startTime)}/${Uri.encode(endTime)}/${Uri.encode(duration)}"
+                                )
+                            },
+                        )
+                    }
+                    composable(
+                        route = "edit_sleep/{title}/{startTime}/{endTime}/{duration}",
+                        arguments = listOf(
+                            navArgument("title") { type = NavType.StringType },
+                            navArgument("startTime") { type = NavType.StringType },
+                            navArgument("endTime") { type = NavType.StringType },
+                            navArgument("duration") { type = NavType.StringType },
+                        ),
+                    ) { backStackEntry ->
+                        EditSleepScreen(
+                            title = backStackEntry.arguments?.getString("title").orEmpty(),
+                            startTime = backStackEntry.arguments?.getString("startTime").orEmpty(),
+                            endTime = backStackEntry.arguments?.getString("endTime").orEmpty(),
+                            duration = backStackEntry.arguments?.getString("duration").orEmpty(),
+                            onCloseClick = { navController.popBackStack() },
                         )
                     }
                     composable("melatonin_window") {
