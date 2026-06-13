@@ -62,7 +62,7 @@ fun MySleepNeedScreen(
 
             SleepNeedGauge(
                 currentNeed = "7h 45m",
-                progress = 0.375f // (7.75 - 7) / (9 - 7)
+                progress = 0.375f
             )
 
             Spacer(modifier = Modifier.height(72.dp))
@@ -150,7 +150,6 @@ private fun SleepNeedGauge(
                 .fillMaxWidth()
                 .height(85.dp)
         ) {
-            // "7h" Label
             Text(
                 text = "7h",
                 color = Color(0xFF8E8E93),
@@ -160,7 +159,6 @@ private fun SleepNeedGauge(
                     .padding(bottom = 28.dp)
             )
 
-            // "9h" Label
             Text(
                 text = "9h",
                 color = Color(0xFF8E8E93),
@@ -170,7 +168,6 @@ private fun SleepNeedGauge(
                     .padding(bottom = 28.dp)
             )
 
-            // Current Need Label and Line
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -193,7 +190,6 @@ private fun SleepNeedGauge(
             }
         }
 
-        // The Bar
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -201,7 +197,6 @@ private fun SleepNeedGauge(
                 .clip(RoundedCornerShape(12.dp))
                 .background(Color(0xFF721BFD))
         ) {
-            // "Most people" segment
             Box(
                 modifier = Modifier
                     .fillMaxHeight()

@@ -1,33 +1,73 @@
 package com.uet.sleeptracker.ui.screens.onboarding.info
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Canvas
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.PermissionController
+import androidx.health.connect.client.permission.HealthPermission
+import androidx.health.connect.client.records.SleepSessionRecord
+import androidx.health.connect.client.records.StepsRecord
+import androidx.health.connect.client.records.ExerciseSessionRecord
 import com.uet.sleeptracker.R
+import com.uet.sleeptracker.ui.components.SleepPrimaryOutlinedButton
 import com.uet.sleeptracker.ui.theme.SleepBackground
 import com.uet.sleeptracker.ui.theme.SleepPrimary
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HealthConnectPermissionScreen(
     onTurnOnClick: () -> Unit,
     onWhyClick: () -> Unit
 ) {
+    val context = LocalContext.current
+    
+    val sdkStatus = remember {
+        try {
+            HealthConnectClient.getSdkStatus(context, "com.google.android.apps.healthdata")
+        } catch (_: Exception) {
+            HealthConnectClient.SDK_UNAVAILABLE
+        }
+    }
+
+    val healthConnectClient = remember {
+        try {
+            HealthConnectClient.getOrCreate(context)
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    val permissions = remember {
+        setOf(
+            HealthPermission.getReadPermission(SleepSessionRecord::class),
+            HealthPermission.getReadPermission(StepsRecord::class),
+            HealthPermission.getReadPermission(ExerciseSessionRecord::class)
+        )
+    }
+
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        contract = PermissionController.createRequestPermissionResultContract()
+    ) { _ ->
+        onTurnOnClick()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -42,8 +82,8 @@ fun HealthConnectPermissionScreen(
             style = MaterialTheme.typography.headlineSmall.copy(
                 color = SleepPrimary,
                 textAlign = TextAlign.Center,
-                lineHeight = 32.sp,
-                fontSize = 24.sp,
+                lineHeight = 22.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Normal
             ),
             modifier = Modifier.fillMaxWidth()
@@ -56,8 +96,8 @@ fun HealthConnectPermissionScreen(
             style = MaterialTheme.typography.bodyLarge.copy(
                 color = Color.White,
                 textAlign = TextAlign.Center,
-                lineHeight = 24.sp,
-                fontSize = 17.sp,
+                lineHeight = 20.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Normal
             ),
             modifier = Modifier.fillMaxWidth()
@@ -74,7 +114,7 @@ fun HealthConnectPermissionScreen(
             style = MaterialTheme.typography.titleMedium.copy(
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
+                fontSize = 14.sp,
                 textAlign = TextAlign.Center
             )
         )
@@ -84,32 +124,24 @@ fun HealthConnectPermissionScreen(
             style = MaterialTheme.typography.bodyLarge.copy(
                 color = Color.White,
                 fontWeight = FontWeight.Normal,
-                fontSize = 18.sp,
+                fontSize = 14.sp,
                 textAlign = TextAlign.Center
             )
         )
 
         Spacer(modifier = Modifier.weight(1.5f))
 
-        OutlinedButton(
-            onClick = onTurnOnClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(64.dp),
-            shape = RoundedCornerShape(8.dp),
-            border = BorderStroke(2.dp, SleepPrimary),
-            colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = Color.White
-            )
-        ) {
-            Text(
-                text = stringResource(id = R.string.perm_health_button),
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Normal,
-                    letterSpacing = 1.sp
-                )
-            )
-        }
+        SleepPrimaryOutlinedButton(
+            text = stringResource(id = R.string.perm_health_button),
+            onClick = {
+                if (sdkStatus == HealthConnectClient.SDK_AVAILABLE && healthConnectClient != null) {
+                    requestPermissionLauncher.launch(permissions)
+                } else {
+                    onTurnOnClick()
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -118,7 +150,7 @@ fun HealthConnectPermissionScreen(
                 text = stringResource(id = R.string.perm_health_why),
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = SleepPrimary,
-                    fontSize = 17.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Normal
                 )
             )
@@ -133,32 +165,11 @@ fun HealthConnectLogo() {
         shape = RoundedCornerShape(24.dp),
         color = Color.White
     ) {
-        Canvas(modifier = Modifier.fillMaxSize().padding(24.dp)) {
-            val strokeWidth = 12.dp.toPx()
-            
-            // Draw a simplified representation of Health Connect Logo (Interlocking links/Heart)
-            // Left part (Dark Teal/Blue)
-            drawArc(
-                color = Color(0xFF003C43),
-                startAngle = 135f,
-                sweepAngle = 180f,
-                useCenter = false,
-                topLeft = center.copy(x = center.x - 20.dp.toPx(), y = center.y - 15.dp.toPx()),
-                size = size / 2.5f,
-                style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
-            )
-            
-            // Right part (Bright Blue)
-            drawArc(
-                color = Color(0xFF4285F4),
-                startAngle = -45f,
-                sweepAngle = 180f,
-                useCenter = false,
-                topLeft = center.copy(x = center.x - 5.dp.toPx(), y = center.y - 5.dp.toPx()),
-                size = size / 2.5f,
-                style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
-            )
-        }
+        Image(
+            painter = painterResource(id = R.drawable.health_connect),
+            contentDescription = "Health Connect",
+            modifier = Modifier.fillMaxSize().padding(24.dp)
+        )
     }
 }
 

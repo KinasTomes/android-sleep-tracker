@@ -8,7 +8,7 @@ val SleepSurface = Color(0xFF1C1C1E)
 val SleepSurfaceSelected = Color(0xFF2C2C2E)
 val SleepOutlineLight = Color(0xFFD1D1D6) // Light gray, almost white for borders
 
-val SleepPrimary = Color(0xFF721BFD) // Exact purple: #721bfd
+val SleepPrimary = Color(0xFF721BFD)
 val SleepSecondary = Color(0xFF2DD4BF)
 val SleepTertiary = Color(0xFFFFD700)
 

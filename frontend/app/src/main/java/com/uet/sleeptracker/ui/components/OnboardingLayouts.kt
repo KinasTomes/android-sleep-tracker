@@ -115,7 +115,8 @@ fun OnboardingHeader(
                 text = title,
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = Color.White,
+                    fontSize = 16.sp
                 )
             )
             Text(
@@ -123,7 +124,7 @@ fun OnboardingHeader(
                 style = MaterialTheme.typography.titleMedium.copy(
                     color = accentColor,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp
+                    fontSize = 14.sp
                 )
             )
         }

@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
+import com.uet.sleeptracker.ui.components.SleepPrimaryOutlinedButton
 import com.uet.sleeptracker.ui.theme.SleepBackground
 import com.uet.sleeptracker.ui.theme.SleepPrimary
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
@@ -45,8 +46,8 @@ fun DataPermissionInfoScreen(
                 color = SleepPrimary,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
-                lineHeight = 34.sp,
-                fontSize = 26.sp
+                lineHeight = 22.sp,
+                fontSize = 16.sp
             ),
             modifier = Modifier.fillMaxWidth()
         )
@@ -61,7 +62,7 @@ fun DataPermissionInfoScreen(
                 style = MaterialTheme.typography.titleLarge.copy(
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
+                    fontSize = 14.sp
                 )
             )
             
@@ -72,8 +73,8 @@ fun DataPermissionInfoScreen(
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = Color.White,
                     textAlign = TextAlign.Center,
-                    lineHeight = 24.sp,
-                    fontSize = 16.sp
+                    lineHeight = 20.sp,
+                    fontSize = 14.sp
                 ),
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
@@ -128,7 +129,7 @@ fun DataPermissionInfoScreen(
                 style = MaterialTheme.typography.titleLarge.copy(
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
+                    fontSize = 14.sp
                 )
             )
             
@@ -139,8 +140,8 @@ fun DataPermissionInfoScreen(
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = Color.White,
                     textAlign = TextAlign.Center,
-                    lineHeight = 24.sp,
-                    fontSize = 16.sp
+                    lineHeight = 20.sp,
+                    fontSize = 14.sp
                 )
             )
         }
@@ -149,25 +150,12 @@ fun DataPermissionInfoScreen(
         Spacer(modifier = Modifier.weight(0.8f))
 
         // 5. Fixed bottom button
-        OutlinedButton(
+        SleepPrimaryOutlinedButton(
+            text = stringResource(id = R.string.data_permission_button),
             onClick = onConfirm,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(8.dp),
-            border = BorderStroke(2.dp, SleepPrimary),
-            colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = Color.White
-            )
-        ) {
-            Text(
-                text = stringResource(id = R.string.data_permission_button),
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Normal,
-                    letterSpacing = 1.sp
-                )
-            )
-        }
+            modifier = Modifier.fillMaxWidth(),
+            height = 56.dp
+        )
     }
 }
 
@@ -191,8 +179,8 @@ private fun InfoItem(
             text = text,
             style = MaterialTheme.typography.bodyLarge.copy(
                 color = Color.White,
-                fontSize = 16.sp,
-                lineHeight = 22.sp
+                fontSize = 14.sp,
+                lineHeight = 20.sp
             )
         )
     }

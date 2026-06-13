@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
+import com.uet.sleeptracker.ui.components.SleepPrimaryOutlinedButton
 import com.uet.sleeptracker.ui.theme.SleepBackground
 import com.uet.sleeptracker.ui.theme.SleepPrimary
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
@@ -91,8 +92,8 @@ fun OnboardingSleepScheduleScreen(
                 style = MaterialTheme.typography.headlineMedium.copy(
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 28.sp,
-                    lineHeight = 36.sp
+                    fontSize = 16.sp,
+                    lineHeight = 22.sp
                 )
             )
 
@@ -110,6 +111,8 @@ fun OnboardingSleepScheduleScreen(
                         label = stringResource(id = R.string.sleep_schedule_in_bed),
                         icon = "🌙",
                         currentMinutes = bedTimeMinutes,
+                        minMinutes = 20 * 60, // 20:00
+                        maxMinutes = 28 * 60, // 04:00 (next day)
                         onTimeChange = { bedTimeMinutes = it }
                     )
 
@@ -123,6 +126,8 @@ fun OnboardingSleepScheduleScreen(
                         label = stringResource(id = R.string.sleep_schedule_wake_up),
                         icon = "☀️",
                         currentMinutes = wakeTimeMinutes,
+                        minMinutes = 4 * 60,  // 04:00
+                        maxMinutes = 12 * 60, // 12:00
                         onTimeChange = { wakeTimeMinutes = it }
                     )
                 }
@@ -130,9 +135,9 @@ fun OnboardingSleepScheduleScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            OutlinedButton(
-                onClick = { 
-                    // Return values
+            SleepPrimaryOutlinedButton(
+                text = stringResource(id = R.string.sleep_schedule_next),
+                onClick = {
                     onNavigateNext(
                         bedTimeMinutes / 60, bedTimeMinutes % 60,
                         wakeTimeMinutes / 60, wakeTimeMinutes % 60
@@ -140,20 +145,14 @@ fun OnboardingSleepScheduleScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(64.dp)
                     .padding(bottom = 16.dp),
-                shape = RoundedCornerShape(8.dp),
-                border = BorderStroke(2.dp, SleepPrimary),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
-            ) {
-                Text(
-                    text = stringResource(id = R.string.sleep_schedule_next),
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Normal,
-                        letterSpacing = 1.sp
-                    )
+                height = 56.dp,
+                textStyle = MaterialTheme.typography.titleMedium.copy(
+                    color = Color.White,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Normal
                 )
-            }
+            )
         }
     }
 }
@@ -163,6 +162,8 @@ fun TimePickerSection(
     label: String,
     icon: String,
     currentMinutes: Int,
+    minMinutes: Int,
+    maxMinutes: Int,
     onTimeChange: (Int) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -174,13 +175,13 @@ fun TimePickerSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = icon, fontSize = 20.sp)
+                Text(text = icon, fontSize = 14.sp)
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
                     text = label,
                     style = MaterialTheme.typography.titleLarge.copy(
                         color = Color.White,
-                        fontSize = 22.sp
+                        fontSize = 14.sp
                     )
                 )
             }
@@ -194,7 +195,7 @@ fun TimePickerSection(
                 text = "$startTime - $endTime",
                 style = MaterialTheme.typography.titleLarge.copy(
                     color = Color.White.copy(alpha = 0.9f),
-                    fontSize = 22.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Normal
                 )
             )
@@ -204,6 +205,8 @@ fun TimePickerSection(
 
         TimeRulerPicker(
             currentMinutes = currentMinutes,
+            minMinutes = minMinutes,
+            maxMinutes = maxMinutes,
             onTimeChange = onTimeChange
         )
     }
@@ -213,17 +216,45 @@ fun TimePickerSection(
 @Composable
 fun TimeRulerPicker(
     currentMinutes: Int,
+    minMinutes: Int,
+    maxMinutes: Int,
     onTimeChange: (Int) -> Unit
 ) {
     val pxPerMinute = 10f
     val snapInterval = 5 // Snap every 5 minutes
     val coroutineScope = rememberCoroutineScope()
     
-    var scrollOffset by remember { mutableFloatStateOf(currentMinutes * pxPerMinute) }
+    // Map initial currentMinutes to the range [minMinutes..maxMinutes]
+    val initialMinutes = remember {
+        val normalized = (currentMinutes % 1440 + 1440) % 1440
+        if (normalized in minMinutes..maxMinutes) normalized
+        else if (normalized + 1440 in minMinutes..maxMinutes) normalized + 1440
+        else if (normalized - 1440 in minMinutes..maxMinutes) normalized - 1440
+        else normalized
+    }
+    
+    var scrollOffset by remember { mutableFloatStateOf(initialMinutes * pxPerMinute) }
     var lastDragTime by remember { mutableLongStateOf(0L) }
     
     // Animate to target position
     val animatedOffset = remember { Animatable(scrollOffset) }
+    
+    // Sync external changes of currentMinutes to scroll state
+    LaunchedEffect(currentMinutes) {
+        val normalized = (currentMinutes % 1440 + 1440) % 1440
+        val mapped = if (normalized in minMinutes..maxMinutes) normalized
+        else if (normalized + 1440 in minMinutes..maxMinutes) normalized + 1440
+        else if (normalized - 1440 in minMinutes..maxMinutes) normalized - 1440
+        else normalized
+        
+        val currentScrollMinutes = (scrollOffset / pxPerMinute).roundToInt()
+        // If the difference is large (greater than snapInterval), it's an external update
+        if (abs(currentScrollMinutes - mapped) > snapInterval) {
+            val targetOffset = mapped * pxPerMinute
+            animatedOffset.snapTo(targetOffset)
+            scrollOffset = targetOffset
+        }
+    }
     
     // Check if we should snap (after user stops dragging)
     LaunchedEffect(scrollOffset) {
@@ -233,20 +264,21 @@ fun TimeRulerPicker(
         kotlinx.coroutines.delay(150) // Wait for user to stop dragging
         
         if (System.currentTimeMillis() - lastDragTime >= 150) {
-            // User has stopped dragging, snap to nearest 5-minute mark
+            // User has stopped dragging, snap to nearest 5-minute mark within bounds
             val currentMinuteFloat = scrollOffset / pxPerMinute
             val snappedMinute = ((currentMinuteFloat / snapInterval).roundToInt() * snapInterval)
+                .coerceIn(minMinutes, maxMinutes)
             val normalizedMinutes = if (snappedMinute < 0) {
                 (snappedMinute % 1440 + 1440) % 1440
             } else {
                 snappedMinute % 1440
             }
             
-            val targetOffset = normalizedMinutes * pxPerMinute
+            val targetOffset = snappedMinute * pxPerMinute
+            
+            onTimeChange(normalizedMinutes)
             
             if (abs(targetOffset - scrollOffset) > 1f) {
-                onTimeChange(normalizedMinutes)
-                
                 // Animate to snapped position
                 animatedOffset.animateTo(
                     targetValue = targetOffset,
@@ -274,7 +306,10 @@ fun TimeRulerPicker(
                     orientation = Orientation.Horizontal,
                     state = rememberScrollableState { delta ->
                         coroutineScope.launch {
-                            val newOffset = scrollOffset - delta
+                            val newOffset = (scrollOffset - delta).coerceIn(
+                                minMinutes * pxPerMinute,
+                                maxMinutes * pxPerMinute
+                            )
                             scrollOffset = newOffset
                             animatedOffset.snapTo(newOffset)
                         }
@@ -289,9 +324,9 @@ fun TimeRulerPicker(
                 val centerOffset = width / 2
                 val currentOffset = animatedOffset.value
 
-                // Draw visible ticks
-                val startMinute = ((currentOffset - centerOffset) / pxPerMinute).toInt() - 60
-                val endMinute = ((currentOffset + centerOffset) / pxPerMinute).toInt() + 60
+                // Draw visible ticks within boundaries
+                val startMinute = (((currentOffset - centerOffset) / pxPerMinute).toInt() - 60).coerceAtLeast(minMinutes)
+                val endMinute = (((currentOffset + centerOffset) / pxPerMinute).toInt() + 60).coerceAtMost(maxMinutes)
 
                 for (min in startMinute..endMinute) {
                     val x = centerOffset + (min * pxPerMinute) - currentOffset

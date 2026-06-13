@@ -1,5 +1,9 @@
 package com.uet.sleeptracker.ui.screens.onboarding.info
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -23,9 +28,15 @@ import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 
 @Composable
 fun PhysicalActivityPermissionScreen(
-    onEnableClick: () -> Unit,
+    onNext: () -> Unit,
     onWhyClick: () -> Unit
 ) {
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { _ ->
+        onNext()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -40,8 +51,8 @@ fun PhysicalActivityPermissionScreen(
             style = MaterialTheme.typography.headlineSmall.copy(
                 color = SleepPrimary,
                 textAlign = TextAlign.Center,
-                lineHeight = 32.sp,
-                fontSize = 22.sp,
+                lineHeight = 22.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Normal
             ),
             modifier = Modifier.fillMaxWidth()
@@ -54,8 +65,8 @@ fun PhysicalActivityPermissionScreen(
             style = MaterialTheme.typography.bodyLarge.copy(
                 color = Color.White,
                 textAlign = TextAlign.Center,
-                lineHeight = 26.sp,
-                fontSize = 17.sp,
+                lineHeight = 20.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Normal
             ),
             modifier = Modifier.fillMaxWidth()
@@ -66,30 +77,37 @@ fun PhysicalActivityPermissionScreen(
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp)
-                .clickable { onEnableClick() },
+                .clickable {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        requestPermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+                    } else {
+                        onNext()
+                    }
+                },
             shape = RoundedCornerShape(16.dp),
             color = Color.Transparent,
             border = BorderStroke(2.dp, SleepPrimary)
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
+                    .fillMaxWidth()
+                    .padding(20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Surface(
                     shape = RoundedCornerShape(8.dp),
-                    color = Color(0xFF4CAF50),
+                    color = Color(0xFF64C564),
                     modifier = Modifier.size(48.dp)
                 ) {
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        Text(
-                            text = "🏃",
-                            fontSize = 24.sp
+                        Icon(
+                            painter = painterResource(id = R.drawable.directions_run_24px),
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 }
@@ -100,7 +118,7 @@ fun PhysicalActivityPermissionScreen(
                     text = stringResource(id = R.string.perm_physical_button),
                     style = MaterialTheme.typography.titleMedium.copy(
                         color = Color.White,
-                        fontSize = 18.sp,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Normal
                     )
                 )
@@ -114,8 +132,8 @@ fun PhysicalActivityPermissionScreen(
             style = MaterialTheme.typography.bodyLarge.copy(
                 color = Color.White,
                 textAlign = TextAlign.Center,
-                lineHeight = 24.sp,
-                fontSize = 16.sp,
+                lineHeight = 20.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Normal
             ),
             modifier = Modifier.padding(horizontal = 16.dp)
@@ -128,7 +146,7 @@ fun PhysicalActivityPermissionScreen(
                 text = stringResource(id = R.string.perm_physical_why),
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = SleepPrimary,
-                    fontSize = 18.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Normal
                 )
             )
@@ -140,6 +158,6 @@ fun PhysicalActivityPermissionScreen(
 @Composable
 fun PhysicalActivityPermissionScreenPreview() {
     SleeptrackerTheme {
-        PhysicalActivityPermissionScreen(onEnableClick = {}, onWhyClick = {})
+        PhysicalActivityPermissionScreen(onNext = {}, onWhyClick = {})
     }
 }

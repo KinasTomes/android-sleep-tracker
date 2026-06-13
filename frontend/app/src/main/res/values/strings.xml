@@ -180,6 +180,7 @@
     <string name="discovery_intro_main_bold">Now, let\'s discover your sleep and energy patterns.</string>
     <string name="discovery_intro_main_desc">We turn existing data into powerful insights.</string>
     <string name="discovery_intro_bullet">Track how your sleep impacts your energy throughout the day.</string>
+    <string name="discovery_intro_bullet_exercise">Find the optimal time to exercise and recover based on your body\'s energy cycles.</string>
     <string name="discovery_intro_button">DISCOVER MY PATTERNS</string>
     <string name="discovery_intro_learn_more">Learn more</string>
 
@@ -195,7 +196,7 @@
     <string name="perm_health_desc">We integrate with other sleep apps and alarm clocks and use step data to estimate historical sleep and provide estimations.</string>
     <string name="perm_health_instruction_bold">Connect RISE to your Health Connect account</string>
     <string name="perm_health_instruction_regular">then tap allow.</string>
-    <string name="perm_health_button">TURN ON SLEEP &amp; STEPS, GOT IT!</string>
+    <string name="perm_health_button">TURN ON SLEEP &amp; STEPS!</string>
     <string name="perm_health_why">Tell me again, why is this important?</string>
 
     <!-- Notification Permission Screen -->
@@ -208,6 +209,25 @@
     <!-- Sleep Need Intro Screen -->
     <string name="sleep_need_intro_text">To understand your sleep debt, we must first answer the question, \"how much sleep do I need?\"</string>
     <string name="sleep_need_intro_button">MY SLEEP PATTERNS</string>
+    <string name="sleep_need_result_value">7h 45m</string>
+    <string name="sleep_need_result_prefix">Based on your sleep patterns, we\'ve learned your</string>
+    <string name="sleep_need_result_bold">sleep need is 7h 45m</string>
+    <string name="sleep_need_result_how_calculated">How do you calculate it?</string>
+    <string name="sleep_need_result_adjust">Adjust sleep need</string>
+    <string name="sleep_need_result_confirm">THAT LOOKS RIGHT</string>
+    <string name="sleep_debt_info_prefix">When you sleep less than your sleep need, you build up</string>
+    <string name="sleep_debt_info_italic">sleep debt</string>
+    <string name="sleep_debt_info_suffix">.</string>
+    <string name="sleep_debt_info_confirm">WHAT IS MY SLEEP DEBT?</string>
+    <string name="sleep_need_edit_header">Edit sleep need</string>
+    <string name="sleep_need_edit_title">Adjust your sleep need until it feels more accurate to you</string>
+    <string name="sleep_need_edit_hint">Think about how long you would sleep if you were on vacation and had no reason to wake up early.</string>
+    <string name="sleep_need_edit_accuracy">This will help us increase the accuracy of your data.</string>
+    <string name="sleep_need_edit_save">SAVE</string>
+    <string name="sleep_need_result_min">7h</string>
+    <string name="sleep_need_result_most_people_start">7h 30m</string>
+    <string name="sleep_need_result_most_people_end">8h 40m</string>
+    <string name="sleep_need_result_max">9h</string>
 
     <!-- Sleep Schedule Screen -->
     <string name="sleep_schedule_title">SLEEP PATTERNS</string>
@@ -215,6 +235,10 @@
     <string name="sleep_schedule_in_bed">In bed</string>
     <string name="sleep_schedule_wake_up">Wake up</string>
     <string name="sleep_schedule_next">NEXT</string>
+
+    <!-- Weekend Sleep Schedule Screen -->
+    <string name="weekend_sleep_schedule_title">SLEEP PATTERNS</string>
+    <string name="weekend_sleep_schedule_headline">On a normal weekend, what is your approximate sleep schedule?</string>
 
     <!-- Profile Screen -->
     <string name="profile_title">Profile</string>
@@ -327,4 +351,5 @@
     <string name="tools_prep_bedroom_desc">Guidance to an environment check</string>
     <string name="tools_habit_reminders_title">Habit Reminders</string>
     <string name="tools_habit_reminders_desc">Optimize routines with nudges aligned with your daily energy schedule.</string>
+    <string name="perm_physical_enabled">Ok</string>
 </resources>

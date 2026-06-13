@@ -1,5 +1,9 @@
 package com.uet.sleeptracker.ui.screens.onboarding.info
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -23,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
+import com.uet.sleeptracker.ui.components.SleepPrimaryOutlinedButton
 import com.uet.sleeptracker.ui.theme.SleepBackground
 import com.uet.sleeptracker.ui.theme.SleepPrimary
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
@@ -32,6 +37,14 @@ fun NotificationPermissionScreen(
     onNext: () -> Unit
 ) {
     var isEnabled by remember { mutableStateOf(false) }
+
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            isEnabled = true
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -47,8 +60,8 @@ fun NotificationPermissionScreen(
             style = MaterialTheme.typography.headlineSmall.copy(
                 color = SleepPrimary,
                 textAlign = TextAlign.Center,
-                lineHeight = 32.sp,
-                fontSize = 24.sp,
+                lineHeight = 22.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Normal
             ),
             modifier = Modifier.fillMaxWidth()
@@ -61,28 +74,33 @@ fun NotificationPermissionScreen(
             style = MaterialTheme.typography.bodyLarge.copy(
                 color = Color.White,
                 textAlign = TextAlign.Center,
-                lineHeight = 24.sp,
-                fontSize = 17.sp,
+                lineHeight = 20.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Normal
             ),
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp)
-                .clickable(enabled = !isEnabled) { isEnabled = true },
+                .clickable(enabled = !isEnabled) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    } else {
+                        isEnabled = true
+                    }
+                },
             shape = RoundedCornerShape(16.dp),
             color = Color.Transparent,
             border = BorderStroke(2.dp, if (isEnabled) Color(0xFF1C1C1E) else SleepPrimary)
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 24.dp),
+                    .fillMaxWidth()
+                    .padding(20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (!isEnabled) {
@@ -93,32 +111,37 @@ fun NotificationPermissionScreen(
                             .size(48.dp)
                             .clip(RoundedCornerShape(12.dp))
                     )
-                    
+
                     Spacer(modifier = Modifier.width(16.dp))
-                    
+
                     Text(
                         text = stringResource(id = R.string.perm_notif_button),
                         style = MaterialTheme.typography.titleMedium.copy(
                             color = Color.White,
-                            fontSize = 18.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Normal
                         )
                     )
                 } else {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = null,
-                        tint = Color(0xFF10B981),
-                        modifier = Modifier.size(32.dp)
-                    )
-                    
+                    Box(
+                        modifier = Modifier.size(48.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                            tint = Color(0xFF10B981),
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+
                     Spacer(modifier = Modifier.width(16.dp))
-                    
+
                     Text(
                         text = stringResource(id = R.string.perm_notif_enabled),
                         style = MaterialTheme.typography.titleMedium.copy(
                             color = Color.Gray,
-                            fontSize = 18.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Normal
                         )
                     )
@@ -126,30 +149,24 @@ fun NotificationPermissionScreen(
             }
         }
 
-        Spacer(modifier = Modifier.weight(1.5f))
+        Spacer(modifier = Modifier.weight(1f))
 
-        AnimatedVisibility(
-            visible = isEnabled,
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically()
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(64.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            OutlinedButton(
-                onClick = onNext,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp),
-                shape = RoundedCornerShape(8.dp),
-                border = BorderStroke(2.dp, SleepPrimary),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = Color.White
-                )
+            AnimatedVisibility(
+                visible = isEnabled,
+                enter = fadeIn() + expandVertically(expandFrom = Alignment.CenterVertically),
+                exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.CenterVertically)
             ) {
-                Text(
+                SleepPrimaryOutlinedButton(
                     text = stringResource(id = R.string.perm_notif_next),
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Normal,
-                        letterSpacing = 1.sp
-                    )
+                    onClick = onNext,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }

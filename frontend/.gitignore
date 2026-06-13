@@ -17,3 +17,6 @@ captures/
 .cxx/
 *.keystore
 !debug.keystore # Cho phép debug keystore nếu cần
+
+# Firebase
+google-services.json

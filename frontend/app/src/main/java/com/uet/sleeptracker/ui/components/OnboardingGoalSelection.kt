@@ -52,14 +52,14 @@ fun GoalSelectableItem(
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                     Text(
                         text = icon,
-                        fontSize = if (isSelected) 20.sp else 18.sp
+                        fontSize = 18.sp
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
                         text = text,
                         style = MaterialTheme.typography.bodyLarge.copy(
                             color = Color.White,
-                            fontSize = if (isSelected) 18.sp else 16.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Normal
                         )
                     )

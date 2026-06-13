@@ -11,9 +11,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -25,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
+import com.uet.sleeptracker.ui.components.SleepPrimaryButton
 import com.uet.sleeptracker.ui.theme.SleepBackground
 import com.uet.sleeptracker.ui.theme.SleepPrimary
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
@@ -39,11 +39,13 @@ fun OnboardingDiscoveryIntroScreen(
             .fillMaxSize()
             .background(SleepBackground)
     ) {
+
         WavyLines(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(400.dp)
+                .height(280.dp)
                 .align(Alignment.TopCenter)
+                .padding(top = 36.dp)
         )
 
         Column(
@@ -60,7 +62,7 @@ fun OnboardingDiscoveryIntroScreen(
                 style = MaterialTheme.typography.titleMedium.copy(
                     color = Color.White,
                     fontWeight = FontWeight.Normal,
-                    fontSize = 20.sp
+                    fontSize = 14.sp
                 )
             )
 
@@ -77,66 +79,27 @@ fun OnboardingDiscoveryIntroScreen(
                 style = MaterialTheme.typography.headlineMedium.copy(
                     color = Color.White,
                     textAlign = TextAlign.Center,
-                    lineHeight = 32.sp,
-                    fontSize = 24.sp,
+                    lineHeight = 22.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Normal
                 )
             )
 
             Spacer(modifier = Modifier.weight(0.8f))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Top,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                Surface(
-                    shape = CircleShape,
-                    color = Color.Transparent,
-                    border = androidx.compose.foundation.BorderStroke(2.dp, SleepPrimary),
-                    modifier = Modifier.size(28.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = null,
-                        tint = SleepPrimary,
-                        modifier = Modifier.padding(4.dp)
-                    )
-                }
-                
-                Spacer(modifier = Modifier.width(16.dp))
-                
-                Text(
-                    text = stringResource(id = R.string.discovery_intro_bullet),
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        color = Color.White,
-                        lineHeight = 24.sp,
-                        fontSize = 17.sp
-                    )
-                )
-            }
+            DiscoveryIntroBullet(text = stringResource(id = R.string.discovery_intro_bullet))
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            DiscoveryIntroBullet(text = stringResource(id = R.string.discovery_intro_bullet_exercise))
 
             Spacer(modifier = Modifier.weight(1.5f))
 
-            Button(
+            SleepPrimaryButton(
+                text = stringResource(id = R.string.discovery_intro_button),
                 onClick = onNavigateNext,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = SleepPrimary
-                )
-            ) {
-                Text(
-                    text = stringResource(id = R.string.discovery_intro_button),
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Normal, 
-                        letterSpacing = 1.sp,
-                        color = Color.White
-                    )
-                )
-            }
+                modifier = Modifier.fillMaxWidth()
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -146,7 +109,7 @@ fun OnboardingDiscoveryIntroScreen(
                     style = MaterialTheme.typography.bodyLarge.copy(
                         color = SleepPrimary,
                         fontWeight = FontWeight.Normal,
-                        fontSize = 18.sp
+                        fontSize = 14.sp
                     )
                 )
             }
@@ -155,8 +118,54 @@ fun OnboardingDiscoveryIntroScreen(
 }
 
 @Composable
+private fun DiscoveryIntroBullet(text: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.Start
+    ) {
+        Surface(
+            shape = CircleShape,
+            color = Color.Transparent,
+            border = androidx.compose.foundation.BorderStroke(2.dp, SleepPrimary),
+            modifier = Modifier.size(28.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = null,
+                tint = SleepPrimary,
+                modifier = Modifier.padding(4.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyLarge.copy(
+                color = Color.White,
+                lineHeight = 20.sp,
+                fontSize = 14.sp
+            )
+        )
+    }
+}
+
+@Composable
 fun WavyLines(modifier: Modifier = Modifier) {
-    Canvas(modifier = modifier) {
+    Canvas(modifier = modifier
+        .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+        .drawWithContent {
+            drawContent()
+            drawRect(
+                brush = Brush.verticalGradient(
+                    0f   to Color.Black,
+                    0.5f to Color.Black,
+                    1f   to Color.Transparent
+                ),
+                blendMode = BlendMode.DstIn
+            )
+        }) {
         val width = size.width
         val height = size.height
         
@@ -170,7 +179,7 @@ fun WavyLines(modifier: Modifier = Modifier) {
 
         colors.forEachIndexed { index, color ->
             val path = Path()
-            val yStart = height * 0.15f + (index * 20.dp.toPx())
+            val yStart = height * 0.3f + (index * 20.dp.toPx())
             path.moveTo(0f, yStart)
             
             val midX = width * 0.5f
