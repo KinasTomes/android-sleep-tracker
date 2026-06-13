@@ -62,11 +62,33 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
 import com.uet.sleeptracker.ui.screens.tools.ToolsViewModel
+import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.media.AudioAttributes
+import android.media.RingtoneManager
+import android.os.Build
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import android.content.pm.PackageManager
+import com.google.firebase.messaging.FirebaseMessaging
+import com.uet.sleeptracker.notifications.FcmTokenRegistrar
+import com.uet.sleeptracker.notifications.LumiFirebaseMessagingService
+
 
 class MainActivity : ComponentActivity() {
+    private val notificationPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
+                registerFcmToken()
+            }
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        createNotificationChannels()
+        requestNotificationPermissionAndRegisterToken()
         setContent {
             SleeptrackerTheme {
                 val navController = rememberNavController()
@@ -1570,6 +1592,59 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun requestNotificationPermissionAndRegisterToken() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val granted = ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+
+            if (granted) {
+                registerFcmToken()
+            } else {
+                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        } else {
+            registerFcmToken()
+        }
+    }
+
+    private fun registerFcmToken() {
+        FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
+            FcmTokenRegistrar.register(token)
+        }
+    }
+
+    private fun createNotificationChannels() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
+
+        val manager = getSystemService(NotificationManager::class.java)
+
+        val habitChannel = NotificationChannel(
+            LumiFirebaseMessagingService.CHANNEL_HABIT_NUDGES,
+            "Habit reminders",
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+
+        val alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+        val alarmAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_ALARM)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build()
+
+        val alarmChannel = NotificationChannel(
+            LumiFirebaseMessagingService.CHANNEL_ALARMS,
+            "Smart alarms",
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            enableVibration(true)
+            setSound(alarmSound, alarmAttributes)
+        }
+
+        manager.createNotificationChannel(habitChannel)
+        manager.createNotificationChannel(alarmChannel)
     }
 }
 
