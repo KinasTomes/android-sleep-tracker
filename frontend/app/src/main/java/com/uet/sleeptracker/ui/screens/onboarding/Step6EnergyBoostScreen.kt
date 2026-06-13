@@ -69,7 +69,7 @@ fun Step6EnergyBoostScreen(
             style = MaterialTheme.typography.headlineSmall.copy(
                 fontWeight = FontWeight.Bold,
                 color = accentColor,
-                fontSize = 26.sp
+                fontSize = 16.sp
             )
         )
 
@@ -79,8 +79,8 @@ fun Step6EnergyBoostScreen(
             text = stringResource(id = R.string.onboarding_energy_select_description),
             style = MaterialTheme.typography.bodyLarge.copy(
                 color = Color.White.copy(alpha = 0.7f),
-                lineHeight = 24.sp,
-                fontSize = 18.sp
+                lineHeight = 20.sp,
+                fontSize = 14.sp
             )
         )
 

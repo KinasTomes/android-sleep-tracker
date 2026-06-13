@@ -46,8 +46,8 @@ fun DataPermissionInfoScreen(
                 color = SleepPrimary,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
-                lineHeight = 34.sp,
-                fontSize = 26.sp
+                lineHeight = 22.sp,
+                fontSize = 16.sp
             ),
             modifier = Modifier.fillMaxWidth()
         )
@@ -62,7 +62,7 @@ fun DataPermissionInfoScreen(
                 style = MaterialTheme.typography.titleLarge.copy(
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
+                    fontSize = 14.sp
                 )
             )
             
@@ -73,8 +73,8 @@ fun DataPermissionInfoScreen(
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = Color.White,
                     textAlign = TextAlign.Center,
-                    lineHeight = 24.sp,
-                    fontSize = 16.sp
+                    lineHeight = 20.sp,
+                    fontSize = 14.sp
                 ),
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
@@ -129,7 +129,7 @@ fun DataPermissionInfoScreen(
                 style = MaterialTheme.typography.titleLarge.copy(
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
+                    fontSize = 14.sp
                 )
             )
             
@@ -140,8 +140,8 @@ fun DataPermissionInfoScreen(
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = Color.White,
                     textAlign = TextAlign.Center,
-                    lineHeight = 24.sp,
-                    fontSize = 16.sp
+                    lineHeight = 20.sp,
+                    fontSize = 14.sp
                 )
             )
         }
@@ -179,8 +179,8 @@ private fun InfoItem(
             text = text,
             style = MaterialTheme.typography.bodyLarge.copy(
                 color = Color.White,
-                fontSize = 16.sp,
-                lineHeight = 22.sp
+                fontSize = 14.sp,
+                lineHeight = 20.sp
             )
         )
     }

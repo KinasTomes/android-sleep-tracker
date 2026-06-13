@@ -117,8 +117,8 @@ private fun OnboardingSleepNeedResultContent(
                 text = informationText,
                 style = MaterialTheme.typography.headlineMedium.copy(
                     color = Color.White,
-                    fontSize = 22.sp,
-                    lineHeight = 30.sp,
+                    fontSize = 16.sp,
+                    lineHeight = 22.sp,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Normal
                 ),
@@ -136,7 +136,7 @@ private fun OnboardingSleepNeedResultContent(
                         text = stringResource(id = R.string.sleep_need_result_how_calculated),
                         color = SleepPrimary,
                         style = MaterialTheme.typography.titleLarge.copy(
-                            fontSize = 22.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Normal
                         )
                     )
@@ -148,7 +148,7 @@ private fun OnboardingSleepNeedResultContent(
                     text = stringResource(id = R.string.sleep_need_result_adjust),
                     color = SleepPrimary,
                     style = MaterialTheme.typography.titleMedium.copy(
-                        fontSize = 18.sp,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Bold
                     )
                 )
@@ -159,7 +159,13 @@ private fun OnboardingSleepNeedResultContent(
             SleepPrimaryOutlinedButton(
                 text = primaryButtonText,
                 onClick = onPrimaryAction,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                height = 56.dp,
+                textStyle = MaterialTheme.typography.titleLarge.copy(
+                    color = Color.White,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Normal
+                )
             )
         }
 
@@ -215,7 +221,7 @@ fun SleepNeedCalculationBottomSheetContent(
             text = "What's sleep need?",
             style = MaterialTheme.typography.headlineSmall.copy(
                 color = Color.White,
-                fontSize = 26.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Normal
             ),
             textAlign = TextAlign.Center
@@ -230,18 +236,18 @@ fun SleepNeedCalculationBottomSheetContent(
             Text(
                 text = "Based on ",
                 color = Color.Gray,
-                fontSize = 18.sp
+                fontSize = 14.sp
             )
             Surface(
                 shape = CircleShape,
                 color = SleepPrimary,
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier.size(24.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Text(
                         text = nightsCount.toString(),
                         color = Color.White,
-                        fontSize = 16.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -249,7 +255,7 @@ fun SleepNeedCalculationBottomSheetContent(
             Text(
                 text = " nights of sleep",
                 color = Color.Gray,
-                fontSize = 18.sp
+                fontSize = 14.sp
             )
         }
 
@@ -259,8 +265,8 @@ fun SleepNeedCalculationBottomSheetContent(
             text = "We estimate your sleep need by comparing how much sleep you usually get versus when you sleep longer than usual—something we call a sleep rebound. This is because your body tries to make up the sleep it needs when you sleep longer than usual.",
             style = MaterialTheme.typography.bodyLarge.copy(
                 color = Color.LightGray,
-                fontSize = 17.sp,
-                lineHeight = 26.sp,
+                fontSize = 14.sp,
+                lineHeight = 20.sp,
                 textAlign = TextAlign.Center
             ),
             modifier = Modifier.fillMaxWidth()
@@ -353,7 +359,7 @@ private fun OnboardingSleepNeedResultGauge(
             Text(
                 text = currentNeed,
                 color = SleepPrimary,
-                fontSize = 28.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Normal
             )
             Box(

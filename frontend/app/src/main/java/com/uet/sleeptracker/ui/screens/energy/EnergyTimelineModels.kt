@@ -95,11 +95,11 @@ private fun EnergyTimelineTime.toTimelineMinutes(timelineStartTime: EnergyTimeli
     return absoluteMinutes - timelineStartMinutes
 }
 
-private fun EnergyTimelineTime.toAbsoluteMinutes(): Int {
+internal fun EnergyTimelineTime.toAbsoluteMinutes(): Int {
     return dayOffset * 24 * 60 + hour * 60 + minute
 }
 
-private fun energyTimelineTimeFromAbsoluteMinutes(absoluteMinutes: Int): EnergyTimelineTime {
+internal fun energyTimelineTimeFromAbsoluteMinutes(absoluteMinutes: Int): EnergyTimelineTime {
     val dayOffset = Math.floorDiv(absoluteMinutes, 24 * 60)
     val minuteOfDay = Math.floorMod(absoluteMinutes, 24 * 60)
 
@@ -108,6 +108,10 @@ private fun energyTimelineTimeFromAbsoluteMinutes(absoluteMinutes: Int): EnergyT
         minute = minuteOfDay % 60,
         dayOffset = dayOffset
     )
+}
+
+internal fun EnergyTimelineTime.addMinutes(minutes: Int): EnergyTimelineTime {
+    return energyTimelineTimeFromAbsoluteMinutes(toAbsoluteMinutes() + minutes)
 }
 
 internal fun defaultEnergyPhases(): List<EnergyPhaseUiModel> = listOf(

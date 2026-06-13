@@ -196,7 +196,7 @@
     <string name="perm_health_desc">We integrate with other sleep apps and alarm clocks and use step data to estimate historical sleep and provide estimations.</string>
     <string name="perm_health_instruction_bold">Connect RISE to your Health Connect account</string>
     <string name="perm_health_instruction_regular">then tap allow.</string>
-    <string name="perm_health_button">TURN ON SLEEP &amp; STEPS, GOT IT!</string>
+    <string name="perm_health_button">TURN ON SLEEP &amp; STEPS!</string>
     <string name="perm_health_why">Tell me again, why is this important?</string>
 
     <!-- Notification Permission Screen -->

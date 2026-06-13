@@ -90,6 +90,13 @@ class MainActivity : ComponentActivity() {
 
                         MainTabsScreen(
                             alarms = smartAlarmViewModel.alarms,
+                            onAlarmEditClick = { alarm ->
+                                val index = smartAlarmViewModel.alarms.indexOfFirst { it.id == alarm.id }
+                                if (index != -1) {
+                                    smartAlarmViewModel.editingIndex = index
+                                    navController.navigate("smart_alarm_schedule")
+                                }
+                            },
                             onProfileClick = { navController.navigate("profile") },
                             onPeaksAndDipsClick = { navController.navigate("peaks_and_dips") },
                             onCaffeineCutoffClick = { navController.navigate("caffeine_cutoff") },

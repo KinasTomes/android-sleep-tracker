@@ -48,8 +48,8 @@ fun NotificationPermissionScreen(
             style = MaterialTheme.typography.headlineSmall.copy(
                 color = SleepPrimary,
                 textAlign = TextAlign.Center,
-                lineHeight = 32.sp,
-                fontSize = 24.sp,
+                lineHeight = 22.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Normal
             ),
             modifier = Modifier.fillMaxWidth()
@@ -62,8 +62,8 @@ fun NotificationPermissionScreen(
             style = MaterialTheme.typography.bodyLarge.copy(
                 color = Color.White,
                 textAlign = TextAlign.Center,
-                lineHeight = 24.sp,
-                fontSize = 17.sp,
+                lineHeight = 20.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Normal
             ),
             modifier = Modifier.fillMaxWidth()
@@ -100,7 +100,7 @@ fun NotificationPermissionScreen(
                         text = stringResource(id = R.string.perm_notif_button),
                         style = MaterialTheme.typography.titleMedium.copy(
                             color = Color.White,
-                            fontSize = 18.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Normal
                         )
                     )
@@ -123,7 +123,7 @@ fun NotificationPermissionScreen(
                         text = stringResource(id = R.string.perm_notif_enabled),
                         style = MaterialTheme.typography.titleMedium.copy(
                             color = Color.Gray,
-                            fontSize = 18.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Normal
                         )
                     )

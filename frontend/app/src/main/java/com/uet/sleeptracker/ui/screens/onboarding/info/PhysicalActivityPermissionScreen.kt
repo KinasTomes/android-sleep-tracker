@@ -41,8 +41,8 @@ fun PhysicalActivityPermissionScreen(
             style = MaterialTheme.typography.headlineSmall.copy(
                 color = SleepPrimary,
                 textAlign = TextAlign.Center,
-                lineHeight = 32.sp,
-                fontSize = 22.sp,
+                lineHeight = 22.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Normal
             ),
             modifier = Modifier.fillMaxWidth()
@@ -55,8 +55,8 @@ fun PhysicalActivityPermissionScreen(
             style = MaterialTheme.typography.bodyLarge.copy(
                 color = Color.White,
                 textAlign = TextAlign.Center,
-                lineHeight = 26.sp,
-                fontSize = 17.sp,
+                lineHeight = 20.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Normal
             ),
             modifier = Modifier.fillMaxWidth()
@@ -102,7 +102,7 @@ fun PhysicalActivityPermissionScreen(
                     text = stringResource(id = R.string.perm_physical_button),
                     style = MaterialTheme.typography.titleMedium.copy(
                         color = Color.White,
-                        fontSize = 18.sp,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Normal
                     )
                 )
@@ -116,8 +116,8 @@ fun PhysicalActivityPermissionScreen(
             style = MaterialTheme.typography.bodyLarge.copy(
                 color = Color.White,
                 textAlign = TextAlign.Center,
-                lineHeight = 24.sp,
-                fontSize = 16.sp,
+                lineHeight = 20.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Normal
             ),
             modifier = Modifier.padding(horizontal = 16.dp)
@@ -130,7 +130,7 @@ fun PhysicalActivityPermissionScreen(
                 text = stringResource(id = R.string.perm_physical_why),
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = SleepPrimary,
-                    fontSize = 18.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Normal
                 )
             )

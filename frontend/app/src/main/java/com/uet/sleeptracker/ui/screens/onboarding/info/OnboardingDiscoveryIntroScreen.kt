@@ -62,7 +62,7 @@ fun OnboardingDiscoveryIntroScreen(
                 style = MaterialTheme.typography.titleMedium.copy(
                     color = Color.White,
                     fontWeight = FontWeight.Normal,
-                    fontSize = 20.sp
+                    fontSize = 14.sp
                 )
             )
 
@@ -79,8 +79,8 @@ fun OnboardingDiscoveryIntroScreen(
                 style = MaterialTheme.typography.headlineMedium.copy(
                     color = Color.White,
                     textAlign = TextAlign.Center,
-                    lineHeight = 32.sp,
-                    fontSize = 24.sp,
+                    lineHeight = 22.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Normal
                 )
             )
@@ -109,7 +109,7 @@ fun OnboardingDiscoveryIntroScreen(
                     style = MaterialTheme.typography.bodyLarge.copy(
                         color = SleepPrimary,
                         fontWeight = FontWeight.Normal,
-                        fontSize = 18.sp
+                        fontSize = 14.sp
                     )
                 )
             }
@@ -144,8 +144,8 @@ private fun DiscoveryIntroBullet(text: String) {
             text = text,
             style = MaterialTheme.typography.bodyLarge.copy(
                 color = Color.White,
-                lineHeight = 24.sp,
-                fontSize = 17.sp
+                lineHeight = 20.sp,
+                fontSize = 14.sp
             )
         )
     }

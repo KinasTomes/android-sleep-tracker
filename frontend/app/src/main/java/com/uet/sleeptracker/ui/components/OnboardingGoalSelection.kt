@@ -59,7 +59,7 @@ fun GoalSelectableItem(
                         text = text,
                         style = MaterialTheme.typography.bodyLarge.copy(
                             color = Color.White,
-                            fontSize = 16.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Normal
                         )
                     )

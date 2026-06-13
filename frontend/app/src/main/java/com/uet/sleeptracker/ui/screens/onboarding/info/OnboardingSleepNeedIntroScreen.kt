@@ -59,8 +59,8 @@ fun OnboardingSleepNeedIntroScreen(
                 style = MaterialTheme.typography.headlineSmall.copy(
                     color = Color.White,
                     textAlign = TextAlign.Center,
-                    lineHeight = 36.sp,
-                    fontSize = 24.sp,
+                    lineHeight = 22.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Normal
                 ),
                 modifier = Modifier.fillMaxWidth()

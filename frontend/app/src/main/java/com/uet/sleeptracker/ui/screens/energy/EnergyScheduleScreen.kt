@@ -41,6 +41,9 @@ import java.util.Calendar
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
+import com.uet.sleeptracker.ui.screens.tools.AlarmItem
+import java.util.Locale
+
 @Composable
 fun EnergyScheduleScreen(
     profileIcon: Painter,
@@ -51,7 +54,9 @@ fun EnergyScheduleScreen(
     caffeineImage: Painter,
     modifier: Modifier = Modifier,
     viewModel: EnergyScheduleViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
-    showTopBar: Boolean = true
+    showTopBar: Boolean = true,
+    alarms: List<AlarmItem> = emptyList(),
+    onAlarmEditClick: (AlarmItem) -> Unit = {}
 ) {
     val state by viewModel.uiState.collectAsState()
 
@@ -65,7 +70,9 @@ fun EnergyScheduleScreen(
         windDownImage = windDownImage,
         caffeineImage = caffeineImage,
         modifier = modifier,
-        showTopBar = showTopBar
+        showTopBar = showTopBar,
+        alarms = alarms,
+        onAlarmEditClick = onAlarmEditClick
     )
 }
 
@@ -80,13 +87,37 @@ fun EnergyScheduleScreen(
     windDownImage: Painter,
     caffeineImage: Painter,
     modifier: Modifier = Modifier,
-    showTopBar: Boolean = true
+    showTopBar: Boolean = true,
+    alarms: List<AlarmItem> = emptyList(),
+    onAlarmEditClick: (AlarmItem) -> Unit = {}
 ) {
     LaunchedEffect(Unit) {
         while (true) {
             onCurrentTimeChange(currentEnergyTimelineTime())
             delay(60_000.milliseconds)
         }
+    }
+
+    val now = Calendar.getInstance()
+    val nextAlarmInfo = alarms
+        .mapNotNull { alarm ->
+            val nextTime = getNextOccurrence(alarm, now)
+            if (nextTime != null) alarm to nextTime else null
+        }
+        .minByOrNull { it.second.timeInMillis }
+
+    val alarmLabel: String
+    val alarmActiveDays: List<Int>
+    if (nextAlarmInfo != null) {
+        val (alarm, nextTime) = nextAlarmInfo
+        val dayLabel = getDayLabel(nextTime, now)
+        alarmLabel = "${alarm.time} $dayLabel"
+        alarmActiveDays = alarm.activeDays.mapIndexedNotNull { index, isActive ->
+            if (isActive) index + 1 else null
+        }
+    } else {
+        alarmLabel = "No alarm"
+        alarmActiveDays = emptyList()
     }
 
     val timelineData = state.timelineData
@@ -109,9 +140,26 @@ fun EnergyScheduleScreen(
     } else {
         timelineData.sleepNeedTime.toTimelineY(timelineStartTime)
     }
-    val wakeWindowY = state.wakeWindowStartTime.toTimelineY(timelineStartTime)
-    val wakeWindowDuration = calculateDurationMinutes(state.wakeWindowStartTime, state.wakeWindowEndTime)
+    val nextAlarmTimelineTime = if (nextAlarmInfo != null) {
+        val (alarm, nextTime) = nextAlarmInfo
+        val parts = alarm.time.split(":")
+        val hour = parts.getOrNull(0)?.toIntOrNull() ?: 0
+        val minute = parts.getOrNull(1)?.toIntOrNull() ?: 0
+        EnergyTimelineTime(hour = hour, minute = minute, dayOffset = state.sleepEndTime.dayOffset + 1)
+    } else {
+        null
+    }
+
+    val wakeWindowStartTime = state.wakeWindowStartTime
+    val wakeWindowEndTime = state.wakeWindowEndTime
+
+    val wakeWindowY = wakeWindowStartTime.toTimelineY(timelineStartTime)
+    val wakeWindowDuration = calculateDurationMinutes(wakeWindowStartTime, wakeWindowEndTime)
     val wakeWindowHeight = wakeWindowDuration.toTimelineHeight()
+
+    val alarmTimelineTime = nextAlarmTimelineTime ?: state.alarmTime.copy(dayOffset = state.sleepEndTime.dayOffset + 1)
+    val alarmTimeY = alarmTimelineTime.toTimelineY(timelineStartTime)
+    val alarmOffset = alarmTimeY - wakeWindowY - 37.dp
     val contentHeight = maxOf(
         EnergyTimelineContentHeight,
         wakeWindowY.value + wakeWindowHeight.value + 100f,
@@ -234,9 +282,13 @@ fun EnergyScheduleScreen(
                         modifier = Modifier
                             .offset(x = 0.dp, y = wakeWindowY)
                             .zIndex(11f),
-                        alarmTimeText = state.alarmTimeText,
-                        activeDays = state.alarmActiveDays,
-                        height = wakeWindowHeight
+                        alarmTimeText = alarmLabel,
+                        activeDays = alarmActiveDays,
+                        height = wakeWindowHeight,
+                        alarmOffset = alarmOffset,
+                        onClickAlarm = {
+                            nextAlarmInfo?.first?.let { onAlarmEditClick(it) }
+                        }
                     )
 
                     EnergyTimelineRuler(
@@ -798,7 +850,9 @@ private fun WakeWindowBlock(
     modifier: Modifier = Modifier,
     alarmTimeText: String,
     activeDays: List<Int>,
-    height: Dp = 110.dp
+    height: Dp = 110.dp,
+    alarmOffset: Dp = 18.5.dp,
+    onClickAlarm: () -> Unit = {}
 ) {
     Box(
         modifier = modifier
@@ -837,9 +891,10 @@ private fun WakeWindowBlock(
         )
 
         AlarmTimePicker(
-            modifier = Modifier.offset(x = 54.dp, y = (-19).dp),
+            modifier = Modifier.offset(x = 54.dp, y = alarmOffset),
             timeText = alarmTimeText,
-            activeDays = activeDays
+            activeDays = activeDays,
+            onClick = onClickAlarm
         )
     }
 }
@@ -854,16 +909,62 @@ private fun WakeWindowBlock(
 private fun EnergyScheduleScreenPreview() {
     MaterialTheme {
         EnergyScheduleScreen(
-            state = EnergyScheduleUiState(
-                alarmActiveDays = listOf(1, 2, 3, 4, 5, 6, 7)
-            ),
+            state = EnergyScheduleUiState(),
             onCurrentTimeChange = {},
             profileIcon = ColorPainter(Color(0xFF721BFD)),
             lightningIcon = ColorPainter(Color(0xFF00EBAC)),
             sleepIcon = ColorPainter(Color.White),
             editIcon = ColorPainter(Color.White),
             windDownImage = ColorPainter(Color(0xFF8D59FC)),
-            caffeineImage = ColorPainter(Color(0xFFFF4F7B))
+            caffeineImage = ColorPainter(Color(0xFFFF4F7B)),
+            alarms = listOf(
+                AlarmItem(id = "1", time = "06:05", isEnabled = true, activeDays = listOf(true, true, true, true, true, true, true))
+            )
         )
+    }
+}
+
+private fun getNextOccurrence(alarm: AlarmItem, now: Calendar): Calendar? {
+    if (!alarm.isEnabled || alarm.activeDays.none { it }) return null
+    val parts = alarm.time.split(":")
+    if (parts.size != 2) return null
+    val hour = parts[0].toIntOrNull() ?: return null
+    val minute = parts[1].toIntOrNull() ?: return null
+
+    for (offset in 0..7) {
+        val candidate = (now.clone() as Calendar).apply {
+            add(Calendar.DAY_OF_YEAR, offset)
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val dayOfWeekIndex = candidate.get(Calendar.DAY_OF_WEEK) - 1
+        if (alarm.activeDays.getOrElse(dayOfWeekIndex) { false }) {
+            if (candidate.after(now)) {
+                return candidate
+            }
+        }
+    }
+    return null
+}
+
+private fun getDayLabel(nextTime: Calendar, now: Calendar): String {
+    val nextYear = nextTime.get(Calendar.YEAR)
+    val nextDayOfYear = nextTime.get(Calendar.DAY_OF_YEAR)
+
+    val todayYear = now.get(Calendar.YEAR)
+    val todayDayOfYear = now.get(Calendar.DAY_OF_YEAR)
+
+    val tomorrow = (now.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, 1) }
+    val tomorrowYear = tomorrow.get(Calendar.YEAR)
+    val tomorrowDayOfYear = tomorrow.get(Calendar.DAY_OF_YEAR)
+
+    return when {
+        nextYear == todayYear && nextDayOfYear == todayDayOfYear -> "Today"
+        nextYear == tomorrowYear && nextDayOfYear == tomorrowDayOfYear -> "Tomorrow"
+        else -> {
+            nextTime.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.US) ?: ""
+        }
     }
 }

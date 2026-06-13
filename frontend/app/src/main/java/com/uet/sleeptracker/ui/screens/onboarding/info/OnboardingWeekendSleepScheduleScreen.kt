@@ -88,8 +88,8 @@ fun OnboardingWeekendSleepScheduleScreen(
                 style = MaterialTheme.typography.headlineMedium.copy(
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 28.sp,
-                    lineHeight = 36.sp
+                    fontSize = 16.sp,
+                    lineHeight = 22.sp
                 )
             )
 
@@ -141,7 +141,13 @@ fun OnboardingWeekendSleepScheduleScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp)
+                    .padding(bottom = 16.dp),
+                height = 56.dp,
+                textStyle = MaterialTheme.typography.titleMedium.copy(
+                    color = Color.White,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Normal
+                )
             )
         }
     }
@@ -165,13 +171,13 @@ fun WeekendTimePickerSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = icon, fontSize = 20.sp)
+                Text(text = icon, fontSize = 14.sp)
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
                     text = label,
                     style = MaterialTheme.typography.titleLarge.copy(
                         color = Color.White,
-                        fontSize = 22.sp
+                        fontSize = 14.sp
                     )
                 )
             }
@@ -183,7 +189,7 @@ fun WeekendTimePickerSection(
                 text = "$startTime - $endTime",
                 style = MaterialTheme.typography.titleLarge.copy(
                     color = Color.White.copy(alpha = 0.9f),
-                    fontSize = 22.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Normal
                 )
             )

@@ -88,10 +88,10 @@ fun OnboardingEditSleepNeedScreen(
                     text = stringResource(R.string.sleep_need_edit_save),
                     onClick = onSaveClick,
                     modifier = Modifier.fillMaxWidth(),
-                    height = 68.dp,
+                    height = 56.dp,
                     textStyle = MaterialTheme.typography.titleLarge.copy(
                         color = Color.White,
-                        fontSize = 20.sp,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Normal
                     )
                 )
@@ -118,8 +118,8 @@ fun OnboardingEditSleepNeedScreen(
             Text(
                 text = stringResource(R.string.sleep_need_edit_title),
                 color = Color.White,
-                fontSize = 21.sp,
-                lineHeight = 30.sp,
+                fontSize = 16.sp,
+                lineHeight = 22.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -131,8 +131,8 @@ fun OnboardingEditSleepNeedScreen(
             Text(
                 text = stringResource(R.string.sleep_need_edit_hint),
                 color = Color.White,
-                fontSize = 17.sp,
-                lineHeight = 27.sp,
+                fontSize = 14.sp,
+                lineHeight = 20.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -144,8 +144,8 @@ fun OnboardingEditSleepNeedScreen(
             Text(
                 text = stringResource(R.string.sleep_need_edit_accuracy),
                 color = Color.White,
-                fontSize = 17.sp,
-                lineHeight = 27.sp,
+                fontSize = 14.sp,
+                lineHeight = 20.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -180,7 +180,7 @@ private fun EditSleepNeedTopBar(onBackClick: () -> Unit) {
         Text(
             text = stringResource(R.string.sleep_need_edit_header),
             color = Color.White,
-            fontSize = 17.sp,
+            fontSize = 16.sp,
             fontWeight = FontWeight.Normal
         )
     }
@@ -326,7 +326,7 @@ private fun EditSleepNeedGauge(
                 val label3WidthDp = with(density) {
                     textMeasurer.measure(
                         text = label3Text,
-                        style = TextStyle(fontSize = 16.sp)
+                        style = TextStyle(fontSize = 14.sp)
                     ).size.width.toDp()
                 }
                 GaugeBoundaryLabel(
@@ -406,7 +406,7 @@ private fun GaugeBoundaryLabel(text: String, modifier: Modifier = Modifier) {
         text = text,
         modifier = modifier,
         color = Color(0xFF7A7A7F),
-        fontSize = 16.sp
+        fontSize = 14.sp
     )
 }
 

@@ -53,6 +53,7 @@ import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 fun MainTabsScreen(
     modifier: Modifier = Modifier,
     alarms: List<AlarmItem> = emptyList(),
+    onAlarmEditClick: (AlarmItem) -> Unit = {},
     onProfileClick: () -> Unit = {},
     onPeaksAndDipsClick: () -> Unit = {},
     onCaffeineCutoffClick: () -> Unit = {},
@@ -117,7 +118,9 @@ fun MainTabsScreen(
                                 editIcon = painterResource(id = R.drawable.scissor),
                                 windDownImage = painterResource(id = R.drawable.evening),
                                 caffeineImage = painterResource(id = R.drawable.ceffeine),
-                                showTopBar = false
+                                showTopBar = false,
+                                alarms = alarms,
+                                onAlarmEditClick = onAlarmEditClick
                             )
                         }
 

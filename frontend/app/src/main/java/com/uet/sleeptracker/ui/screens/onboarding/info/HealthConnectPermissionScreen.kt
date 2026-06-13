@@ -41,8 +41,8 @@ fun HealthConnectPermissionScreen(
             style = MaterialTheme.typography.headlineSmall.copy(
                 color = SleepPrimary,
                 textAlign = TextAlign.Center,
-                lineHeight = 32.sp,
-                fontSize = 24.sp,
+                lineHeight = 22.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Normal
             ),
             modifier = Modifier.fillMaxWidth()
@@ -55,8 +55,8 @@ fun HealthConnectPermissionScreen(
             style = MaterialTheme.typography.bodyLarge.copy(
                 color = Color.White,
                 textAlign = TextAlign.Center,
-                lineHeight = 24.sp,
-                fontSize = 17.sp,
+                lineHeight = 20.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Normal
             ),
             modifier = Modifier.fillMaxWidth()
@@ -73,7 +73,7 @@ fun HealthConnectPermissionScreen(
             style = MaterialTheme.typography.titleMedium.copy(
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
+                fontSize = 14.sp,
                 textAlign = TextAlign.Center
             )
         )
@@ -83,7 +83,7 @@ fun HealthConnectPermissionScreen(
             style = MaterialTheme.typography.bodyLarge.copy(
                 color = Color.White,
                 fontWeight = FontWeight.Normal,
-                fontSize = 18.sp,
+                fontSize = 14.sp,
                 textAlign = TextAlign.Center
             )
         )
@@ -103,7 +103,7 @@ fun HealthConnectPermissionScreen(
                 text = stringResource(id = R.string.perm_health_why),
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = SleepPrimary,
-                    fontSize = 17.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Normal
                 )
             )

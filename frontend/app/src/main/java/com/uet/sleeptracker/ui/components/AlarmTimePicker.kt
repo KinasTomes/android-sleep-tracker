@@ -136,7 +136,7 @@ fun AlarmTimePicker(
                             color = if (activeDays.contains(day.first)) {
                                 Color(0xFF721BFD)
                             } else {
-                                Color(0xFF343434)
+                                Color(0xFF989898)
                             },
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Normal,
