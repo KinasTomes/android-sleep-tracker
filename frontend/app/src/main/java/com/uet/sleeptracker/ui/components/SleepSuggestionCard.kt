@@ -41,9 +41,16 @@ enum class SleepSuggestionCardTextStyle {
 }
 
 data class SleepSuggestionCardDetailLine(
-    val text: String,
+    val annotatedText: androidx.compose.ui.text.AnnotatedString,
     val color: Color,
-)
+) {
+    constructor(text: String, color: Color) : this(
+        annotatedText = androidx.compose.ui.text.AnnotatedString(text),
+        color = color
+    )
+
+    val text: String get() = annotatedText.text
+}
 
 @Composable
 fun SleepSuggestionCard(
@@ -113,7 +120,7 @@ fun SleepSuggestionCard(
 
                         detailLines.forEach { line ->
                             Text(
-                                text = line.text,
+                                text = line.annotatedText,
                                 color = line.color,
                                 fontSize = 12.sp,
                                 lineHeight = 16.sp,

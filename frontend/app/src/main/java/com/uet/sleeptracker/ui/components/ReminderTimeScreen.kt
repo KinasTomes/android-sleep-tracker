@@ -54,6 +54,7 @@ fun ReminderTimeScreen(
     options: List<ReminderChoiceItem>,
     initialSelectedIndex: Int,
     type: Int = 0,
+    onSelectedOption: (ReminderChoiceItem) -> Unit = {},
     onCloseClick: () -> Unit = {},
 ) {
     ReminderChoiceTemplate(
@@ -64,6 +65,7 @@ fun ReminderTimeScreen(
         options = options,
         initialSelectedIndex = initialSelectedIndex,
         type = type,
+        onSelectedOption = onSelectedOption,
         onCloseClick = onCloseClick
     )
 }
@@ -77,6 +79,7 @@ fun ReminderChoiceTemplate(
     options: List<ReminderChoiceItem>,
     initialSelectedIndex: Int,
     type: Int = 0,
+    onSelectedOption: (ReminderChoiceItem) -> Unit = {},
     onCloseClick: () -> Unit = {},
 ) {
     val safeInitialSelectedIndex = initialSelectedIndex.coerceIn(0, (options.lastIndex).coerceAtLeast(0))
@@ -121,7 +124,10 @@ fun ReminderChoiceTemplate(
                 ReminderTimeOptionRow(
                     option = option,
                     selected = index == currentSelectedIndex,
-                    onClick = { currentSelectedIndex = index }
+                    onClick = {
+                        currentSelectedIndex = index
+                        onSelectedOption(option)
+                    }
                 )
             }
         }

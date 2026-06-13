@@ -44,6 +44,7 @@ import com.uet.sleeptracker.ui.screens.home.HomeSlideUpPanel
 import androidx.compose.ui.tooling.preview.Preview
 import com.uet.sleeptracker.ui.screens.progress.ProgressScreen
 import com.uet.sleeptracker.ui.screens.tools.ToolsScreen
+import com.uet.sleeptracker.ui.screens.tools.AlarmItem
 import com.uet.sleeptracker.ui.theme.SleepBackground
 import com.uet.sleeptracker.ui.theme.SleepPrimary
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
@@ -51,6 +52,7 @@ import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 @Composable
 fun MainTabsScreen(
     modifier: Modifier = Modifier,
+    alarms: List<AlarmItem> = emptyList(),
     onProfileClick: () -> Unit = {},
     onPeaksAndDipsClick: () -> Unit = {},
     onCaffeineCutoffClick: () -> Unit = {},
@@ -122,6 +124,7 @@ fun MainTabsScreen(
                         SleepBottomNavTab.Tools -> {
                             ToolsScreen(
                                 modifier = Modifier.fillMaxSize(),
+                                alarms = alarms,
                                 onSmartAlarmClick = onSmartAlarmClick,
                                 onSleepQualityClick = onSleepQualityClick,
                                 onPrepBedroomClick = onPrepBedroomClick,

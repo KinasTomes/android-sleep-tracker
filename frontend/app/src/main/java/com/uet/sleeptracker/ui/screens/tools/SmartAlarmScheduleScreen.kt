@@ -254,7 +254,7 @@ private fun SmartAlarmHero(
             Text(
                 text = "${formatScheduleTime(currentMinutes)} Schedule",
                 color = titleColor,
-                fontSize = 24.sp,
+                fontSize = 20.sp,
                 lineHeight = 26.sp,
                 fontWeight = FontWeight.Normal
             )
@@ -270,7 +270,7 @@ private fun SmartAlarmHero(
                         Text(
                             text = "Tap a day to enable",
                             color = titleColor,
-                            fontSize = 16.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Normal
                         )
                     }

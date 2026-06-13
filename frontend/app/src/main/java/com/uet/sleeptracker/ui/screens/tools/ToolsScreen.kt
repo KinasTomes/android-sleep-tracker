@@ -35,12 +35,17 @@ import com.uet.sleeptracker.ui.components.SleepSuggestionCardTextStyle
 import com.uet.sleeptracker.ui.components.SleepSuggestionCard
 import com.uet.sleeptracker.ui.theme.SleepBackground
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
+import java.util.Calendar
+import java.util.Locale
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.SpanStyle
 
 private val ToolsMutedText = Color(0xFF989898)
 
 @Composable
 fun ToolsScreen(
     modifier: Modifier = Modifier,
+    alarms: List<AlarmItem> = emptyList(),
     onSmartAlarmClick: () -> Unit = {},
     onSleepQualityClick: () -> Unit = {},
     onPrepBedroomClick: () -> Unit = {},
@@ -60,6 +65,40 @@ fun ToolsScreen(
     val verticalScrollState = rememberScrollState()
     val horizontalScrollState = rememberScrollState()
 
+    val now = Calendar.getInstance()
+    val nextAlarmInfo = alarms
+        .mapNotNull { alarm ->
+            val nextTime = getNextOccurrence(alarm, now)
+            if (nextTime != null) alarm to nextTime else null
+        }
+        .minByOrNull { it.second.timeInMillis }
+
+    val alarmLabel: String
+    val alarmActiveDays: List<Boolean>
+    if (nextAlarmInfo != null) {
+        val (alarm, nextTime) = nextAlarmInfo
+        val dayLabel = getDayLabel(nextTime, now)
+        alarmLabel = "${alarm.time} $dayLabel"
+        alarmActiveDays = alarm.activeDays
+    } else {
+        alarmLabel = "No alarm"
+        alarmActiveDays = List(7) { false }
+    }
+
+    val annotatedDays = buildAnnotatedString {
+        val daysString = "S M T W T F S"
+        append(daysString)
+        for (day in 0..6) {
+            val isActive = alarmActiveDays.getOrElse(day) { false }
+            val color = if (isActive) Color.White else ToolsMutedText
+            addStyle(
+                style = SpanStyle(color = color),
+                start = day * 2,
+                end = day * 2 + 1
+            )
+        }
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -78,8 +117,8 @@ fun ToolsScreen(
                 backgroundImageResId = R.drawable.smart_alarm,
                 textStyle = SleepSuggestionCardTextStyle.Details,
                 detailLines = listOf(
-                    SleepSuggestionCardDetailLine("08:00 Tomorrow", ToolsMutedText),
-                    SleepSuggestionCardDetailLine("S M T W T F S", Color.White)
+                    SleepSuggestionCardDetailLine(alarmLabel, ToolsMutedText),
+                    SleepSuggestionCardDetailLine(annotatedDays, Color.Unspecified)
                 ),
                 onClick = onSmartAlarmClick
             )
@@ -280,6 +319,51 @@ private data class ToolIconItem(
     @param:DrawableRes val imageRes: Int,
     val onClick: () -> Unit = {},
 )
+
+private fun getNextOccurrence(alarm: AlarmItem, now: Calendar): Calendar? {
+    if (!alarm.isEnabled || alarm.activeDays.none { it }) return null
+    val parts = alarm.time.split(":")
+    if (parts.size != 2) return null
+    val hour = parts[0].toIntOrNull() ?: return null
+    val minute = parts[1].toIntOrNull() ?: return null
+
+    for (offset in 0..7) {
+        val candidate = (now.clone() as Calendar).apply {
+            add(Calendar.DAY_OF_YEAR, offset)
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val dayOfWeekIndex = candidate.get(Calendar.DAY_OF_WEEK) - 1
+        if (alarm.activeDays.getOrElse(dayOfWeekIndex) { false }) {
+            if (candidate.after(now)) {
+                return candidate
+            }
+        }
+    }
+    return null
+}
+
+private fun getDayLabel(nextTime: Calendar, now: Calendar): String {
+    val nextYear = nextTime.get(Calendar.YEAR)
+    val nextDayOfYear = nextTime.get(Calendar.DAY_OF_YEAR)
+
+    val todayYear = now.get(Calendar.YEAR)
+    val todayDayOfYear = now.get(Calendar.DAY_OF_YEAR)
+
+    val tomorrow = (now.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, 1) }
+    val tomorrowYear = tomorrow.get(Calendar.YEAR)
+    val tomorrowDayOfYear = tomorrow.get(Calendar.DAY_OF_YEAR)
+
+    return when {
+        nextYear == todayYear && nextDayOfYear == todayDayOfYear -> "Today"
+        nextYear == tomorrowYear && nextDayOfYear == tomorrowDayOfYear -> "Tomorrow"
+        else -> {
+            nextTime.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.US) ?: ""
+        }
+    }
+}
 
 @Preview(showBackground = true, backgroundColor = 0xFF000000)
 @Composable

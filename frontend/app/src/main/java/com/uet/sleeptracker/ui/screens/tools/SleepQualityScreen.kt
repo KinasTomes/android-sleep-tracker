@@ -30,10 +30,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import java.util.Calendar
+import java.util.Locale
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,13 +57,14 @@ private val SleepQualityDividerColor = Color(0xFF1A1A1D)
 @Composable
 fun SleepQualityScreen(
     modifier: Modifier = Modifier,
+    selectedMoodIndex: Int? = null,
+    reminderEnabled: Boolean = true,
     reminderTimeText: String = "1h 30m",
-    onCloseClick: () -> Unit = {},
+    onMoodChange: (Int) -> Unit = {},
+    onReminderEnabledChange: (Boolean) -> Unit = {},
     onReminderTimeClick: () -> Unit = {},
+    onCloseClick: () -> Unit = {},
 ) {
-    var selectedMoodIndex by remember { mutableIntStateOf(2) }
-    var reminderEnabled by remember { mutableStateOf(true) }
-
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = SleepQualityScreenColor,
@@ -90,7 +92,7 @@ fun SleepQualityScreen(
 
                 SleepQualityMoodSelector(
                     selectedIndex = selectedMoodIndex,
-                    onSelectedIndexChange = { selectedMoodIndex = it },
+                    onSelectedIndexChange = onMoodChange,
                     modifier = Modifier.padding(top = 34.dp)
                 )
 
@@ -104,7 +106,9 @@ fun SleepQualityScreen(
 
                 HorizontalDivider(color = SleepQualityDividerColor, thickness = 1.dp)
 
-                SleepQualityRecentCheckIns()
+                SleepQualityRecentCheckIns(
+                    selectedTodayMoodIndex = selectedMoodIndex
+                )
 
                 HorizontalDivider(color = SleepQualityDividerColor, thickness = 1.dp)
 
@@ -120,7 +124,7 @@ fun SleepQualityScreen(
 
                 SleepQualityReminderToggleRow(
                     checked = reminderEnabled,
-                    onCheckedChange = { reminderEnabled = it }
+                    onCheckedChange = onReminderEnabledChange
                 )
 
                 SleepQualityReminderTimeRow(
@@ -136,6 +140,13 @@ fun SleepQualityScreen(
 
 @Composable
 private fun SleepQualityHero() {
+    val todayCal = remember { Calendar.getInstance() }
+    val dayName = remember { todayCal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.US) }
+    val monthName = remember { todayCal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.US) }
+    val dayOfMonth = remember { todayCal.get(Calendar.DAY_OF_MONTH) }
+    val suffix = remember { getOrdinalSuffix(dayOfMonth) }
+    val todayText = "Today - $dayName, $monthName $dayOfMonth$suffix"
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -158,30 +169,40 @@ private fun SleepQualityHero() {
                 .padding(top = 64.dp)
                 .size(48.dp)
         )
+ 
+         Text(
+             text = "Sleep Quality:",
+             color = Color.White,
+             fontSize = 24.sp,
+             lineHeight = 15.sp,
+             fontWeight = FontWeight.Normal,
+             modifier = Modifier.padding(top = 123.dp)
+         )
+ 
+         Text(
+             text = todayText,
+             color = Color.White,
+             fontSize = 20.sp,
+             lineHeight = 15.sp,
+             fontWeight = FontWeight.Normal,
+             modifier = Modifier.padding(top = 160.dp)
+         )
+     }
+ }
 
-        Text(
-            text = "Sleep Quality:",
-            color = Color.White,
-            fontSize = 24.sp,
-            lineHeight = 15.sp,
-            fontWeight = FontWeight.Normal,
-            modifier = Modifier.padding(top = 123.dp)
-        )
-
-        Text(
-            text = "Today - Tuesday, June 9th",
-            color = Color.White,
-            fontSize = 20.sp,
-            lineHeight = 15.sp,
-            fontWeight = FontWeight.Normal,
-            modifier = Modifier.padding(top = 160.dp)
-        )
+private fun getOrdinalSuffix(n: Int): String {
+    if (n in 11..13) return "th"
+    return when (n % 10) {
+        1 -> "st"
+        2 -> "nd"
+        3 -> "rd"
+        else -> "th"
     }
 }
 
 @Composable
 private fun SleepQualityMoodSelector(
-    selectedIndex: Int,
+    selectedIndex: Int?,
     onSelectedIndexChange: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -249,9 +270,43 @@ private fun SleepQualityMoodSelector(
 }
 
 @Composable
-private fun SleepQualityRecentCheckIns() {
+private fun SleepQualityRecentCheckIns(
+    selectedTodayMoodIndex: Int?,
+    modifier: Modifier = Modifier
+) {
+    val iconIds = listOf(
+        R.drawable.face_poor,
+        R.drawable.face_notgood,
+        R.drawable.face_neutral,
+        R.drawable.face_good,
+        R.drawable.face_awesome
+    )
+
+    val daysInfo = remember {
+        val list = mutableListOf<Pair<String, Int?>>()
+        val seededMoods = listOf(3, 4, 2, 3, 1, 4)
+        for (i in -6..0) {
+            val dayCal = Calendar.getInstance().apply {
+                add(Calendar.DAY_OF_YEAR, i)
+            }
+            val dayName = when (dayCal.get(Calendar.DAY_OF_WEEK)) {
+                Calendar.SUNDAY -> "SUN"
+                Calendar.MONDAY -> "MON"
+                Calendar.TUESDAY -> "TUE"
+                Calendar.WEDNESDAY -> "WED"
+                Calendar.THURSDAY -> "THU"
+                Calendar.FRIDAY -> "FRI"
+                Calendar.SATURDAY -> "SAT"
+                else -> ""
+            }
+            val mood = if (i == 0) null else seededMoods.getOrNull(i + 6)
+            list.add(dayName to mood)
+        }
+        list
+    }
+
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(186.dp)
             .padding(start = 21.dp, end = 21.dp, top = 26.dp)
@@ -266,7 +321,7 @@ private fun SleepQualityRecentCheckIns() {
             Text(
                 text = "How many days in a row can you\ncomplete this habit? You’ve got this!",
                 color = Color.White,
-                fontSize = 16.sp,
+                fontSize = 14.sp,
                 lineHeight = 22.sp,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier.padding(start = 16.dp)
@@ -279,18 +334,39 @@ private fun SleepQualityRecentCheckIns() {
                 .padding(top = 23.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            listOf("WED", "THU", "FRI", "SAT", "SUN", "MON", "TUE").forEach { day ->
+            daysInfo.forEachIndexed { index, (day, seededMood) ->
+                val mood = if (index == 6) selectedTodayMoodIndex else seededMood
+                val hasMood = mood != null
+                val textColor = if (hasMood) Color.White else Color(0xFF414141)
+
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Box(
-                        modifier = Modifier
-                            .size(28.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFF414141))
-                    )
+                    if (mood != null) {
+                        Box(
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clip(CircleShape)
+                                .background(SleepPrimary),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(id = iconIds[mood]),
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFF414141))
+                        )
+                    }
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = day,
-                        color = Color(0xFF414141),
+                        color = textColor,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Normal
                     )

@@ -60,6 +60,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
+import com.uet.sleeptracker.ui.screens.tools.ToolsViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +71,7 @@ class MainActivity : ComponentActivity() {
             SleeptrackerTheme {
                 val navController = rememberNavController()
                 val smartAlarmViewModel: SmartAlarmViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+                val toolsViewModel: ToolsViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
                 
                 NavHost(
                     navController = navController,
@@ -81,6 +84,7 @@ class MainActivity : ComponentActivity() {
 
                     composable("main_tabs") {
                         MainTabsScreen(
+                            alarms = smartAlarmViewModel.alarms,
                             onProfileClick = { navController.navigate("profile") },
                             onPeaksAndDipsClick = { navController.navigate("peaks_and_dips") },
                             onCaffeineCutoffClick = { navController.navigate("caffeine_cutoff") },
@@ -389,7 +393,66 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     ) {
+                        val selectedMoodIndex by toolsViewModel.sleepQualityTodayMood.collectAsState()
+                        val reminderEnabled by toolsViewModel.sleepQualityReminderEnabled.collectAsState()
+                        val reminderTimeText by toolsViewModel.sleepQualityReminderTime.collectAsState()
+
                         SleepQualityScreen(
+                            selectedMoodIndex = selectedMoodIndex,
+                            reminderEnabled = reminderEnabled,
+                            reminderTimeText = reminderTimeText ?: "1h 30m",
+                            onMoodChange = { toolsViewModel.setSleepQualityTodayMood(it) },
+                            onReminderEnabledChange = { toolsViewModel.setSleepQualityReminderEnabled(it) },
+                            onReminderTimeClick = { navController.navigate("sleep_quality_reminder_time") },
+                            onCloseClick = { navController.popBackStack() }
+                        )
+                    }
+                    composable(
+                        route = "sleep_quality_reminder_time",
+                        enterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        exitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popEnterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popExitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        }
+                    ) {
+                        val reminderTimeText by toolsViewModel.sleepQualityReminderTime.collectAsState()
+                        val reminderChoices = buildReminderChoiceItems(
+                            labels = listOf("30 minutes", "1 hour", "1h 30m", "2 hours"),
+                            highlightedLabel = "1h 30m"
+                        )
+                        ReminderTimeScreen(
+                            headerTitle = "Sleep Quality",
+                            screenTitle = "Reminder time",
+                            sectionLabel = "AFTER WAKETIME",
+                            options = reminderChoices,
+                            initialSelectedIndex = findInitialReminderChoiceIndex(
+                                options = reminderChoices,
+                                selectedLabel = reminderTimeText ?: "1h 30m"
+                            ),
+                            type = 1,
+                            onSelectedOption = { option ->
+                                toolsViewModel.setSleepQualityReminderTime(option.label)
+                                navController.popBackStack()
+                            },
                             onCloseClick = { navController.popBackStack() }
                         )
                     }

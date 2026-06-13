@@ -59,6 +59,23 @@ class ToolsViewModel(application: Application) : AndroidViewModel(application) {
         initialValue = true
     )
 
+    // Sleep Quality
+    val sleepQualityReminderTime = repository.sleepQualityReminderTime.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = "1h 30m"
+    )
+    val sleepQualityReminderEnabled = repository.sleepQualityReminderEnabled.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = true
+    )
+    val sleepQualityTodayMood = repository.sleepQualityTodayMood.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = null
+    )
+
     // Write Operations
     fun setMelatoninReminderTime(time: String) {
         viewModelScope.launch { repository.saveMelatoninReminderTime(time) }
@@ -86,5 +103,15 @@ class ToolsViewModel(application: Application) : AndroidViewModel(application) {
     }
     fun setPeaksAndDipsReminderEnabled(enabled: Boolean) {
         viewModelScope.launch { repository.savePeaksAndDipsReminderEnabled(enabled) }
+    }
+
+    fun setSleepQualityReminderTime(time: String) {
+        viewModelScope.launch { repository.saveSleepQualityReminderTime(time) }
+    }
+    fun setSleepQualityReminderEnabled(enabled: Boolean) {
+        viewModelScope.launch { repository.saveSleepQualityReminderEnabled(enabled) }
+    }
+    fun setSleepQualityTodayMood(mood: Int?) {
+        viewModelScope.launch { repository.saveSleepQualityTodayMood(mood) }
     }
 }

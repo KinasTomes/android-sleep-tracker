@@ -32,6 +32,11 @@ class ToolsSettingsRepository(private val context: Context) {
 
         // Smart Alarm List
         val SMART_ALARMS = stringPreferencesKey("smart_alarms")
+
+        // Sleep Quality
+        val SLEEP_QUALITY_REMINDER_TIME = stringPreferencesKey("sleep_quality_reminder_time")
+        val SLEEP_QUALITY_REMINDER_ENABLED = booleanPreferencesKey("sleep_quality_reminder_enabled")
+        val SLEEP_QUALITY_TODAY_MOOD = androidx.datastore.preferences.core.intPreferencesKey("sleep_quality_today_mood")
     }
 
     // Melatonin Flow
@@ -64,6 +69,18 @@ class ToolsSettingsRepository(private val context: Context) {
     }
     val peaksAndDipsReminderEnabled: Flow<Boolean> = context.toolsDataStore.data.map { preferences ->
         preferences[PEAKS_AND_DIPS_REMINDER_ENABLED] ?: true
+    }
+
+    // Sleep Quality Flow
+    val sleepQualityReminderTime: Flow<String> = context.toolsDataStore.data.map { preferences ->
+        preferences[SLEEP_QUALITY_REMINDER_TIME] ?: "1h 30m"
+    }
+    val sleepQualityReminderEnabled: Flow<Boolean> = context.toolsDataStore.data.map { preferences ->
+        preferences[SLEEP_QUALITY_REMINDER_ENABLED] ?: true
+    }
+    val sleepQualityTodayMood: Flow<Int?> = context.toolsDataStore.data.map { preferences ->
+        val mood = preferences[SLEEP_QUALITY_TODAY_MOOD] ?: -1
+        if (mood == -1) null else mood
     }
 
     // Smart Alarm Flow
@@ -111,6 +128,18 @@ class ToolsSettingsRepository(private val context: Context) {
     suspend fun saveSmartAlarms(alarms: List<AlarmItem>) {
         context.toolsDataStore.edit { preferences ->
             preferences[SMART_ALARMS] = serializeAlarms(alarms)
+        }
+    }
+
+    suspend fun saveSleepQualityReminderTime(time: String) {
+        context.toolsDataStore.edit { preferences -> preferences[SLEEP_QUALITY_REMINDER_TIME] = time }
+    }
+    suspend fun saveSleepQualityReminderEnabled(enabled: Boolean) {
+        context.toolsDataStore.edit { preferences -> preferences[SLEEP_QUALITY_REMINDER_ENABLED] = enabled }
+    }
+    suspend fun saveSleepQualityTodayMood(mood: Int?) {
+        context.toolsDataStore.edit { preferences ->
+            preferences[SLEEP_QUALITY_TODAY_MOOD] = mood ?: -1
         }
     }
 }
