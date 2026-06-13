@@ -12,8 +12,10 @@ foundation = "1.11.0"
 navigationCompose = "2.8.5"
 animationCore = "1.11.2"
 datastore = "1.1.1"
+healthConnect = "1.1.0-alpha11"
 
 [libraries]
+androidx-health-connect = { group = "androidx.health.connect", name = "connect-client", version.ref = "healthConnect" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

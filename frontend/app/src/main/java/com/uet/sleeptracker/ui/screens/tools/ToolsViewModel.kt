@@ -4,8 +4,12 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.uet.sleeptracker.data.ToolsSettingsRepository
+import com.uet.sleeptracker.R
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -565,5 +569,41 @@ class ToolsViewModel(application: Application) : AndroidViewModel(application) {
     fun cancelBlueLightControlOnboarding() {
         tempBlueLightControlBrightLightEnabled = null
         tempBlueLightControlAvoidBrightLightEnabled = null
+    }
+
+    // Audio Playback
+    private val _isAudioPlaying = MutableStateFlow(false)
+    val isAudioPlaying: StateFlow<Boolean> = _isAudioPlaying.asStateFlow()
+
+    private var mediaPlayer: android.media.MediaPlayer? = null
+
+    fun toggleAudioPlayback() {
+        if (_isAudioPlaying.value) {
+            mediaPlayer?.pause()
+            _isAudioPlaying.value = false
+        } else {
+            try {
+                if (mediaPlayer == null) {
+                    mediaPlayer = android.media.MediaPlayer.create(getApplication(), R.raw.sleep_music).apply {
+                        setOnCompletionListener {
+                            _isAudioPlaying.value = false
+                        }
+                        start()
+                        _isAudioPlaying.value = true
+                    }
+                } else {
+                    mediaPlayer?.start()
+                    _isAudioPlaying.value = true
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        mediaPlayer?.release()
+        mediaPlayer = null
     }
 }

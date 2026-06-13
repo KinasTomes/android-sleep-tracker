@@ -53,6 +53,8 @@ import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 fun MainTabsScreen(
     modifier: Modifier = Modifier,
     alarms: List<AlarmItem> = emptyList(),
+    isAudioPlaying: Boolean = false,
+    onAudioClick: () -> Unit = {},
     onAlarmEditClick: (AlarmItem) -> Unit = {},
     onProfileClick: () -> Unit = {},
     onPeaksAndDipsClick: () -> Unit = {},
@@ -130,6 +132,8 @@ fun MainTabsScreen(
                             ToolsScreen(
                                 modifier = Modifier.fillMaxSize(),
                                 alarms = alarms,
+                                isAudioPlaying = isAudioPlaying,
+                                onAudioClick = onAudioClick,
                                 onSmartAlarmClick = onSmartAlarmClick,
                                 onSleepQualityClick = onSleepQualityClick,
                                 onPrepBedroomClick = onPrepBedroomClick,
@@ -169,11 +173,13 @@ fun MainTabsScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = innerPadding.calculateTopPadding()),
+                alarms = alarms,
                 onPeaksAndDipsClick = onPeaksAndDipsClick,
                 onCaffeineCutoffClick = onCaffeineCutoffClick,
                 onEveningRoutineClick = onEveningRoutineClick,
                 onMelatoninWindowClick = onMelatoninWindowClick,
-                onBrowseAllToolsClick = { selectedTab = SleepBottomNavTab.Tools }
+                onBrowseAllToolsClick = { selectedTab = SleepBottomNavTab.Tools },
+                onAlarmEditClick = onAlarmEditClick
             )
 
             SleepBottomNavigation(

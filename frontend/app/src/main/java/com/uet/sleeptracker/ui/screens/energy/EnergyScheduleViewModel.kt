@@ -1,7 +1,8 @@
 package com.uet.sleeptracker.ui.screens.energy
 
+import android.app.Application
 import android.annotation.SuppressLint
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,20 +13,84 @@ import kotlinx.coroutines.launch
 import androidx.compose.ui.unit.dp
 import com.uet.sleeptracker.ui.screens.progress.SleepRepository
 import com.uet.sleeptracker.ui.screens.progress.ChartDay
+import com.uet.sleeptracker.data.ToolsSettingsRepository
+import kotlinx.coroutines.flow.combine
 
-class EnergyScheduleViewModel : ViewModel() {
+class EnergyScheduleViewModel(application: Application) : AndroidViewModel(application) {
+    private val repository = ToolsSettingsRepository(application)
+
     private val _uiState = MutableStateFlow(EnergyScheduleUiState())
     val uiState: StateFlow<EnergyScheduleUiState> = _uiState.asStateFlow()
 
+    private var lastChartDays: List<ChartDay> = emptyList()
+    private var lastRemindersState: RemindersState? = null
+
     init {
+        val remindersFlow = combine(
+            repository.melatoninReminderEnabled,
+            repository.melatoninSupplementsReminderEnabled,
+            repository.melatoninSupplementsRemindMeClicked,
+            repository.blueLightGlassesReminderEnabled,
+            repository.blueLightGlassesRemindMeClicked,
+            repository.caffeineReminderEnabled,
+            repository.avoidLateMealsReminderEnabled,
+            repository.avoidLateMealsRemindMeClicked,
+            repository.earlierWorkoutsReminderEnabled,
+            repository.earlierWorkoutsRemindMeClicked,
+            repository.avoidLateAlcoholReminderEnabled,
+            repository.avoidLateAlcoholRemindMeClicked,
+            repository.eveningRoutineReminderEnabled,
+            repository.morningRoutineReminderEnabled,
+            repository.blueLightControlBrightLightEnabled,
+            repository.blueLightControlAvoidBrightLightEnabled,
+            repository.blueLightControlRemindMeClicked,
+            repository.peaksAndDipsPeakRemindersEnabled,
+            repository.peaksAndDipsDipReminderEnabled,
+            repository.environmentReminderEnabled,
+            repository.environmentRemindMeClicked,
+            repository.brainDumpEveningReminderEnabled
+        ) { args ->
+            RemindersState(
+                melatoninReminderEnabled = args[0] as Boolean,
+                melatoninSupplementsReminderEnabled = args[1] as Boolean,
+                melatoninSupplementsRemindMeClicked = args[2] as Boolean,
+                blueLightGlassesReminderEnabled = args[3] as Boolean,
+                blueLightGlassesRemindMeClicked = args[4] as Boolean,
+                caffeineReminderEnabled = args[5] as Boolean,
+                avoidLateMealsReminderEnabled = args[6] as Boolean,
+                avoidLateMealsRemindMeClicked = args[7] as Boolean,
+                earlierWorkoutsReminderEnabled = args[8] as Boolean,
+                earlierWorkoutsRemindMeClicked = args[9] as Boolean,
+                avoidLateAlcoholReminderEnabled = args[10] as Boolean,
+                avoidLateAlcoholRemindMeClicked = args[11] as Boolean,
+                eveningRoutineReminderEnabled = args[12] as Boolean,
+                morningRoutineReminderEnabled = args[13] as Boolean,
+                blueLightControlBrightLightEnabled = args[14] as Boolean,
+                blueLightControlAvoidBrightLightEnabled = args[15] as Boolean,
+                blueLightControlRemindMeClicked = args[16] as Boolean,
+                peaksAndDipsPeakRemindersEnabled = args[17] as Boolean,
+                peaksAndDipsDipReminderEnabled = args[18] as Boolean,
+                environmentReminderEnabled = args[19] as Boolean,
+                environmentRemindMeClicked = args[20] as Boolean,
+                brainDumpEveningReminderEnabled = args[21] as Boolean
+            )
+        }
+
         viewModelScope.launch {
-            SleepRepository.chartDays.collect { chartDays ->
-                syncWithNearestDay(chartDays)
+            combine(
+                SleepRepository.chartDays,
+                remindersFlow
+            ) { chartDays, reminders ->
+                Pair(chartDays, reminders)
+            }.collect { (chartDays, reminders) ->
+                lastChartDays = chartDays
+                lastRemindersState = reminders
+                syncWithNearestDayAndReminders(chartDays, reminders)
             }
         }
     }
 
-    private fun syncWithNearestDay(chartDays: List<ChartDay>) {
+    private fun syncWithNearestDayAndReminders(chartDays: List<ChartDay>, reminders: RemindersState) {
         val lastRecordedDay = chartDays.lastOrNull { it.showSleepBar } ?: return
         val partsStart = lastRecordedDay.startTime.split(":")
         val startHour = partsStart.getOrNull(0)?.toIntOrNull() ?: 0
@@ -105,8 +170,191 @@ class EnergyScheduleViewModel : ViewModel() {
             prevScaledEnd = scaledEnd
         }
 
+        // Generate base activities list from enabled reminders
+        val baseActivities = mutableListOf<EnergyActivityMarkerUiModel>()
+
+        // 1. Melatonin window
+        if (reminders.melatoninReminderEnabled) {
+            baseActivities.add(
+                EnergyActivityMarkerUiModel(
+                    title = "Melatonin\nwindow",
+                    phaseId = "melatonin_window",
+                    imageType = EnergyActivityImageType.MelatoninWindow,
+                    yOffset = 19.dp
+                )
+            )
+        }
+
+        // 2. Melatonin supplements
+        if (reminders.melatoninSupplementsReminderEnabled && reminders.melatoninSupplementsRemindMeClicked) {
+            baseActivities.add(
+                EnergyActivityMarkerUiModel(
+                    title = "Melatonin\nsupplements",
+                    phaseId = "wind_down",
+                    imageType = EnergyActivityImageType.MelatoninSupplements,
+                    yOffset = (-30).dp
+                )
+            )
+        }
+
+        // 3. Blue light glasses
+        if (reminders.blueLightGlassesReminderEnabled && reminders.blueLightGlassesRemindMeClicked) {
+            baseActivities.add(
+                EnergyActivityMarkerUiModel(
+                    title = "Blue light\nglasses",
+                    phaseId = "wind_down",
+                    imageType = EnergyActivityImageType.BlueLightGlasses,
+                    yOffset = 10.dp
+                )
+            )
+        }
+
+        // 4. Caffeine cutoff
+        if (reminders.caffeineReminderEnabled) {
+            baseActivities.add(
+                EnergyActivityMarkerUiModel(
+                    title = "Avoid caffeine",
+                    phaseId = "afternoon_dip",
+                    imageType = EnergyActivityImageType.Caffeine,
+                    yOffset = (-47).dp
+                )
+            )
+        }
+
+        // 5. Avoid late meals
+        if (reminders.avoidLateMealsReminderEnabled && reminders.avoidLateMealsRemindMeClicked) {
+            baseActivities.add(
+                EnergyActivityMarkerUiModel(
+                    title = "Avoid late\nmeals",
+                    phaseId = "evening_peak",
+                    imageType = EnergyActivityImageType.Meals,
+                    yOffset = (-20).dp
+                )
+            )
+        }
+
+        // 6. Earlier workouts
+        if (reminders.earlierWorkoutsReminderEnabled && reminders.earlierWorkoutsRemindMeClicked) {
+            baseActivities.add(
+                EnergyActivityMarkerUiModel(
+                    title = "Earlier\nworkouts",
+                    phaseId = "evening_peak",
+                    imageType = EnergyActivityImageType.Workouts,
+                    yOffset = 40.dp
+                )
+            )
+        }
+
+        // 7. Avoid late alcohol
+        if (reminders.avoidLateAlcoholReminderEnabled && reminders.avoidLateAlcoholRemindMeClicked) {
+            baseActivities.add(
+                EnergyActivityMarkerUiModel(
+                    title = "Avoid late\nalcohol",
+                    phaseId = "evening_peak",
+                    imageType = EnergyActivityImageType.Alcohol,
+                    yOffset = 100.dp
+                )
+            )
+        }
+
+        // 8. Evening routine (Wind-down activities)
+        if (reminders.eveningRoutineReminderEnabled) {
+            baseActivities.add(
+                EnergyActivityMarkerUiModel(
+                    title = "Wind-down\nactivities",
+                    phaseId = "wind_down",
+                    imageType = EnergyActivityImageType.Evening,
+                    yOffset = 50.dp
+                )
+            )
+        }
+
+        // 9. Morning routine
+        if (reminders.morningRoutineReminderEnabled) {
+            baseActivities.add(
+                EnergyActivityMarkerUiModel(
+                    title = "Morning\nroutine",
+                    phaseId = "grogginess",
+                    imageType = EnergyActivityImageType.Morning,
+                    yOffset = 15.dp
+                )
+            )
+        }
+
+        // 10. Blue light control - bright light
+        if (reminders.blueLightControlBrightLightEnabled && reminders.blueLightControlRemindMeClicked) {
+            baseActivities.add(
+                EnergyActivityMarkerUiModel(
+                    title = "Get bright\nlight",
+                    phaseId = "morning_peak",
+                    imageType = EnergyActivityImageType.BlueLight,
+                    yOffset = 10.dp
+                )
+            )
+        }
+
+        // 11. Blue light control - avoid bright light
+        if (reminders.blueLightControlAvoidBrightLightEnabled && reminders.blueLightControlRemindMeClicked) {
+            baseActivities.add(
+                EnergyActivityMarkerUiModel(
+                    title = "Avoid bright\nlight",
+                    phaseId = "wind_down",
+                    imageType = EnergyActivityImageType.BlueLight,
+                    yOffset = 90.dp
+                )
+            )
+        }
+
+        // 12. Peaks & Dips - peak reminders
+        if (reminders.peaksAndDipsPeakRemindersEnabled) {
+            baseActivities.add(
+                EnergyActivityMarkerUiModel(
+                    title = "Peak activities",
+                    phaseId = "evening_peak",
+                    imageType = EnergyActivityImageType.PeaksAndDips,
+                    yOffset = 160.dp
+                )
+            )
+        }
+
+        // 13. Peaks & Dips - dip reminder
+        if (reminders.peaksAndDipsDipReminderEnabled) {
+            baseActivities.add(
+                EnergyActivityMarkerUiModel(
+                    title = "Dip relaxation",
+                    phaseId = "afternoon_dip",
+                    imageType = EnergyActivityImageType.PeaksAndDips,
+                    yOffset = 25.dp
+                )
+            )
+        }
+
+        // 14. Prep bedroom / environment reminder
+        if (reminders.environmentReminderEnabled && reminders.environmentRemindMeClicked) {
+            baseActivities.add(
+                EnergyActivityMarkerUiModel(
+                    title = "Environment\ncheck",
+                    phaseId = "wind_down",
+                    imageType = EnergyActivityImageType.Environment,
+                    yOffset = 130.dp
+                )
+            )
+        }
+
+        // 15. Brain dump evening reminder
+        if (reminders.brainDumpEveningReminderEnabled) {
+            baseActivities.add(
+                EnergyActivityMarkerUiModel(
+                    title = "Write brain\ndump",
+                    phaseId = "wind_down",
+                    imageType = EnergyActivityImageType.BrainDump,
+                    yOffset = 170.dp
+                )
+            )
+        }
+
         // Scale activities yOffset:
-        val scaledActivities = defaultEnergyActivities().map { activity ->
+        val scaledActivities = baseActivities.map { activity ->
             activity.copy(yOffset = (activity.yOffset.value * scaleFactor).dp)
         }
 
@@ -164,6 +412,33 @@ class EnergyScheduleViewModel : ViewModel() {
         _uiState.value = _uiState.value.copy(activities = activities)
     }
 }
+
+data class RemindersState(
+    val melatoninReminderEnabled: Boolean,
+    val melatoninSupplementsReminderEnabled: Boolean,
+    val melatoninSupplementsRemindMeClicked: Boolean,
+    val blueLightGlassesReminderEnabled: Boolean,
+    val blueLightGlassesRemindMeClicked: Boolean,
+    val caffeineReminderEnabled: Boolean,
+    val avoidLateMealsReminderEnabled: Boolean,
+    val avoidLateMealsRemindMeClicked: Boolean,
+    val earlierWorkoutsReminderEnabled: Boolean,
+    val earlierWorkoutsRemindMeClicked: Boolean,
+    val avoidLateAlcoholReminderEnabled: Boolean,
+    val avoidLateAlcoholRemindMeClicked: Boolean,
+    val eveningRoutineReminderEnabled: Boolean,
+    val morningRoutineReminderEnabled: Boolean,
+    val blueLightControlBrightLightEnabled: Boolean,
+    val blueLightControlAvoidBrightLightEnabled: Boolean,
+    val blueLightControlRemindMeClicked: Boolean,
+    val peaksAndDipsPeakRemindersEnabled: Boolean,
+    val peaksAndDipsDipReminderEnabled: Boolean,
+    val environmentReminderEnabled: Boolean,
+    val environmentRemindMeClicked: Boolean,
+    val brainDumpEveningReminderEnabled: Boolean
+)
+
+
 
 data class EnergyScheduleUiState(
     // 1. Total sleep time & Sleep need

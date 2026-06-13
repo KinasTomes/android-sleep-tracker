@@ -267,8 +267,20 @@ fun EnergyScheduleScreen(
                                 y = phaseLayout.y + activity.yOffset
                             ),
                             image = when (activity.imageType) {
-                                EnergyActivityImageType.Caffeine -> caffeineImage
-                                EnergyActivityImageType.WindDown -> windDownImage
+                                EnergyActivityImageType.Caffeine -> painterResource(id = R.drawable.ceffeine)
+                                EnergyActivityImageType.WindDown -> painterResource(id = R.drawable.evening)
+                                EnergyActivityImageType.MelatoninWindow -> painterResource(id = R.drawable.melatonin_window)
+                                EnergyActivityImageType.MelatoninSupplements -> painterResource(id = R.drawable.melatonin_supplement)
+                                EnergyActivityImageType.BlueLightGlasses -> painterResource(id = R.drawable.blue_light_glasses)
+                                EnergyActivityImageType.Meals -> painterResource(id = R.drawable.meals)
+                                EnergyActivityImageType.Workouts -> painterResource(id = R.drawable.workouts)
+                                EnergyActivityImageType.Alcohol -> painterResource(id = R.drawable.alcohols)
+                                EnergyActivityImageType.Evening -> painterResource(id = R.drawable.evening)
+                                EnergyActivityImageType.Morning -> painterResource(id = R.drawable.morning)
+                                EnergyActivityImageType.BlueLight -> painterResource(id = R.drawable.blue_light)
+                                EnergyActivityImageType.PeaksAndDips -> painterResource(id = R.drawable.paeks_n_dips)
+                                EnergyActivityImageType.Environment -> painterResource(id = R.drawable.prep_the_bedroom)
+                                EnergyActivityImageType.BrainDump -> painterResource(id = R.drawable.write_a_brain_dump)
                             },
                             title = activity.title
                         )

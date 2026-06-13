@@ -79,7 +79,7 @@ fun TodoItemCard(
             Text(
                 text = text,
                 color = Color.White,
-                fontSize = 16.sp,
+                fontSize = 14.sp,
                 lineHeight = 15.sp,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier.padding(start = 12.dp)
@@ -144,7 +144,7 @@ fun TodoAddItemCard(
             singleLine = true,
             textStyle = TextStyle(
                 color = Color.White,
-                fontSize = 16.sp,
+                fontSize = 14.sp,
                 lineHeight = 15.sp,
                 fontWeight = FontWeight.Normal
             ),
@@ -169,7 +169,7 @@ fun TodoAddItemCard(
                     Text(
                         text = placeholder,
                         color = TodoPlaceholder,
-                        fontSize = 16.sp,
+                        fontSize = 14.sp,
                         lineHeight = 15.sp,
                         fontWeight = FontWeight.Normal
                     )

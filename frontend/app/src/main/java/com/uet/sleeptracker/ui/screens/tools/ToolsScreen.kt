@@ -46,6 +46,8 @@ private val ToolsMutedText = Color(0xFF989898)
 fun ToolsScreen(
     modifier: Modifier = Modifier,
     alarms: List<AlarmItem> = emptyList(),
+    isAudioPlaying: Boolean = false,
+    onAudioClick: () -> Unit = {},
     onSmartAlarmClick: () -> Unit = {},
     onSleepQualityClick: () -> Unit = {},
     onPrepBedroomClick: () -> Unit = {},
@@ -142,8 +144,9 @@ fun ToolsScreen(
 
         SleepAudioCard(
             title = "Sleep sounds",
-            subtitle = "Ambient Music",
-            onClick = {},
+            subtitle = if (isAudioPlaying) "Playing..." else "Ambient Music",
+            onClick = onAudioClick,
+            isPlaying = isAudioPlaying,
             modifier = Modifier.padding(start = 19.dp, end = 19.dp, top = 6.dp)
         )
 
@@ -160,7 +163,7 @@ fun ToolsScreen(
         ) {
             SleepSuggestionCard(
                 title = "Write a brain dump",
-                subtitle = "Ease your mind before\nbed",
+                subtitle = "Ease your mind before bed",
                 backgroundImageResId = R.drawable.write_a_brain_dump,
                 onClick = onBrainDumpClick,
                 modifier = Modifier.weight(1f)

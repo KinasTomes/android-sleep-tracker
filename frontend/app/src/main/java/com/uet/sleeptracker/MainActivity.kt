@@ -87,9 +87,12 @@ class MainActivity : ComponentActivity() {
                         val avoidLateMealsRemindMeClicked by toolsViewModel.avoidLateMealsRemindMeClicked.collectAsState(initial = false)
                         val earlierWorkoutsRemindMeClicked by toolsViewModel.earlierWorkoutsRemindMeClicked.collectAsState(initial = false)
                         val avoidLateAlcoholRemindMeClicked by toolsViewModel.avoidLateAlcoholRemindMeClicked.collectAsState(initial = false)
+                        val isAudioPlaying by toolsViewModel.isAudioPlaying.collectAsState(initial = false)
 
                         MainTabsScreen(
                             alarms = smartAlarmViewModel.alarms,
+                            isAudioPlaying = isAudioPlaying,
+                            onAudioClick = { toolsViewModel.toggleAudioPlayback() },
                             onAlarmEditClick = { alarm ->
                                 val index = smartAlarmViewModel.alarms.indexOfFirst { it.id == alarm.id }
                                 if (index != -1) {

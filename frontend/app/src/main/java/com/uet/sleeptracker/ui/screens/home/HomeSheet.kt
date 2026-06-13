@@ -59,6 +59,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.uet.sleeptracker.ui.theme.SleepPrimary
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 import kotlin.math.absoluteValue
+import java.util.Calendar
+import java.util.Locale
+import com.uet.sleeptracker.ui.screens.tools.AlarmItem
+
 
 private val SheetPanelColor = Color(0xFF232429)
 private val SheetBorderColor = Color(0xFF55565C)
@@ -68,13 +72,30 @@ private val SheetItemMinHeight = 72.dp
 @Composable
 internal fun HomeSlideUpPanel(
     modifier: Modifier = Modifier,
+    alarms: List<AlarmItem> = emptyList(),
     onPeaksAndDipsClick: () -> Unit = {},
     onCaffeineCutoffClick: () -> Unit = {},
     onEveningRoutineClick: () -> Unit = {},
     onMelatoninWindowClick: () -> Unit = {},
-    onBrowseAllToolsClick: () -> Unit = {}
+    onBrowseAllToolsClick: () -> Unit = {},
+    onAlarmEditClick: (AlarmItem) -> Unit = {}
 ) {
     var isSheetExpanded by rememberSaveable { mutableStateOf(false) }
+
+    val now = Calendar.getInstance()
+    val nextAlarmInfo = alarms
+        .mapNotNull { alarm ->
+            val nextTime = getNextOccurrence(alarm, now)
+            if (nextTime != null) alarm to nextTime else null
+        }
+        .minByOrNull { it.second.timeInMillis }
+
+    val alarmLabel = if (nextAlarmInfo != null) {
+        val (alarm, _) = nextAlarmInfo
+        alarm.time
+    } else {
+        "No alarm"
+    }
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val density = LocalDensity.current
@@ -163,7 +184,12 @@ internal fun HomeSlideUpPanel(
 
                     SheetHeader(
                         isExpanded = isArrowExpanded,
-                        onToggle = { isSheetExpanded = !isSheetExpanded }
+                        alarmLabel = alarmLabel,
+                        onToggle = { isSheetExpanded = !isSheetExpanded },
+                        onAlarmClick = {
+                            val alarmToEdit = nextAlarmInfo?.first ?: alarms.firstOrNull()
+                            alarmToEdit?.let { onAlarmEditClick(it) }
+                        }
                     )
 
                     if (shouldShowSheetContent) {
@@ -288,7 +314,9 @@ internal fun SheetToolItem(
 @Composable
 internal fun SheetHeader(
     isExpanded: Boolean,
+    alarmLabel: String,
     onToggle: () -> Unit,
+    onAlarmClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -321,6 +349,7 @@ internal fun SheetHeader(
                 modifier = Modifier
                     .clip(RoundedCornerShape(20.dp))
                     .background(Color(0xFF721BFD))
+                    .clickable { onAlarmClick() }
                     .padding(horizontal = 12.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -331,7 +360,7 @@ internal fun SheetHeader(
                     tint = Color.White,
                     modifier = Modifier.size(16.dp)
                 )
-                Text(text = "08:00", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.W400)
+                Text(text = alarmLabel, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.W400)
             }
         }
     }
@@ -489,10 +518,57 @@ private fun HomeSheetPreview() {
         ) {
             SheetHeader(
                 isExpanded = true,
-                onToggle = {}
+                alarmLabel = "08:00",
+                onToggle = {},
+                onAlarmClick = {}
             )
             Spacer(modifier = Modifier.height(16.dp))
             SheetExpandedContent()
+        }
+    }
+}
+
+private fun getNextOccurrence(alarm: AlarmItem, now: Calendar): Calendar? {
+    if (!alarm.isEnabled || alarm.activeDays.none { it }) return null
+    val parts = alarm.time.split(":")
+    if (parts.size != 2) return null
+    val hour = parts[0].toIntOrNull() ?: return null
+    val minute = parts[1].toIntOrNull() ?: return null
+
+    for (offset in 0..7) {
+        val candidate = (now.clone() as Calendar).apply {
+            add(Calendar.DAY_OF_YEAR, offset)
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val dayOfWeekIndex = candidate.get(Calendar.DAY_OF_WEEK) - 1
+        if (alarm.activeDays.getOrElse(dayOfWeekIndex) { false }) {
+            if (candidate.after(now)) {
+                return candidate
+            }
+        }
+    }
+    return null
+}
+
+private fun getDayLabel(nextTime: Calendar, now: Calendar): String {
+    val nextYear = nextTime.get(Calendar.YEAR)
+    val nextDayOfYear = nextTime.get(Calendar.DAY_OF_YEAR)
+
+    val todayYear = now.get(Calendar.YEAR)
+    val todayDayOfYear = now.get(Calendar.DAY_OF_YEAR)
+
+    val tomorrow = (now.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, 1) }
+    val tomorrowYear = tomorrow.get(Calendar.YEAR)
+    val tomorrowDayOfYear = tomorrow.get(Calendar.DAY_OF_YEAR)
+
+    return when {
+        nextYear == todayYear && nextDayOfYear == todayDayOfYear -> "Today"
+        nextYear == tomorrowYear && nextDayOfYear == tomorrowDayOfYear -> "Tomorrow"
+        else -> {
+            nextTime.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.US) ?: ""
         }
     }
 }

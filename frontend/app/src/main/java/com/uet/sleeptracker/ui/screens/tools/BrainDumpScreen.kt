@@ -141,7 +141,7 @@ fun BrainDumpScreen(
                     Text(
                         text = "Set a reminder",
                         color = SleepPrimary,
-                        fontSize = 18.sp,
+                        fontSize = 14.sp,
                         lineHeight = 15.sp,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.padding(top = 14.dp)
@@ -150,7 +150,7 @@ fun BrainDumpScreen(
                     Text(
                         text = "to review your list in the morning",
                         color = BrainDumpFooterText,
-                        fontSize = 18.sp,
+                        fontSize = 14.sp,
                         lineHeight = 15.sp,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.padding(top = 23.dp)
@@ -190,7 +190,7 @@ private fun BrainDumpHero() {
         Text(
             text = "Write a brain dump",
             color = Color.White,
-            fontSize = 24.sp,
+            fontSize = 20.sp,
             lineHeight = 15.sp,
             fontWeight = FontWeight.Normal,
             modifier = Modifier.padding(start = 64.dp)

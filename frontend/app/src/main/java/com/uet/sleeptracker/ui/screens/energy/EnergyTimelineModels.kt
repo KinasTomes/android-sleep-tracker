@@ -35,7 +35,19 @@ data class EnergyActivityMarkerUiModel(
 
 enum class EnergyActivityImageType {
     Caffeine,
-    WindDown
+    WindDown,
+    MelatoninWindow,
+    MelatoninSupplements,
+    BlueLightGlasses,
+    Meals,
+    Workouts,
+    Alcohol,
+    Evening,
+    Morning,
+    BlueLight,
+    PeaksAndDips,
+    Environment,
+    BrainDump
 }
 
 data class EnergyTimelineUiModel(

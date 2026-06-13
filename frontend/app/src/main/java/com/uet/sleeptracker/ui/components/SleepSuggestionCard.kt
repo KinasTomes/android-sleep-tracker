@@ -87,12 +87,12 @@ fun SleepSuggestionCard(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(start = 11.dp, top = 11.dp, end = 11.dp, bottom = 10.dp)
+                    .padding(start = 11.dp, top = 11.dp, end = 2.dp, bottom = 10.dp)
             ) {
                 Text(
                     text = title,
                     color = Color.White,
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     lineHeight = 20.sp,
                     fontWeight = FontWeight.Normal,
                     maxLines = 1,

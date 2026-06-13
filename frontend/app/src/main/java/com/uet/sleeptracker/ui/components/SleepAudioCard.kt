@@ -28,6 +28,11 @@ import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
 import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Arrangement
+
 private val AudioCardShape = RoundedCornerShape(12.dp)
 private val AudioCardBackground = Color(0xFF16151A)
 private val AudioCardBorder = Color(0xFF363636)
@@ -39,6 +44,7 @@ fun SleepAudioCard(
     subtitle: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    isPlaying: Boolean = false,
 ) {
     Box(
         modifier = modifier
@@ -72,6 +78,7 @@ fun SleepAudioCard(
                 .clickable(onClick = onClick)
         ) {
             PlayBadge(
+                isPlaying = isPlaying,
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .padding(start = 20.dp)
@@ -109,6 +116,7 @@ fun SleepAudioCard(
 
 @Composable
 private fun PlayBadge(
+    isPlaying: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -118,13 +126,23 @@ private fun PlayBadge(
             .border(width = 2.dp, color = Color.White, shape = CircleShape),
         contentAlignment = Alignment.Center
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.play_button),
-            contentDescription = null,
-            modifier = Modifier
-                .size(width = 18.dp, height = 19.dp)
-                .offset(x = 1.5.dp)
-        )
+        if (isPlaying) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.size(width = 12.dp, height = 14.dp)
+            ) {
+                Box(modifier = Modifier.width(4.dp).fillMaxHeight().background(Color.White))
+                Box(modifier = Modifier.width(4.dp).fillMaxHeight().background(Color.White))
+            }
+        } else {
+            Image(
+                painter = painterResource(id = R.drawable.play_button),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(width = 18.dp, height = 19.dp)
+                    .offset(x = 1.5.dp)
+            )
+        }
     }
 }
 
