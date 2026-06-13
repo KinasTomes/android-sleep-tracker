@@ -39,7 +39,7 @@ import com.uet.sleeptracker.ui.screens.energy.EnergyScheduleScreen
 import com.uet.sleeptracker.ui.screens.home.HomeScreen
 import com.uet.sleeptracker.ui.screens.home.HomeSlideUpPanel
 import androidx.compose.ui.tooling.preview.Preview
-import com.uet.sleeptracker.ui.screens.progress.ProgressScreenNew
+import com.uet.sleeptracker.ui.screens.progress.ProgressScreen
 import com.uet.sleeptracker.ui.screens.tools.ToolsScreen
 import com.uet.sleeptracker.ui.theme.SleepBackground
 import com.uet.sleeptracker.ui.theme.SleepPrimary
@@ -135,7 +135,7 @@ fun MainTabsScreen(
                         }
 
                         SleepBottomNavTab.Stats -> {
-                            ProgressScreenNew(
+                            ProgressScreen(
                                 modifier = Modifier.fillMaxSize(),
                                 onSleepRecordClick = onSleepRecordClick,
                             )
