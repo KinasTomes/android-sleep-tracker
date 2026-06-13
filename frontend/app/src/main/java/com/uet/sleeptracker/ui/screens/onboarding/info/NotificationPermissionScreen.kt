@@ -1,5 +1,9 @@
 package com.uet.sleeptracker.ui.screens.onboarding.info
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -33,6 +37,14 @@ fun NotificationPermissionScreen(
     onNext: () -> Unit
 ) {
     var isEnabled by remember { mutableStateOf(false) }
+
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            isEnabled = true
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -74,7 +86,13 @@ fun NotificationPermissionScreen(
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(enabled = !isEnabled) { isEnabled = true },
+                .clickable(enabled = !isEnabled) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    } else {
+                        isEnabled = true
+                    }
+                },
             shape = RoundedCornerShape(16.dp),
             color = Color.Transparent,
             border = BorderStroke(2.dp, if (isEnabled) Color(0xFF1C1C1E) else SleepPrimary)

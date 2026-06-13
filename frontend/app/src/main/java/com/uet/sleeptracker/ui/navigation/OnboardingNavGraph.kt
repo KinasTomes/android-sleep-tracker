@@ -88,7 +88,7 @@ fun NavGraphBuilder.onboardingNavGraph(navController: NavController) {
     }
     composable("info_physical_activity") {
         PhysicalActivityPermissionScreen(
-            onNext = { navController.navigate("home") },
+            onNext = { navController.navigate("main_tabs") },
             onWhyClick = { }
         )
     }

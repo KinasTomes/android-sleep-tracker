@@ -1,5 +1,9 @@
 package com.uet.sleeptracker.ui.screens.onboarding.info
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,6 +31,12 @@ fun PhysicalActivityPermissionScreen(
     onNext: () -> Unit,
     onWhyClick: () -> Unit
 ) {
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { _ ->
+        onNext()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -67,7 +77,13 @@ fun PhysicalActivityPermissionScreen(
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClick = onNext),
+                .clickable {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        requestPermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+                    } else {
+                        onNext()
+                    }
+                },
             shape = RoundedCornerShape(16.dp),
             color = Color.Transparent,
             border = BorderStroke(2.dp, SleepPrimary)
