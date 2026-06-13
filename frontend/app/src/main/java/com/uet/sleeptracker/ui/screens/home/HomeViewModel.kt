@@ -68,13 +68,41 @@ class HomeViewModel : ViewModel() {
             ""
         }
 
+        // Data needed to navigate to EditSleepScreen for nap editing
+        val napEditTitle = if (lastRecordedDay != null) {
+            val dayName = when (lastRecordedDay.label) {
+                "MON" -> "Monday"
+                "TUE" -> "Tuesday"
+                "WED" -> "Wednesday"
+                "THU" -> "Thursday"
+                "FRI" -> "Friday"
+                "SAT" -> "Saturday"
+                "SUN" -> "Sunday"
+                else -> lastRecordedDay.label
+            }
+            "$dayName night"
+        } else {
+            "Tonight"
+        }
+        val napEditStartTime = lastRecordedDay?.startTime ?: "23:00"
+        val napEditEndTime = lastRecordedDay?.endTime ?: "07:00"
+        val napEditDuration = if (lastRecordedDay != null) {
+            "${lastRecordedDay.hours} ${lastRecordedDay.minutes}"
+        } else {
+            "8h 0m"
+        }
+
         return HomeUiState(
             sleepDebtHours = currentSleepDebt,
             debtSinceYesterdayText = debtSinceYesterdayText,
             energyPotentialText = "84%",
             totalSleepTimeText = totalSleepTimeText,
             sleepTimeRangeText = sleepTimeRangeText,
-            napsTodayText = napsTodayText
+            napsTodayText = napsTodayText,
+            napEditTitle = napEditTitle,
+            napEditStartTime = napEditStartTime,
+            napEditEndTime = napEditEndTime,
+            napEditDuration = napEditDuration,
         )
     }
 }
@@ -86,4 +114,8 @@ data class HomeUiState(
     val totalSleepTimeText: String = "8h 30m",
     val sleepTimeRangeText: String = "23:30 - 08:00",
     val napsTodayText: String = "",
+    val napEditTitle: String = "Tonight",
+    val napEditStartTime: String = "23:00",
+    val napEditEndTime: String = "07:00",
+    val napEditDuration: String = "8h 0m",
 )

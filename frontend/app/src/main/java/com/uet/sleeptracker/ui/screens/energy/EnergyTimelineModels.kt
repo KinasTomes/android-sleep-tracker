@@ -84,7 +84,7 @@ internal fun buildEnergyTimelineLabels(
     }
 }
 
-private fun EnergyTimelineTime.toTimelineMinutes(timelineStartTime: EnergyTimelineTime): Int {
+internal fun EnergyTimelineTime.toTimelineMinutes(timelineStartTime: EnergyTimelineTime): Int {
     var absoluteMinutes = toAbsoluteMinutes()
     val timelineStartMinutes = timelineStartTime.toAbsoluteMinutes()
 

@@ -142,6 +142,11 @@ class MainActivity : ComponentActivity() {
                                     "edit_sleep/${Uri.encode(title)}/${Uri.encode(startTime)}/${Uri.encode(endTime)}/${Uri.encode(duration)}"
                                 )
                             },
+                            onNavigateToNaps = { title, startTime, endTime, duration ->
+                                navController.navigate(
+                                    "edit_sleep_naps/${Uri.encode(title)}/${Uri.encode(startTime)}/${Uri.encode(endTime)}/${Uri.encode(duration)}"
+                                )
+                            },
                         )
                     }
                     composable(
@@ -158,6 +163,24 @@ class MainActivity : ComponentActivity() {
                             startTime = backStackEntry.arguments?.getString("startTime").orEmpty(),
                             endTime = backStackEntry.arguments?.getString("endTime").orEmpty(),
                             duration = backStackEntry.arguments?.getString("duration").orEmpty(),
+                            onCloseClick = { navController.popBackStack() },
+                        )
+                    }
+                    composable(
+                        route = "edit_sleep_naps/{title}/{startTime}/{endTime}/{duration}",
+                        arguments = listOf(
+                            navArgument("title") { type = NavType.StringType },
+                            navArgument("startTime") { type = NavType.StringType },
+                            navArgument("endTime") { type = NavType.StringType },
+                            navArgument("duration") { type = NavType.StringType },
+                        ),
+                    ) { backStackEntry ->
+                        EditSleepScreen(
+                            title = backStackEntry.arguments?.getString("title").orEmpty(),
+                            startTime = backStackEntry.arguments?.getString("startTime").orEmpty(),
+                            endTime = backStackEntry.arguments?.getString("endTime").orEmpty(),
+                            duration = backStackEntry.arguments?.getString("duration").orEmpty(),
+                            openNapsOnEntry = true,
                             onCloseClick = { navController.popBackStack() },
                         )
                     }

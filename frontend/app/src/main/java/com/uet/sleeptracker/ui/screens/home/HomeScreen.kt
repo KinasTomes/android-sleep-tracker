@@ -26,6 +26,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
     onNavigateToEnergy: () -> Unit = {},
+    onNavigateToNaps: (title: String, startTime: String, endTime: String, duration: String) -> Unit = { _, _, _, _ -> },
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -37,7 +38,15 @@ fun HomeScreen(
         totalSleepTimeText = uiState.totalSleepTimeText,
         sleepTimeRangeText = uiState.sleepTimeRangeText,
         napsTodayText = uiState.napsTodayText,
-        onNavigateToEnergy = onNavigateToEnergy
+        onNavigateToEnergy = onNavigateToEnergy,
+        onNavigateToNaps = {
+            onNavigateToNaps(
+                uiState.napEditTitle,
+                uiState.napEditStartTime,
+                uiState.napEditEndTime,
+                uiState.napEditDuration,
+            )
+        },
     )
 }
 
@@ -51,6 +60,7 @@ fun HomeScreen(
     sleepTimeRangeText: String,
     napsTodayText: String,
     onNavigateToEnergy: () -> Unit,
+    onNavigateToNaps: () -> Unit = {},
 ) {
     LazyColumn(
         modifier = modifier
@@ -93,7 +103,10 @@ fun HomeScreen(
         }
 
         item {
-            NapsTodayCard(napsTodayText = napsTodayText)
+            NapsTodayCard(
+                napsTodayText = napsTodayText,
+                onClick = onNavigateToNaps,
+            )
         }
 
         item {

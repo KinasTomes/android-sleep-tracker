@@ -236,12 +236,15 @@ internal fun LastNightCard(
 @Composable
 internal fun NapsTodayCard(
     napsTodayText: String,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
         color = Color(0xFF232429),
         shape = RoundedCornerShape(14.dp),
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
     ) {
         Row(
             modifier = Modifier
@@ -287,7 +290,7 @@ private fun HomeCardsPreview() {
             DebtSummary(value = "-0.8hrs")
             EnergyPotentialCard(value = "Peak Focus", onClick = {})
             LastNightCard(totalSleepTime = "7h 45m", sleepTimeRange = "11:30 PM - 7:15 AM", onSleepTimeClick = {})
-            NapsTodayCard(napsTodayText = "Add Time")
+            NapsTodayCard(napsTodayText = "Add Time", onClick = {})
         }
     }
 }

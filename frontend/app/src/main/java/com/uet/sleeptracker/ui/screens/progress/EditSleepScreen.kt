@@ -41,12 +41,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
 import com.uet.sleeptracker.ui.components.TotalSleepTimeOverlay
 import com.uet.sleeptracker.ui.theme.SleepPrimary
+import androidx.compose.runtime.collectAsState
 
 private val EditSleepBackground = Color(0xFF111111)
 private val EditSleepTopBar = Color(0xFF222328)
@@ -64,9 +64,10 @@ fun EditSleepScreen(
     endTime: String,
     duration: String,
     onCloseClick: () -> Unit,
+    openNapsOnEntry: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
-    val initialDay = SleepRepository.chartDays.value.let { days ->
+    val initialDay = SleepRepository.chartDays.collectAsState().value.let { days ->
         val idx = findChartDayIndex(days, title)
         if (idx != -1) days[idx] else null
     }
@@ -78,6 +79,14 @@ fun EditSleepScreen(
     var selectedEndTime by rememberSaveable(endTime) { mutableStateOf(initialDay?.endTime ?: endTime) }
     var selectedDuration by rememberSaveable(duration) { mutableStateOf(initialDay?.let { "${it.hours} ${it.minutes}" } ?: duration) }
     var showDurationOverlay by rememberSaveable { mutableStateOf(false) }
+
+    // Auto-open naps overlay when navigated from Home's Naps Today card
+    androidx.compose.runtime.LaunchedEffect(openNapsOnEntry) {
+        if (openNapsOnEntry) {
+            draftNapMinutes = napMinutes
+            showNapsOverlay = true
+        }
+    }
 
     Box(
         modifier = modifier
@@ -507,7 +516,7 @@ private fun NapsDialogButton(
 
     Box(
         modifier = modifier
-            .height(72.dp)
+            .height(48.dp)
             .background(
                 color = if (filled) SleepPrimary else Color.Black,
                 shape = shape,
@@ -529,8 +538,8 @@ private fun NapsDialogButton(
         Text(
             text = text,
             color = Color.White,
-            fontSize = 20.sp,
-            lineHeight = 24.sp,
+            fontSize = 15.sp,
+            lineHeight = 18.sp,
         )
     }
 }
@@ -631,19 +640,8 @@ private fun saveSleepData(
     if (index != -1) {
         val originalDay = currentDays[index]
 
-        // Calculate sleep duration in minutes
-        val startMin = clockMinutes(startTime)
-        val endMin = clockMinutes(endTime)
-        val diffMin = if (endMin <= startMin) {
-            (endMin + 24 * 60) - startMin
-        } else {
-            endMin - startMin
-        }
-
-        // Add nap minutes to total sleep minutes
-        val totalSleepMinutes = diffMin + napMinutes
-        val newHoursStr = "${totalSleepMinutes / 60}h"
-        val newMinutesStr = "${totalSleepMinutes % 60}m"
+        // Calculate total sleep duration (actual sleep + naps) using shared helper
+        val (newHoursStr, newMinutesStr) = computeDisplayDuration(startTime, endTime, napMinutes)
 
         currentDays[index] = originalDay.copy(
             startTime = startTime,
@@ -655,3 +653,4 @@ private fun saveSleepData(
         SleepRepository.updateChartDays(currentDays)
     }
 }
+

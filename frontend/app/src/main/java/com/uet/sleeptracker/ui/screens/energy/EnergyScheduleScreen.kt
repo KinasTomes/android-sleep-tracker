@@ -238,7 +238,11 @@ fun EnergyScheduleScreen(
                     )
 
                     phaseLayouts.forEach { phaseLayout ->
-                        EnergyPhaseBlock(phaseLayout = phaseLayout)
+                        EnergyPhaseBlock(
+                            phaseLayout = phaseLayout,
+                            currentTime = state.currentTime,
+                            timelineStartTime = timelineStartTime
+                        )
                     }
 
                     Text(
@@ -498,7 +502,9 @@ private fun currentEnergyTimelineTime(): EnergyTimelineTime {
 
 @Composable
 private fun EnergyPhaseBlock(
-    phaseLayout: EnergyPhaseLayout
+    phaseLayout: EnergyPhaseLayout,
+    currentTime: EnergyTimelineTime,
+    timelineStartTime: EnergyTimelineTime
 ) {
     val phase = phaseLayout.phase
 
@@ -513,29 +519,34 @@ private fun EnergyPhaseBlock(
         }
 
         EnergyPhaseStyle.EveningPeak -> {
+            val isActive = isCurrentTimeInPhase(currentTime, phase, timelineStartTime)
             EnergySectionCard(
-                modifier = Modifier.offset(x = (-9).dp, y = phaseLayout.y),
+                modifier = Modifier.offset(x = 0.dp, y = phaseLayout.y),
                 title = phase.title,
                 height = phaseLayout.height,
-                width = 364.dp,
-                background = Color(0xFF333333)
+                width = 355.dp,
+                background = if (isActive) Color(0xFF333333) else Color(0xFF16151A)
             )
         }
 
         EnergyPhaseStyle.Grogginess -> {
+            val isActive = isCurrentTimeInPhase(currentTime, phase, timelineStartTime)
             GrogginessWaveCard(
                 modifier = Modifier.offset(x = 0.dp, y = phaseLayout.y),
                 title = phase.title,
-                height = phaseLayout.height
+                height = phaseLayout.height,
+                background = if (isActive) Color(0xFF333333) else Color(0xB316151A)
             )
         }
 
         EnergyPhaseStyle.Standard -> {
+            val isActive = isCurrentTimeInPhase(currentTime, phase, timelineStartTime)
             EnergySectionCard(
                 modifier = Modifier.offset(x = 0.dp, y = phaseLayout.y),
                 title = phase.title,
                 subtitle = phase.subtitle,
                 height = phaseLayout.height,
+                background = if (isActive) Color(0xFF333333) else Color(0xFF16151A),
                 dotColor = if (phase.id == "morning_peak") {
                     Color(0xFFFF5A8A)
                 } else {
@@ -546,12 +557,24 @@ private fun EnergyPhaseBlock(
     }
 }
 
+private fun isCurrentTimeInPhase(
+    currentTime: EnergyTimelineTime,
+    phase: EnergyPhaseUiModel,
+    timelineStartTime: EnergyTimelineTime
+): Boolean {
+    val currentMinutes = currentTime.toTimelineMinutes(timelineStartTime)
+    val phaseStartMinutes = phase.startTime.toTimelineMinutes(timelineStartTime)
+    val phaseEndMinutes = phaseStartMinutes + phase.durationMinutes
+    return currentMinutes in phaseStartMinutes until phaseEndMinutes
+}
+
 @Composable
 private fun GrogginessWaveCard(
     modifier: Modifier = Modifier,
     title: String,
     width: Dp = 355.dp,
-    height: Dp
+    height: Dp,
+    background: Color = Color(0xB316151A)
 ) {
     val shape = RoundedCornerShape(12.dp)
 
@@ -560,7 +583,7 @@ private fun GrogginessWaveCard(
             .width(width)
             .height(height)
             .clip(shape)
-            .background(Color(0xB316151A))
+            .background(background)
             .border(
                 width = 2.dp,
                 color = Color(0xFF363636),
@@ -903,7 +926,7 @@ private fun WakeWindowBlock(
     showBackground = true,
     backgroundColor = 0xFF000000,
     widthDp = 476,
-    heightDp = 1000
+    heightDp = 3000
 )
 @Composable
 private fun EnergyScheduleScreenPreview() {
@@ -960,9 +983,9 @@ private fun getDayLabel(nextTime: Calendar, now: Calendar): String {
     val tomorrowYear = tomorrow.get(Calendar.YEAR)
     val tomorrowDayOfYear = tomorrow.get(Calendar.DAY_OF_YEAR)
 
-    return when {
-        nextYear == todayYear && nextDayOfYear == todayDayOfYear -> "Today"
-        nextYear == tomorrowYear && nextDayOfYear == tomorrowDayOfYear -> "Tomorrow"
+    return when (nextYear) {
+        todayYear if nextDayOfYear == todayDayOfYear -> "Today"
+        tomorrowYear if nextDayOfYear == tomorrowDayOfYear -> "Tomorrow"
         else -> {
             nextTime.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.US) ?: ""
         }

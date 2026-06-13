@@ -71,6 +71,7 @@ fun MainTabsScreen(
     onEarlierWorkoutsClick: () -> Unit = {},
     onAvoidLateAlcoholClick: () -> Unit = {},
     onSleepRecordClick: (title: String, startTime: String, endTime: String, duration: String) -> Unit = { _, _, _, _ -> },
+    onNavigateToNaps: (title: String, startTime: String, endTime: String, duration: String) -> Unit = { _, _, _, _ -> },
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(SleepBottomNavTab.MySleep) }
 
@@ -105,7 +106,8 @@ fun MainTabsScreen(
                         SleepBottomNavTab.MySleep -> {
                             HomeScreen(
                                 modifier = Modifier.fillMaxSize(),
-                                onNavigateToEnergy = { selectedTab = SleepBottomNavTab.Energy }
+                                onNavigateToEnergy = { selectedTab = SleepBottomNavTab.Energy },
+                                onNavigateToNaps = onNavigateToNaps,
                             )
                         }
 
