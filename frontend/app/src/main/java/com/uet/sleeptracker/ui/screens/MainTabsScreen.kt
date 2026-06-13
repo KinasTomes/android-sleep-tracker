@@ -163,7 +163,9 @@ fun MainTabsScreen(
                     .padding(top = innerPadding.calculateTopPadding()),
                 onPeaksAndDipsClick = onPeaksAndDipsClick,
                 onCaffeineCutoffClick = onCaffeineCutoffClick,
-                onEveningRoutineClick = onEveningRoutineClick
+                onEveningRoutineClick = onEveningRoutineClick,
+                onMelatoninWindowClick = onMelatoninWindowClick,
+                onBrowseAllToolsClick = { selectedTab = SleepBottomNavTab.Tools }
             )
 
             SleepBottomNavigation(

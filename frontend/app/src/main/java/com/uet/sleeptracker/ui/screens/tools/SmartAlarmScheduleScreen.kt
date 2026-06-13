@@ -58,6 +58,10 @@ private val SmartAlarmDays = listOf("S", "M", "T", "W", "T", "F", "S")
 
 @Composable
 fun SmartAlarmScheduleScreen(
+    alarm: AlarmItem,
+    onEnabledChange: (Boolean) -> Unit,
+    onActiveDaysChange: (List<Boolean>) -> Unit,
+    onTimeChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onGentleWakeUpClick: () -> Unit = {},
@@ -65,13 +69,9 @@ fun SmartAlarmScheduleScreen(
     onDeleteClick: () -> Unit = {},
     canDelete: Boolean = true,
 ) {
-    var isAlarmEnabled by remember { mutableStateOf(true) }
-    var currentMinutes by remember { mutableStateOf(6 * 60) }
-    val activeDays = remember {
-        mutableStateListOf<Boolean>().apply {
-            addAll(List(SmartAlarmDays.size) { true })
-        }
-    }
+    val isAlarmEnabled = alarm.isEnabled
+    val currentMinutes = parseTimeStringToMinutes(alarm.time)
+    val activeDays = alarm.activeDays
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -108,7 +108,7 @@ fun SmartAlarmScheduleScreen(
                         currentMinutes = currentMinutes,
                         isAlarmEnabled = isAlarmEnabled,
                         allDaysDisabled = allDaysDisabled,
-                        onToggleChange = { isAlarmEnabled = it },
+                        onToggleChange = onEnabledChange,
                         scale = contentScale,
                         modifier = Modifier.padding(start = 16.dp, end = 26.dp)
                     )
@@ -122,12 +122,18 @@ fun SmartAlarmScheduleScreen(
                         SmartAlarmDays.forEachIndexed { index, label ->
                             AlarmDayChip(
                                 label = label,
-                                isDayActive = activeDays[index],
+                                isDayActive = activeDays.getOrElse(index) { false },
                                 isAlarmEnabled = isAlarmEnabled,
                                 chipWidth = chipWidth,
                                 chipHeight = chipHeight,
                                 scale = contentScale,
-                                onClick = { activeDays[index] = !activeDays[index] }
+                                onClick = {
+                                    val newDays = activeDays.toMutableList()
+                                    if (index in newDays.indices) {
+                                        newDays[index] = !newDays[index]
+                                        onActiveDaysChange(newDays)
+                                    }
+                                }
                             )
                         }
                     }
@@ -146,7 +152,7 @@ fun SmartAlarmScheduleScreen(
                     ) {
                         SleepTimeRulerPicker(
                             currentMinutes = currentMinutes,
-                            onTimeChange = { currentMinutes = it }
+                            onTimeChange = onTimeChange
                         )
                     }
 
@@ -156,7 +162,7 @@ fun SmartAlarmScheduleScreen(
                         text = "SCIENCE TO FEEL LESS GROGGY",
                         backgroundColor = SmartAlarmScheduleHeaderBand,
                         textColor = Color.White,
-                        modifier = Modifier.padding(horizontal = 19.dp)
+                        modifier = Modifier.padding(horizontal = 5.dp)
                     )
 
                     SmartAlarmNavigationRow(
@@ -170,7 +176,7 @@ fun SmartAlarmScheduleScreen(
                     HorizontalDivider(
                         color = SmartAlarmScheduleSectionDivider,
                         thickness = 1.dp,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp)
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
                     )
 
                     SmartAlarmNavigationRow(
@@ -308,7 +314,7 @@ private fun SmartAlarmNavigationRow(
                 indication = null,
                 onClick = onClick
             )
-            .padding(start = 40.dp, end = 28.dp),
+            .padding(start = 20.dp, end = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
@@ -318,7 +324,7 @@ private fun SmartAlarmNavigationRow(
                 text = title,
                 color = Color.White,
                 fontSize = 16.sp,
-                lineHeight = 24.sp,
+                lineHeight = 20.sp,
                 fontWeight = FontWeight.Normal
             )
             Spacer(modifier = Modifier.height(6.dp))
@@ -336,10 +342,10 @@ private fun SmartAlarmNavigationRow(
                 text = trailingText,
                 color = SmartAlarmScheduleMuted,
                 fontSize = 14.sp,
-                lineHeight = 24.sp,
+                lineHeight = 20.sp,
                 fontWeight = FontWeight.Normal
             )
-            Spacer(modifier = Modifier.width(9.dp))
+            Spacer(modifier = Modifier.width(4.dp))
         }
 
         Icon(
@@ -374,6 +380,18 @@ private fun DisabledText(color: Color) {
 @Composable
 private fun SmartAlarmScheduleScreenPreview() {
     SleeptrackerTheme {
-        SmartAlarmScheduleScreen()
+        SmartAlarmScheduleScreen(
+            alarm = AlarmItem("1", "08:00", true, listOf(true, true, true, true, true, true, true)),
+            onEnabledChange = {},
+            onActiveDaysChange = {},
+            onTimeChange = {}
+        )
     }
+}
+
+private fun parseTimeStringToMinutes(time: String): Int {
+    val parts = time.split(":")
+    val hour = parts.getOrNull(0)?.toIntOrNull() ?: 0
+    val minute = parts.getOrNull(1)?.toIntOrNull() ?: 0
+    return hour * 60 + minute
 }

@@ -42,17 +42,12 @@ fun AlarmScheduleCard(
     time: String,
     modifier: Modifier = Modifier,
     settingsLabel: String = "Settings",
-    initialAlarmEnabled: Boolean = true,
-    initialActiveDays: List<Boolean> = List(DefaultAlarmDays.size) { true },
+    isAlarmEnabled: Boolean = true,
+    activeDays: List<Boolean> = List(DefaultAlarmDays.size) { true },
+    onEnabledChange: (Boolean) -> Unit = {},
+    onActiveDaysChange: (List<Boolean>) -> Unit = {},
     onSettingsClick: (() -> Unit)? = null,
 ) {
-    var isAlarmEnabled by rememberSaveable { mutableStateOf(initialAlarmEnabled) }
-    val activeDays = remember {
-        mutableStateListOf<Boolean>().apply {
-            addAll(initialActiveDays.normalizedToWeek())
-        }
-    }
-
     BoxWithConstraints(
         modifier = modifier
             .fillMaxWidth()
@@ -83,7 +78,7 @@ fun AlarmScheduleCard(
 
         AlarmPillToggle(
             checked = isAlarmEnabled,
-            onCheckedChange = { isAlarmEnabled = it },
+            onCheckedChange = onEnabledChange,
             scale = contentScale,
             modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -106,12 +101,18 @@ fun AlarmScheduleCard(
             DefaultAlarmDays.forEachIndexed { index, label ->
                 AlarmDayChip(
                     label = label,
-                    isDayActive = activeDays[index],
+                    isDayActive = activeDays.getOrElse(index) { false },
                     isAlarmEnabled = isAlarmEnabled,
                     chipWidth = chipWidth,
                     chipHeight = chipHeight,
                     scale = contentScale,
-                    onClick = { activeDays[index] = !activeDays[index] }
+                    onClick = {
+                        val newDays = activeDays.toMutableList()
+                        if (index in newDays.indices) {
+                            newDays[index] = !newDays[index]
+                            onActiveDaysChange(newDays)
+                        }
+                    }
                 )
             }
         }
@@ -151,8 +152,8 @@ private fun AlarmScheduleCardPreview() {
         ) {
             AlarmScheduleCard(
                 time = "08:00",
-                initialAlarmEnabled = true,
-                initialActiveDays = listOf(true, true, true, true, true, true, true)
+                isAlarmEnabled = true,
+                activeDays = listOf(true, true, true, true, true, true, true)
             )
         }
     }

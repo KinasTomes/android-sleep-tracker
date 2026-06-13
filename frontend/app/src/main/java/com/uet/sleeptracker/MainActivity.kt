@@ -35,6 +35,8 @@ import com.uet.sleeptracker.ui.screens.notifications.NotificationsScreen
 import com.uet.sleeptracker.ui.screens.settings.*
 import com.uet.sleeptracker.ui.screens.tools.SmartAlarmSettingScreen
 import com.uet.sleeptracker.ui.screens.tools.SmartAlarmScheduleScreen
+import com.uet.sleeptracker.ui.screens.tools.AlarmItem
+import com.uet.sleeptracker.ui.screens.tools.SmartAlarmViewModel
 import com.uet.sleeptracker.ui.screens.tools.EnvironmentCheckScreen
 import com.uet.sleeptracker.ui.screens.tools.BrainDumpScreen
 import com.uet.sleeptracker.ui.screens.tools.BrainDumpSettingsScreen
@@ -66,8 +68,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SleeptrackerTheme {
                 val navController = rememberNavController()
-                val alarmList = remember { mutableStateListOf("08:00", "09:30") }
-                var editingIndex by remember { mutableStateOf<Int?>(null) }
+                val smartAlarmViewModel: SmartAlarmViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
                 
                 NavHost(
                     navController = navController,
@@ -120,7 +121,33 @@ class MainActivity : ComponentActivity() {
                             onCloseClick = { navController.popBackStack() },
                         )
                     }
-                    composable("melatonin_window") {
+                    composable(
+                        route = "melatonin_window",
+                        enterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        exitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popEnterTransition = {
+                            slideIntoContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        },
+                        popExitTransition = {
+                            slideOutOfContainer(
+                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                animationSpec = tween(320)
+                            )
+                        }
+                    ) {
                         MelatoninWindowScreen(
                             onCloseClick = { navController.popBackStack() },
                             onSettingsClick = { navController.navigate("melatonin_window_settings") },
@@ -394,15 +421,20 @@ class MainActivity : ComponentActivity() {
                         }
                     ) {
                         SmartAlarmSettingScreen(
-                            alarms = alarmList,
+                            alarms = smartAlarmViewModel.alarms,
+                            onAlarmEnabledChange = { index, enabled ->
+                                smartAlarmViewModel.updateAlarmEnabled(index, enabled)
+                            },
+                            onAlarmActiveDaysChange = { index, activeDays ->
+                                smartAlarmViewModel.updateAlarmActiveDays(index, activeDays)
+                            },
                             onBackClick = { navController.popBackStack() },
                             onSettingsClick = { index ->
-                                editingIndex = index
+                                smartAlarmViewModel.editingIndex = index
                                 navController.navigate("smart_alarm_schedule")
                             },
                             onAddAlarmClick = {
-                                alarmList.add("07:00")
-                                editingIndex = alarmList.lastIndex
+                                smartAlarmViewModel.addAlarm("07:00")
                                 navController.navigate("smart_alarm_schedule")
                             }
                         )
@@ -434,18 +466,22 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     ) {
-                        SmartAlarmScheduleScreen(
-                            onBackClick = { navController.popBackStack() },
-                            onDeleteClick = {
-                                editingIndex?.let { index ->
-                                    if (alarmList.size > 1 && index in alarmList.indices) {
-                                        alarmList.removeAt(index)
-                                    }
-                                }
-                                navController.popBackStack()
-                            },
-                            canDelete = alarmList.size > 1
-                        )
+                        val editIdx = smartAlarmViewModel.editingIndex
+                        val alarm = editIdx?.let { smartAlarmViewModel.alarms.getOrNull(it) }
+                        if (alarm != null && editIdx != null) {
+                            SmartAlarmScheduleScreen(
+                                alarm = alarm,
+                                onEnabledChange = { smartAlarmViewModel.updateAlarmEnabled(editIdx, it) },
+                                onActiveDaysChange = { smartAlarmViewModel.updateAlarmActiveDays(editIdx, it) },
+                                onTimeChange = { smartAlarmViewModel.updateAlarmTime(editIdx, it) },
+                                onBackClick = { navController.popBackStack() },
+                                onDeleteClick = {
+                                    smartAlarmViewModel.deleteAlarm(editIdx)
+                                    navController.popBackStack()
+                                },
+                                canDelete = smartAlarmViewModel.alarms.size > 1
+                            )
+                        }
                     }
                     composable(
                         route = "environment_check",

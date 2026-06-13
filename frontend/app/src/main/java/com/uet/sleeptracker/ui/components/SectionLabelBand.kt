@@ -36,7 +36,7 @@ fun SectionLabelBand(
             color = textColor,
             fontSize = 13.sp,
             fontWeight = FontWeight.Normal,
-            modifier = Modifier.padding(start = 21.dp)
+            modifier = Modifier.padding(start = 20.dp)
         )
     }
 }

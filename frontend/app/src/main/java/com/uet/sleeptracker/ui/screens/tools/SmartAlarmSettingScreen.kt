@@ -34,8 +34,10 @@ private val SmartAlarmAccentColor = Color(0xFF8962EC)
 
 @Composable
 fun SmartAlarmSettingScreen(
+    alarms: List<AlarmItem>,
+    onAlarmEnabledChange: (Int, Boolean) -> Unit,
+    onAlarmActiveDaysChange: (Int, List<Boolean>) -> Unit,
     modifier: Modifier = Modifier,
-    alarms: List<String> = remember { mutableStateListOf("08:00") },
     onBackClick: () -> Unit = {},
     onSettingsClick: (Int) -> Unit = {},
     onAddAlarmClick: () -> Unit = {},
@@ -61,9 +63,13 @@ fun SmartAlarmSettingScreen(
                     .fillMaxWidth()
                     .padding(top = 33.dp)
             ) {
-                alarms.forEachIndexed { index, time ->
+                alarms.forEachIndexed { index, alarm ->
                     AlarmScheduleCard(
-                        time = time,
+                        time = alarm.time,
+                        isAlarmEnabled = alarm.isEnabled,
+                        activeDays = alarm.activeDays,
+                        onEnabledChange = { onAlarmEnabledChange(index, it) },
+                        onActiveDaysChange = { onAlarmActiveDaysChange(index, it) },
                         onSettingsClick = { onSettingsClick(index) },
                         modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
                     )
@@ -115,6 +121,10 @@ private fun AddAlarmRow(
 @Composable
 private fun SmartAlarmSettingScreenPreview() {
     SleeptrackerTheme {
-        SmartAlarmSettingScreen()
+        SmartAlarmSettingScreen(
+            alarms = listOf(AlarmItem("1", "08:00", true, listOf(true, true, true, true, true, true, true))),
+            onAlarmEnabledChange = { _, _ -> },
+            onAlarmActiveDaysChange = { _, _ -> }
+        )
     }
 }

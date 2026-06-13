@@ -70,7 +70,9 @@ internal fun HomeSlideUpPanel(
     modifier: Modifier = Modifier,
     onPeaksAndDipsClick: () -> Unit = {},
     onCaffeineCutoffClick: () -> Unit = {},
-    onEveningRoutineClick: () -> Unit = {}
+    onEveningRoutineClick: () -> Unit = {},
+    onMelatoninWindowClick: () -> Unit = {},
+    onBrowseAllToolsClick: () -> Unit = {}
 ) {
     var isSheetExpanded by rememberSaveable { mutableStateOf(false) }
 
@@ -168,7 +170,12 @@ internal fun HomeSlideUpPanel(
                         SheetExpandedContent(
                             onPeaksAndDipsClick = onPeaksAndDipsClick,
                             onCaffeineCutoffClick = onCaffeineCutoffClick,
-                            onEveningRoutineClick = onEveningRoutineClick
+                            onEveningRoutineClick = onEveningRoutineClick,
+                            onMelatoninWindowClick = onMelatoninWindowClick,
+                            onBrowseAllToolsClick = {
+                                isSheetExpanded = false
+                                onBrowseAllToolsClick()
+                            }
                         )
                     }
                 }
@@ -234,15 +241,14 @@ internal fun SheetToolItem(
                 Text(
                     text = title,
                     color = titleColor,
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Normal
                 )
                 if (subtitle != null) {
-                    Spacer(modifier = Modifier.height(1.dp))
                     Text(
                         text = subtitle,
                         color = Color.White.copy(alpha = 0.5f),
-                        fontSize = 16.sp
+                        fontSize = 14.sp
                     )
                 }
             }
@@ -251,13 +257,13 @@ internal fun SheetToolItem(
         if (showBell) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.bell),
                     contentDescription = "Reminder",
                     tint = Color.White,
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(16.dp)
                 )
                 Icon(
                     painter = painterResource(id = R.drawable.right),
@@ -327,17 +333,6 @@ internal fun SheetHeader(
                 )
                 Text(text = "08:00", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.W400)
             }
-
-            // Plus Button
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFF2C2C2E)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "+", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Normal)
-            }
         }
     }
 }
@@ -347,7 +342,9 @@ internal fun ColumnScope.SheetExpandedContent(
     modifier: Modifier = Modifier,
     onPeaksAndDipsClick: () -> Unit = {},
     onCaffeineCutoffClick: () -> Unit = {},
-    onEveningRoutineClick: () -> Unit = {}
+    onEveningRoutineClick: () -> Unit = {},
+    onMelatoninWindowClick: () -> Unit = {},
+    onBrowseAllToolsClick: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -437,7 +434,8 @@ internal fun ColumnScope.SheetExpandedContent(
                         },
                         title = "Melatonin window",
                         subtitle = "22:45–00:15",
-                        showBell = true
+                        showBell = true,
+                        onClick = onMelatoninWindowClick
                     )
                     Divider()
 
@@ -459,7 +457,8 @@ internal fun ColumnScope.SheetExpandedContent(
                             title = "Browse all tools",
                             subtitle = null,
                             showBell = false,
-                            titleColor = Color(0xFF8C5CFF)
+                            titleColor = Color(0xFF8C5CFF),
+                            onClick = onBrowseAllToolsClick
                         )
                     }
                 }
