@@ -27,18 +27,25 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import com.uet.sleeptracker.R
 import com.uet.sleeptracker.ui.components.MissingSleepProgressBar
 import com.uet.sleeptracker.ui.components.SleepProgressBar
@@ -59,14 +66,18 @@ private val ChartColumnWidth = 60.dp
 private val ChartHoursLabelY = 284.dp
 private val ChartMinutesLabelY = 303.dp
 private val ChartDayLabelY = 328.dp
+private val DebtPointRadius = 6.dp
 private const val DefaultChartStartHour = 21
 private const val DefaultChartEndHour = 32
+private const val SleepDebtMaxHours = 12
 
 @Composable
 fun ProgressScreenNew(
     modifier: Modifier = Modifier,
     onSleepRecordClick: (title: String, startTime: String, endTime: String, duration: String) -> Unit = { _, _, _, _ -> },
 ) {
+    var selectedProgressTab by rememberSaveable { mutableStateOf(ProgressRangeTab.SleepTimes) }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -85,54 +96,107 @@ fun ProgressScreenNew(
             val timeRange = calculateChartTimeRange(chartDays)
 
             ProgressRangeSelector(
+                selectedTab = selectedProgressTab,
+                onTabSelected = { selectedProgressTab = it },
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .padding(top = 18.dp)
             )
 
-            SleepChart(
-                days = chartDays,
-                timeRange = timeRange,
-                modifier = Modifier
-                    .offset(x = -ChartLeftOverflow, y = 70.dp)
-                    .width(chartViewportWidth)
-            )
+            when (selectedProgressTab) {
+                ProgressRangeTab.SleepTimes -> {
+                    SleepChart(
+                        days = chartDays,
+                        timeRange = timeRange,
+                        modifier = Modifier
+                            .offset(x = -ChartLeftOverflow, y = 70.dp)
+                            .width(chartViewportWidth)
+                    )
 
-            TimeScale(
-                timeRange = timeRange,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(top = 70.dp)
-            )
+                    TimeScale(
+                        timeRange = timeRange,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(top = 70.dp)
+                    )
+                }
+
+                ProgressRangeTab.SleepDebt -> {
+                    SleepDebtChart(
+                        days = progressSleepDebtDays(),
+                        modifier = Modifier
+                            .offset(x = -ChartLeftOverflow, y = 70.dp)
+                            .width(chartViewportWidth)
+                    )
+
+                    SleepDebtTimeScale(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(top = 70.dp)
+                    )
+                }
+
+                ProgressRangeTab.SleepQuality -> {
+                    SleepChart(
+                        days = chartDays,
+                        timeRange = timeRange,
+                        modifier = Modifier
+                            .offset(x = -ChartLeftOverflow, y = 70.dp)
+                            .width(chartViewportWidth)
+                    )
+
+                    TimeScale(
+                        timeRange = timeRange,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(top = 70.dp)
+                    )
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        Text(
-            text = "All sleep times",
-            color = Color.White,
-            fontSize = 22.sp,
-            modifier = Modifier.padding(start = 19.dp, bottom = 28.dp)
-        )
+        if (selectedProgressTab == ProgressRangeTab.SleepTimes) {
+            Text(
+                text = "All sleep times",
+                color = Color.White,
+                fontSize = 22.sp,
+                modifier = Modifier.padding(start = 19.dp, bottom = 28.dp)
+            )
 
-        progressSleepRecords().forEach { record ->
-            SleepRecordItem(
-                record = record,
-                onClick = {
-                    onSleepRecordClick(
-                        record.editorTitle,
-                        record.startTime,
-                        record.endTime,
-                        record.duration,
-                    )
-                },
+            progressSleepRecords().forEach { record ->
+                SleepRecordItem(
+                    record = record,
+                    onClick = {
+                        onSleepRecordClick(
+                            record.editorTitle,
+                            record.startTime,
+                            record.endTime,
+                            record.duration,
+                        )
+                    },
+                )
+            }
+
+            SeedDataCard(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 22.dp)
             )
         }
 
-        SeedDataCard(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 22.dp)
-        )
+        ProgressDataSources()
+    }
+}
 
+private enum class ProgressRangeTab(val label: String) {
+    SleepTimes("Sleep Times"),
+    SleepDebt("Sleep Debt"),
+    SleepQuality("Sleep Quality"),
+}
+
+@Composable
+private fun ProgressDataSources() {
+    Column {
         Text(
             text = "DATA SOURCE",
             color = Color(0xFFBABABA),
@@ -195,7 +259,11 @@ fun ProgressScreenNew(
 }
 
 @Composable
-private fun ProgressRangeSelector(modifier: Modifier = Modifier) {
+private fun ProgressRangeSelector(
+    selectedTab: ProgressRangeTab,
+    onTabSelected: (ProgressRangeTab) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -205,21 +273,14 @@ private fun ProgressRangeSelector(modifier: Modifier = Modifier) {
             .background(Color(0xFF2B2B2B)),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        ProgressRangeButton(
-            text = "Sleep Times",
-            selected = true,
-            modifier = Modifier.weight(1f)
-        )
-        ProgressRangeButton(
-            text = "Sleep Debt",
-            selected = false,
-            modifier = Modifier.weight(1f)
-        )
-        ProgressRangeButton(
-            text = "Sleep Quality",
-            selected = false,
-            modifier = Modifier.weight(1f)
-        )
+        ProgressRangeTab.entries.forEach { tab ->
+            ProgressRangeButton(
+                text = tab.label,
+                selected = tab == selectedTab,
+                onClick = { onTabSelected(tab) },
+                modifier = Modifier.weight(1f)
+            )
+        }
     }
 }
 
@@ -227,12 +288,14 @@ private fun ProgressRangeSelector(modifier: Modifier = Modifier) {
 private fun ProgressRangeButton(
     text: String,
     selected: Boolean,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(48.dp)
+            .clickable(onClick = onClick)
             .background(if (selected) SleepPrimary else Color.Transparent),
         contentAlignment = Alignment.Center
     ) {
@@ -241,6 +304,150 @@ private fun ProgressRangeButton(
             color = Color.White,
             fontSize = 14.sp
         )
+    }
+}
+
+@Composable
+private fun SleepDebtChart(
+    days: List<SleepDebtDay>,
+    modifier: Modifier = Modifier
+) {
+    val chartScrollState = rememberScrollState()
+    val dayContentWidth = ChartColumnWidth * days.size + 4.dp
+    val scrollContentWidth = dayContentWidth + TimeScaleWidth
+
+    Box(
+        modifier = modifier
+            .height(ChartHeight)
+            .clipToBounds()
+            .horizontalScroll(chartScrollState)
+    ) {
+        LaunchedEffect(chartScrollState.maxValue) {
+            if (chartScrollState.maxValue > 0) {
+                chartScrollState.scrollTo(chartScrollState.maxValue)
+            }
+        }
+
+        Box(
+            modifier = Modifier
+                .width(scrollContentWidth)
+                .height(ChartHeight)
+        ) {
+            Canvas(modifier = Modifier.matchParentSize()) {
+                repeat(SleepDebtMaxHours + 1) { index ->
+                    val y = debtGridY(index).toPx()
+                    drawLine(
+                        color = Line,
+                        start = Offset(0f, y),
+                        end = Offset(size.width, y),
+                        strokeWidth = 2.dp.toPx()
+                    )
+                }
+
+                val pointCenters = days.mapIndexed { index, day ->
+                    Offset(
+                        x = (ChartColumnWidth * index + ChartColumnWidth / 2).toPx(),
+                        y = yForSleepDebt(day.debtHours).toPx()
+                    )
+                }
+
+                if (pointCenters.size > 1) {
+                    val path = Path().apply {
+                        moveTo(pointCenters.first().x, pointCenters.first().y)
+                        pointCenters.drop(1).forEach { point ->
+                            lineTo(point.x, point.y)
+                        }
+                    }
+                    drawPath(
+                        path = path,
+                        color = SleepPrimary,
+                        style = Stroke(
+                            width = 2.dp.toPx(),
+                            cap = StrokeCap.Round
+                        )
+                    )
+                }
+
+                pointCenters.forEach { point ->
+                    drawCircle(
+                        color = Bg,
+                        radius = DebtPointRadius.toPx(),
+                        center = point
+                    )
+                    drawCircle(
+                        color = SleepPrimary,
+                        radius = DebtPointRadius.toPx(),
+                        center = point,
+                        style = Stroke(width = 2.dp.toPx())
+                    )
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(start = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(0.dp),
+                verticalAlignment = Alignment.Top
+            ) {
+                days.forEach { day ->
+                    SleepDebtChartColumn(day)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SleepDebtChartColumn(day: SleepDebtDay) {
+    Box(
+        modifier = Modifier
+            .width(ChartColumnWidth)
+            .height(ChartHeight)
+    ) {
+        Text(
+            day.debtLabel,
+            color = Color.White,
+            fontSize = 16.sp,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .offset(y = ChartMinutesLabelY)
+                .padding(start = 8.dp)
+        )
+        Text(
+            day.label,
+            color = Color.White,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = (-1).sp,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .offset(y = ChartDayLabelY)
+                .padding(start = 8.dp)
+        )
+    }
+}
+
+@Composable
+private fun SleepDebtTimeScale(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .width(TimeScaleWidth)
+            .height(ChartHeight)
+            .background(Color(0x4D010101), RoundedCornerShape(8.dp))
+    ) {
+        (SleepDebtMaxHours downTo 0).forEach { value ->
+            Text(
+                text = if (value % 2 == 0) "${value}h" else "-",
+                color = Color.White,
+                fontSize = 14.sp,
+                lineHeight = 15.sp,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .offset(y = yForSleepDebt(value.toFloat()) - 8.dp)
+                    .padding(end = 2.dp)
+            )
+        }
     }
 }
 
@@ -447,6 +654,38 @@ private data class SleepRecord(
     val endTime: String,
     val duration: String,
 )
+
+private data class SleepDebtDay(
+    val label: String,
+    val debtHours: Float,
+    val debtLabel: String,
+)
+
+private fun progressSleepDebtDays(): List<SleepDebtDay> = listOf(
+    SleepDebtDay("TUE", 0f, "0h"),
+    SleepDebtDay("WED", 0.8f, "0.8h"),
+    SleepDebtDay("THU", 2.4f, "2.4h"),
+    SleepDebtDay("FRI", 2.5f, "2.5h"),
+    SleepDebtDay("SAT", 2.4f, "2.4h"),
+    SleepDebtDay("SUN", 3.9f, "3.9h"),
+    SleepDebtDay("MON", 3.1f, "3.1h"),
+    SleepDebtDay("TUE", 4.9f, "4.9h"),
+    SleepDebtDay("WED", 6.7f, "6.7h"),
+    SleepDebtDay("THU", 6.3f, "6.3h"),
+    SleepDebtDay("FRI", 5.8f, "5.8h"),
+    SleepDebtDay("SAT", 4.9f, "4.9h"),
+    SleepDebtDay("SUN", 6.3f, "6.3h"),
+    SleepDebtDay("MON", 4f, "4h"),
+)
+
+private fun debtGridY(index: Int): Dp {
+    return ChartGridStartY + ChartGridHeight * (index / SleepDebtMaxHours.toFloat())
+}
+
+private fun yForSleepDebt(hours: Float): Dp {
+    val clampedHours = hours.coerceIn(0f, SleepDebtMaxHours.toFloat())
+    return ChartGridStartY + ChartGridHeight * ((SleepDebtMaxHours - clampedHours) / SleepDebtMaxHours.toFloat())
+}
 
 private fun progressSleepRecords(): List<SleepRecord> = listOf(
     SleepRecord("Last night (Sunday)", "Sunday night", "00:00", "06:45", "6h 45m"),

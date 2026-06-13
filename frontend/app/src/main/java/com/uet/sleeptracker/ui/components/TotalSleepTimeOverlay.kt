@@ -28,7 +28,9 @@ fun TotalSleepTimeOverlay(
     overlayHeight: Dp = 671.dp,
     timeFontSize: TextUnit = 20.sp,
     editFontSize: TextUnit = 16.sp,
-    onEditClick: () -> Unit = {}
+    onEditClick: () -> Unit = {},
+    onStartTimeClick: () -> Unit = {},
+    onEndTimeClick: () -> Unit = {},
 ) {
     Box(
         modifier = modifier.height(overlayHeight + 6.dp)
@@ -92,7 +94,9 @@ fun TotalSleepTimeOverlay(
             color = Color.White,
             fontSize = timeFontSize,
             fontWeight = FontWeight.Normal,
-            modifier = Modifier.offset(x = 44.dp, y = 15.dp)
+            modifier = Modifier
+                .offset(x = 44.dp, y = 15.dp)
+                .clickable(onClick = onStartTimeClick),
         )
 
         // Edit action
@@ -128,6 +132,7 @@ fun TotalSleepTimeOverlay(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .offset(x = (-52).dp, y = (-14).dp)
+                .clickable(onClick = onEndTimeClick),
         )
     }
 }
