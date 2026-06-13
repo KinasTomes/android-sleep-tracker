@@ -66,12 +66,17 @@ fun EditSleepScreen(
     onCloseClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var napMinutes by rememberSaveable { mutableIntStateOf(15) }
+    val initialDay = SleepRepository.chartDays.value.let { days ->
+        val idx = findChartDayIndex(days, title)
+        if (idx != -1) days[idx] else null
+    }
+
+    var napMinutes by rememberSaveable { mutableIntStateOf(initialDay?.napMinutes ?: 0) }
     var draftNapMinutes by rememberSaveable { mutableIntStateOf(napMinutes) }
     var showNapsOverlay by rememberSaveable { mutableStateOf(false) }
-    var selectedStartTime by rememberSaveable(startTime) { mutableStateOf(startTime) }
-    var selectedEndTime by rememberSaveable(endTime) { mutableStateOf(endTime) }
-    var selectedDuration by rememberSaveable(duration) { mutableStateOf(duration) }
+    var selectedStartTime by rememberSaveable(startTime) { mutableStateOf(initialDay?.startTime ?: startTime) }
+    var selectedEndTime by rememberSaveable(endTime) { mutableStateOf(initialDay?.endTime ?: endTime) }
+    var selectedDuration by rememberSaveable(duration) { mutableStateOf(initialDay?.let { "${it.hours} ${it.minutes}" } ?: duration) }
     var showDurationOverlay by rememberSaveable { mutableStateOf(false) }
 
     Box(
@@ -84,7 +89,15 @@ fun EditSleepScreen(
         ) {
             EditSleepTopBar(
                 title = title,
-                onCloseClick = onCloseClick,
+                onCloseClick = {
+                    saveSleepData(
+                        title = title,
+                        startTime = selectedStartTime,
+                        endTime = selectedEndTime,
+                        napMinutes = napMinutes
+                    )
+                    onCloseClick()
+                },
             )
 
             Column(
@@ -346,7 +359,7 @@ private fun NapsRow(
             modifier = Modifier.weight(1f),
         )
         Text(
-            text = "${napMinutes}m",
+            text = if (napMinutes == 0) "Add naps" else "${napMinutes}m",
             color = EditSleepMuted,
             fontSize = 16.sp,
         )
@@ -579,4 +592,66 @@ private fun EditSleepScreenPreview() {
         duration = "7h 25m",
         onCloseClick = {},
     )
+}
+
+private fun findChartDayIndex(chartDays: List<ChartDay>, editorTitle: String): Int {
+    val recordedDays = chartDays.filter { it.showSleepBar }
+    val reversedRecorded = recordedDays.reversed()
+    val matchIndexInReversed = reversedRecorded.indexOfFirst { day ->
+        val dayName = when (day.label) {
+            "MON" -> "Monday"
+            "TUE" -> "Tuesday"
+            "WED" -> "Wednesday"
+            "THU" -> "Thursday"
+            "FRI" -> "Friday"
+            "SAT" -> "Saturday"
+            "SUN" -> "Sunday"
+            else -> day.label
+        }
+        val recordEditorTitle = if (reversedRecorded.indexOf(day) < 7) {
+            "$dayName night"
+        } else {
+            "$dayName night (last week)"
+        }
+        recordEditorTitle == editorTitle
+    }
+    if (matchIndexInReversed == -1) return -1
+    val matchedDay = reversedRecorded[matchIndexInReversed]
+    return chartDays.indexOf(matchedDay)
+}
+
+private fun saveSleepData(
+    title: String,
+    startTime: String,
+    endTime: String,
+    napMinutes: Int
+) {
+    val currentDays = SleepRepository.chartDays.value.toMutableList()
+    val index = findChartDayIndex(currentDays, title)
+    if (index != -1) {
+        val originalDay = currentDays[index]
+
+        // Calculate sleep duration in minutes
+        val startMin = clockMinutes(startTime)
+        val endMin = clockMinutes(endTime)
+        val diffMin = if (endMin <= startMin) {
+            (endMin + 24 * 60) - startMin
+        } else {
+            endMin - startMin
+        }
+
+        // Add nap minutes to total sleep minutes
+        val totalSleepMinutes = diffMin + napMinutes
+        val newHoursStr = "${totalSleepMinutes / 60}h"
+        val newMinutesStr = "${totalSleepMinutes % 60}m"
+
+        currentDays[index] = originalDay.copy(
+            startTime = startTime,
+            endTime = endTime,
+            hours = newHoursStr,
+            minutes = newMinutesStr,
+            napMinutes = napMinutes
+        )
+        SleepRepository.updateChartDays(currentDays)
+    }
 }

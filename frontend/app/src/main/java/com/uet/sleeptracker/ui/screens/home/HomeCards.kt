@@ -1,6 +1,7 @@
 package com.uet.sleeptracker.ui.screens.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,7 +41,7 @@ internal fun DebtSummary(
 
     Column(
         modifier = modifier.padding(start = 4.dp),
-        verticalArrangement = Arrangement.spacedBy(2.dp)
+        verticalArrangement = Arrangement.spacedBy((-3).dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -56,14 +57,16 @@ internal fun DebtSummary(
             Text(
                 text = "$displayedValue debt",
                 color = Color.White,
-                fontSize = 16.sp,
+                fontSize = 14.sp,
+                lineHeight = 20.sp,
                 fontWeight = FontWeight.Normal
             )
         }
         Text(
             text = "Since yesterday",
             color = Color.White.copy(alpha = 0.75f),
-            fontSize = 16.sp
+            fontSize = 14.sp,
+            lineHeight = 20.sp
         )
     }
 }
@@ -71,18 +74,19 @@ internal fun DebtSummary(
 @Composable
 internal fun EnergyPotentialCard(
     value: String,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
         color = Color(0xFF1C1C1E),
         shape = RoundedCornerShape(12.dp),
-        modifier = modifier
+        modifier = modifier.clickable { onClick() }
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 14.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp)
+            verticalArrangement = Arrangement.spacedBy((-3).dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -92,14 +96,22 @@ internal fun EnergyPotentialCard(
                 Text(
                     text = "Energy Potential",
                     color = Color.White,
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
+                    lineHeight = 20.sp,
                     fontWeight = FontWeight.Normal
+                )
+                Icon(
+                    painter = painterResource(R.drawable.right),
+                    tint = Color.White,
+                    contentDescription = "Add time",
+                    modifier = Modifier.size(16.dp)
                 )
             }
             Text(
                 text = value,
                 color = Color(0xFF2DD4BF),
-                fontSize = 16.sp,
+                fontSize = 14.sp,
+                lineHeight = 20.sp,
                 fontWeight = FontWeight.Normal
             )
         }
@@ -110,6 +122,7 @@ internal fun EnergyPotentialCard(
 internal fun LastNightCard(
     totalSleepTime: String,
     sleepTimeRange: String,
+    onSleepTimeClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val cardColor = Color(0xFF1C1C1E)
@@ -124,7 +137,7 @@ internal fun LastNightCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(36.dp)
+                    .height(28.dp)
                     .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -146,21 +159,23 @@ internal fun LastNightCard(
 
         Surface(
             color = Color(0xFF232429),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onSleepTimeClick() }
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(76.dp)
+                    .height(68.dp)
                     .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
                     Text(
                         text = totalSleepTime,
                         color = Color.White,
-                        fontSize = 16.sp,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Normal
                     )
                     Text(
@@ -203,7 +218,7 @@ internal fun LastNightCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(44.dp)
+                    .height(28.dp)
                     .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -270,8 +285,8 @@ private fun HomeCardsPreview() {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             DebtSummary(value = "-0.8hrs")
-            EnergyPotentialCard(value = "Peak Focus")
-            LastNightCard(totalSleepTime = "7h 45m", sleepTimeRange = "11:30 PM - 7:15 AM")
+            EnergyPotentialCard(value = "Peak Focus", onClick = {})
+            LastNightCard(totalSleepTime = "7h 45m", sleepTimeRange = "11:30 PM - 7:15 AM", onSleepTimeClick = {})
             NapsTodayCard(napsTodayText = "Add Time")
         }
     }

@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,12 +24,33 @@ import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    sleepDebtHours: Float = 3.2f,
-    debtSinceYesterdayText: String = "-8hrs",
-    energyPotentialText: String = "84%",
-    totalSleepTimeText: String = "8h 30m",
-    sleepTimeRangeText: String = "23:30 - 08:00",
-    napsTodayText: String = "",
+    viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    onNavigateToEnergy: () -> Unit = {},
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    HomeScreen(
+        modifier = modifier,
+        sleepDebtHours = uiState.sleepDebtHours,
+        debtSinceYesterdayText = uiState.debtSinceYesterdayText,
+        energyPotentialText = uiState.energyPotentialText,
+        totalSleepTimeText = uiState.totalSleepTimeText,
+        sleepTimeRangeText = uiState.sleepTimeRangeText,
+        napsTodayText = uiState.napsTodayText,
+        onNavigateToEnergy = onNavigateToEnergy
+    )
+}
+
+@Composable
+fun HomeScreen(
+    modifier: Modifier,
+    sleepDebtHours: Float,
+    debtSinceYesterdayText: String,
+    energyPotentialText: String,
+    totalSleepTimeText: String,
+    sleepTimeRangeText: String,
+    napsTodayText: String,
+    onNavigateToEnergy: () -> Unit,
 ) {
     LazyColumn(
         modifier = modifier
@@ -55,7 +78,8 @@ fun HomeScreen(
                 )
                 EnergyPotentialCard(
                     value = energyPotentialText,
-                    modifier = Modifier.weight(1.1f)
+                    onClick = onNavigateToEnergy,
+                    modifier = Modifier.weight(1.6f)
                 )
             }
         }
@@ -63,7 +87,8 @@ fun HomeScreen(
         item {
             LastNightCard(
                 totalSleepTime = totalSleepTimeText,
-                sleepTimeRange = sleepTimeRangeText
+                sleepTimeRange = sleepTimeRangeText,
+                onSleepTimeClick = onNavigateToEnergy
             )
         }
 
@@ -97,6 +122,15 @@ fun HomeScreen(
 @Composable
 private fun HomeScreenPreview() {
     SleeptrackerTheme {
-        HomeScreen()
+        HomeScreen(
+            modifier = Modifier.fillMaxSize(),
+            sleepDebtHours = 3.2f,
+            debtSinceYesterdayText = "-8hrs",
+            energyPotentialText = "84%",
+            totalSleepTimeText = "8h 30m",
+            sleepTimeRangeText = "23:30 - 08:00",
+            napsTodayText = "",
+            onNavigateToEnergy = {}
+        )
     }
 }

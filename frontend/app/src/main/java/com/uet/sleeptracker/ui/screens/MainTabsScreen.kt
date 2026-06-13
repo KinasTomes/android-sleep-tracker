@@ -31,6 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.R
 import com.uet.sleeptracker.ui.components.ScreenTopBar
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 import com.uet.sleeptracker.ui.components.SleepBottomNavTab
 import com.uet.sleeptracker.ui.components.SleepBottomNavigation
 import com.uet.sleeptracker.ui.components.SleepIconType
@@ -97,7 +100,10 @@ fun MainTabsScreen(
                 ) { tab ->
                     when (tab) {
                         SleepBottomNavTab.MySleep -> {
-                            HomeScreen(modifier = Modifier.fillMaxSize())
+                            HomeScreen(
+                                modifier = Modifier.fillMaxSize(),
+                                onNavigateToEnergy = { selectedTab = SleepBottomNavTab.Energy }
+                            )
                         }
 
                         SleepBottomNavTab.Energy -> {
@@ -142,7 +148,10 @@ fun MainTabsScreen(
                         }
 
                         else -> {
-                            HomeScreen(modifier = Modifier.fillMaxSize())
+                            HomeScreen(
+                                modifier = Modifier.fillMaxSize(),
+                                onNavigateToEnergy = { selectedTab = SleepBottomNavTab.Energy }
+                            )
                         }
                     }
                 }
@@ -192,9 +201,9 @@ private fun MainTabsTopBar(
             else -> "My Sleep"
         },
         subTitle = when {
-            isProgress -> "May 26 - June 8"
+            isProgress -> getTopBarDateRange(13)
             isTools || isEnergy -> null
-            else -> "May 17-30"
+            else -> getTopBarDateRange(13)
         },
         subTitleContent = if (isEnergy) {
             {
@@ -243,5 +252,26 @@ private fun MainTabsTopBar(
 private fun MainTabsScreenPreview() {
     SleeptrackerTheme {
         MainTabsScreen()
+    }
+}
+
+private fun getTopBarDateRange(daysBack: Int): String {
+    val today = Calendar.getInstance()
+    val pastDate = Calendar.getInstance().apply {
+        add(Calendar.DAY_OF_YEAR, -daysBack)
+    }
+
+    val monthFormat = SimpleDateFormat("MMM", Locale.US)
+    val dayFormat = SimpleDateFormat("d", Locale.US)
+
+    val startMonth = monthFormat.format(pastDate.time)
+    val startDay = dayFormat.format(pastDate.time)
+    val endMonth = monthFormat.format(today.time)
+    val endDay = dayFormat.format(today.time)
+
+    return if (startMonth == endMonth) {
+        "$startMonth $startDay-$endDay"
+    } else {
+        "$startMonth $startDay - $endMonth $endDay"
     }
 }

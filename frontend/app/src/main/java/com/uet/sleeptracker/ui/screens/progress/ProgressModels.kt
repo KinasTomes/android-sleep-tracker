@@ -16,7 +16,8 @@ data class ChartDay(
     val endTime: String,
     val sleepWindowTopTime: String,
     val missing: Boolean,
-    val showSleepBar: Boolean = true
+    val showSleepBar: Boolean = true,
+    val napMinutes: Int = 0
 ) {
     fun startY(timeRange: ChartTimeRange): Dp = timeRange.yForTime(startTime)
     fun sleepWindowTopY(timeRange: ChartTimeRange): Dp = timeRange.yForTime(sleepWindowTopTime)
@@ -150,14 +151,48 @@ fun progressSleepDebtDays(): List<SleepDebtDay> = listOf(
     SleepDebtDay("SAT", 4f, "4h")
 )
 
-fun progressSleepRecords(): List<SleepRecord> = listOf(
-    SleepRecord("Last night (Sunday)", "Sunday night", "00:00", "06:45", "6h 45m"),
-    SleepRecord("Saturday night", "Saturday night", "01:43", "07:04", "6h 45m"),
-    SleepRecord("Friday night", "Friday night", "23:10", "04:45", "5h 21m"),
-    SleepRecord("Thursday night", "Thursday night", "23:32", "07:30", "5h 35m"),
-    SleepRecord("Wednesday night", "Wednesday night", "00:37", "06:57", "7h 57m"),
-    SleepRecord("Tuesday night", "Tuesday night", "00:32", "07:59", "6h"),
-    SleepRecord("Monday night", "Monday night", "23:22", "06:43", "7h 28m"),
-    SleepRecord("June 1", "June 1", "23:59", "06:00", "7h 21m"),
-    SleepRecord("June 1", "June 1", "23:59", "06:00", "6h")
-)
+fun generateSleepRecordsFromChartDays(chartDays: List<ChartDay>): List<SleepRecord> {
+    val recordedDays = chartDays.filter { it.showSleepBar }.reversed()
+    return recordedDays.mapIndexed { index, day ->
+        val dayName = when (day.label) {
+            "MON" -> "Monday"
+            "TUE" -> "Tuesday"
+            "WED" -> "Wednesday"
+            "THU" -> "Thursday"
+            "FRI" -> "Friday"
+            "SAT" -> "Saturday"
+            "SUN" -> "Sunday"
+            else -> day.label
+        }
+
+        val title = if (index == 0) {
+            "Last night ($dayName)"
+        } else if (index < 7) {
+            "$dayName night"
+        } else {
+            "Last $dayName night"
+        }
+
+        val editorTitle = if (index < 7) {
+            "$dayName night"
+        } else {
+            "$dayName night (last week)"
+        }
+
+        val durationText = if (day.minutes == "0m") {
+            day.hours
+        } else {
+            "${day.hours} ${day.minutes}"
+        }
+
+        SleepRecord(
+            title = title,
+            editorTitle = editorTitle,
+            startTime = day.startTime,
+            endTime = day.endTime,
+            duration = durationText
+        )
+    }
+}
+
+fun progressSleepRecords(): List<SleepRecord> = generateSleepRecordsFromChartDays(progressChartDays())
