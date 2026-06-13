@@ -52,15 +52,16 @@ private val EnvironmentCheckMuted = Color(0xFF989898)
 @Composable
 fun EnvironmentCheckScreen(
     modifier: Modifier = Modifier,
-    reminderTime: String = "30m",
+    reminderTime: String = "30 minutes",
     initialRemindersEnabled: Boolean = true,
+    showActionButtons: Boolean = true,
     onRemindersEnabledChange: (Boolean) -> Unit = {},
     onReminderTimeClick: () -> Unit = {},
     onRemindMeClick: () -> Unit = {},
     onNotNowClick: () -> Unit = {},
     onBackClick: () -> Unit = {},
 ) {
-    var remindersEnabled by remember { mutableStateOf(initialRemindersEnabled) }
+    var remindersEnabled by remember(initialRemindersEnabled) { mutableStateOf(initialRemindersEnabled) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -91,7 +92,7 @@ fun EnvironmentCheckScreen(
                 Text(
                     text = "Benefits",
                     color = Color.White,
-                    fontSize = 28.sp,
+                    fontSize = 24.sp,
                     lineHeight = 28.sp,
                     fontWeight = FontWeight.Normal,
                     modifier = Modifier.padding(horizontal = 21.dp)
@@ -113,7 +114,7 @@ fun EnvironmentCheckScreen(
                 Text(
                     text = "How does this work?",
                     color = Color.White,
-                    fontSize = 28.sp,
+                    fontSize = 24.sp,
                     lineHeight = 28.sp,
                     fontWeight = FontWeight.Normal,
                     modifier = Modifier.padding(horizontal = 21.dp)
@@ -124,7 +125,7 @@ fun EnvironmentCheckScreen(
                 Text(
                     text = "Do a quick environment check before going to bed to ensure you fall, and stay, asleep. The three key factor are temperature, light, and bed associations. We’ll send a reminder to do a check right before bed.",
                     color = EnvironmentCheckMuted,
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     lineHeight = 24.sp,
                     letterSpacing = 0.sp,
                     fontWeight = FontWeight.Normal,
@@ -136,7 +137,7 @@ fun EnvironmentCheckScreen(
                 Text(
                     text = "The fix",
                     color = Color.White,
-                    fontSize = 28.sp,
+                    fontSize = 24.sp,
                     lineHeight = 28.sp,
                     fontWeight = FontWeight.Normal,
                     modifier = Modifier.padding(horizontal = 21.dp)
@@ -167,7 +168,7 @@ fun EnvironmentCheckScreen(
                 Text(
                     text = "How does this work?",
                     color = Color.White,
-                    fontSize = 28.sp,
+                    fontSize = 24.sp,
                     lineHeight = 28.sp,
                     fontWeight = FontWeight.Normal,
                     modifier = Modifier.padding(horizontal = 21.dp)
@@ -219,12 +220,14 @@ fun EnvironmentCheckScreen(
                     onReminderTimeClick = onReminderTimeClick,
                 )
 
-                Spacer(modifier = Modifier.height(48.dp))
+                if (showActionButtons) {
+                    Spacer(modifier = Modifier.height(48.dp))
 
-                HabitReminderActionButtons(
-                    onRemindMeClick = onRemindMeClick,
-                    onNotNowClick = onNotNowClick,
-                )
+                    HabitReminderActionButtons(
+                        onRemindMeClick = onRemindMeClick,
+                        onNotNowClick = onNotNowClick,
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(24.dp))
             }
@@ -308,7 +311,7 @@ private fun EnvironmentCheckBenefit(text: String) {
         Text(
             text = text,
             color = Color.White,
-            fontSize = 18.sp,
+            fontSize = 16.sp,
             lineHeight = 18.sp,
             letterSpacing = (-0.54).sp,
             fontWeight = FontWeight.Normal
@@ -327,7 +330,7 @@ private fun EnvironmentCheckFixItem(
     ) {
         Box(
             modifier = Modifier
-                .size(52.dp)
+                .size(36.dp)
                 .clip(CircleShape)
                 .background(SleepPrimary),
             contentAlignment = Alignment.Center
@@ -335,7 +338,7 @@ private fun EnvironmentCheckFixItem(
             Text(
                 text = number,
                 color = Color.White,
-                fontSize = 28.sp,
+                fontSize = 24.sp,
                 lineHeight = 28.sp,
                 fontWeight = FontWeight.Normal
             )
@@ -346,8 +349,8 @@ private fun EnvironmentCheckFixItem(
         Text(
             text = text,
             color = EnvironmentCheckMuted,
-            fontSize = 18.sp,
-            lineHeight = 26.sp,
+            fontSize = 14.sp,
+            lineHeight = 20.sp,
             letterSpacing = (-0.54).sp,
             fontWeight = FontWeight.Normal,
             modifier = Modifier.padding(top = 4.dp)
@@ -365,7 +368,7 @@ private fun EnvironmentCheckExplanation(
             withStyle(
                 SpanStyle(
                     color = EnvironmentCheckMuted,
-                    fontSize = 18.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     letterSpacing = (-0.54).sp
                 )
@@ -375,7 +378,7 @@ private fun EnvironmentCheckExplanation(
             withStyle(
                 SpanStyle(
                     color = EnvironmentCheckMuted,
-                    fontSize = 18.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
                     letterSpacing = (-0.54).sp
                 )

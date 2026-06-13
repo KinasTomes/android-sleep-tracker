@@ -10,22 +10,29 @@ import com.uet.sleeptracker.ui.theme.SleeptrackerTheme
 @Composable
 fun MelatoninSupplementsScreen(
     modifier: Modifier = Modifier,
-    onCloseClick: () -> Unit = {},
+    reminderTime: String = "4h",
+    initialRemindersEnabled: Boolean = false,
+    showActionButtons: Boolean = true,
+    onRemindersEnabledChange: (Boolean) -> Unit = {},
     onReminderTimeClick: () -> Unit = {},
-    onDoneClick: () -> Unit = {},
+    onRemindMeClick: () -> Unit = {},
+    onNotNowClick: () -> Unit = {},
+    onCloseClick: () -> Unit = {},
 ) {
     HabitReminderSettingsScreen(
         content = HabitSettingsContent(
             topBarTitle = "Melatonin Supplements",
             toggleTitle = "Remind me",
             toggleSubtitle = "to take melatonin supplements before\nmy melatonin window",
-            reminderValue = "4h",
-            initialEnabled = false,
+            reminderValue = reminderTime,
+            initialEnabled = initialRemindersEnabled,
+            showActions = showActionButtons,
         ),
         onCloseClick = onCloseClick,
+        onCheckedChange = onRemindersEnabledChange,
         onReminderTimeClick = onReminderTimeClick,
-        onRemindMeClick = onDoneClick,
-        onNotNowClick = onDoneClick,
+        onRemindMeClick = onRemindMeClick,
+        onNotNowClick = onNotNowClick,
         modifier = modifier,
     )
 }

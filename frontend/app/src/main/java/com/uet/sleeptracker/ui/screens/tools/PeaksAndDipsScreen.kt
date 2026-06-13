@@ -53,13 +53,18 @@ private val PeaksItemStrokeColor = Color(0xFF1A1A1D)
 @Composable
 fun PeaksAndDipsScreen(
     modifier: Modifier = Modifier,
+    morningForecastEnabled: Boolean = true,
+    morningForecastTime: String = "1h",
+    peakRemindersEnabled: Boolean = true,
+    peakRemindersTime: String = "15m",
+    dipReminderEnabled: Boolean = true,
+    dipReminderTime: String = "15m",
+    onMorningForecastEnabledChange: (Boolean) -> Unit = {},
+    onPeakRemindersEnabledChange: (Boolean) -> Unit = {},
+    onDipReminderEnabledChange: (Boolean) -> Unit = {},
     onCloseClick: () -> Unit = {},
     onReminderTimeClick: (sectionLabel: String, selectedTime: String, recommendedTime: String) -> Unit = { _, _, _ -> },
 ) {
-    var morningForecastEnabled by remember { mutableStateOf(true) }
-    var peakRemindersEnabled by remember { mutableStateOf(true) }
-    var dipReminderEnabled by remember { mutableStateOf(true) }
-
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = PeaksScreenColor,
@@ -99,11 +104,11 @@ fun PeaksAndDipsScreen(
                     title = "Morning forecast",
                     description = "Summary of daily energy updates",
                     checked = morningForecastEnabled,
-                    onCheckedChange = { morningForecastEnabled = it },
+                    onCheckedChange = onMorningForecastEnabledChange,
                     sectionLabel = "AFTER WAKE",
                     reminderTitle = "Reminder Time",
                     reminderDescription = "After wake",
-                    value = "1h",
+                    value = morningForecastTime,
                     recommendedTime = "1 hour",
                     onReminderTimeClick = onReminderTimeClick
                 )
@@ -115,11 +120,11 @@ fun PeaksAndDipsScreen(
                     title = "Peak reminders",
                     description = "Peak times and updates",
                     checked = peakRemindersEnabled,
-                    onCheckedChange = { peakRemindersEnabled = it },
+                    onCheckedChange = onPeakRemindersEnabledChange,
                     sectionLabel = "BEFORE PEAKS",
                     reminderTitle = "Reminder Time",
                     reminderDescription = "Before peaks",
-                    value = "15m",
+                    value = peakRemindersTime,
                     recommendedTime = "15 minutes",
                     onReminderTimeClick = onReminderTimeClick
                 )
@@ -131,11 +136,11 @@ fun PeaksAndDipsScreen(
                     title = "Dip reminder",
                     description = "Dip time and updates",
                     checked = dipReminderEnabled,
-                    onCheckedChange = { dipReminderEnabled = it },
+                    onCheckedChange = onDipReminderEnabledChange,
                     sectionLabel = "BEFORE DIP",
                     reminderTitle = "Reminder Time",
                     reminderDescription = "Before dip",
-                    value = "15m",
+                    value = dipReminderTime,
                     recommendedTime = "15 minutes",
                     onReminderTimeClick = onReminderTimeClick
                 )

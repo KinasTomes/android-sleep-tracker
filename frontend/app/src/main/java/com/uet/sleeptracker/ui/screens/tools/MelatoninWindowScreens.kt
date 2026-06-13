@@ -214,18 +214,23 @@ private fun MelatoninRulerTick(modifier: Modifier = Modifier) {
 @Composable
 fun MelatoninWindowSettingsScreen(
     modifier: Modifier = Modifier,
-    onCloseClick: () -> Unit = {},
+    reminderTime: String = "15 minutes",
+    initialRemindersEnabled: Boolean = true,
+    onRemindersEnabledChange: (Boolean) -> Unit = {},
     onReminderTimeClick: () -> Unit = {},
+    onCloseClick: () -> Unit = {},
 ) {
     HabitReminderSettingsScreen(
         content = HabitSettingsContent(
             topBarTitle = "Melatonin Window",
             toggleTitle = "Remind me of daily melatonin",
             toggleSubtitle = "window times and changes",
-            reminderValue = "1h 30m",
+            reminderValue = reminderTime,
+            initialEnabled = initialRemindersEnabled,
             showActions = false,
         ),
         onCloseClick = onCloseClick,
+        onCheckedChange = onRemindersEnabledChange,
         onReminderTimeClick = onReminderTimeClick,
         modifier = modifier,
     )

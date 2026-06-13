@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -245,12 +246,13 @@ data class HabitSettingsContent(
 fun HabitReminderSettingsScreen(
     content: HabitSettingsContent,
     onCloseClick: () -> Unit,
+    onCheckedChange: (Boolean) -> Unit = {},
     onReminderTimeClick: (() -> Unit)? = null,
     onRemindMeClick: () -> Unit = {},
     onNotNowClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    var enabled by remember(content.topBarTitle) { mutableStateOf(content.initialEnabled) }
+    var enabled by remember(content.initialEnabled) { mutableStateOf(content.initialEnabled) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -319,7 +321,10 @@ fun HabitReminderSettingsScreen(
                 reminderValue = content.reminderValue,
                 reminderSubtitle = content.reminderSubtitle,
                 checked = enabled,
-                onCheckedChange = { enabled = it },
+                onCheckedChange = {
+                    enabled = it
+                    onCheckedChange(it)
+                },
                 onReminderTimeClick = onReminderTimeClick,
             )
 
@@ -452,14 +457,14 @@ private fun HabitReminderRow(
                 tint = Color.Unspecified,
                 modifier = Modifier.size(24.dp)
             )
-            Column(modifier = Modifier.padding(start = 16.dp)) {
+            Column(modifier = Modifier.padding(start = 8.dp)) {
                 Text(text = "Reminder Time", color = Color.White, fontSize = 16.sp)
-                Text(text = subtitle, color = HabitMuted, fontSize = 14.sp, modifier = Modifier.padding(top = 4.dp))
+                Text(text = subtitle, color = HabitMuted, fontSize = 14.sp)
             }
         }
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text(text = value, color = HabitMuted, fontSize = 14.sp)
             if (onClick != null) {

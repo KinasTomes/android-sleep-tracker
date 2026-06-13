@@ -42,8 +42,14 @@ fun EarlierWorkoutsScreen(
 @Composable
 fun EarlierWorkoutsSettingsScreen(
     modifier: Modifier = Modifier,
+    reminderTime: String = "1h",
+    initialRemindersEnabled: Boolean = true,
+    showActionButtons: Boolean = true,
+    onRemindersEnabledChange: (Boolean) -> Unit = {},
+    onReminderTimeClick: () -> Unit = {},
+    onRemindMeClick: () -> Unit = {},
+    onNotNowClick: () -> Unit = {},
     onCloseClick: () -> Unit = {},
-    onDoneClick: () -> Unit = {},
 ) {
     HabitReminderSettingsScreen(
         content = HabitSettingsContent(
@@ -53,11 +59,15 @@ fun EarlierWorkoutsSettingsScreen(
             heroGradientEnd = Color(0xFF06602A),
             toggleTitle = "Remind me",
             toggleSubtitle = "to workout earlier",
-            reminderValue = "1h",
+            reminderValue = reminderTime,
+            initialEnabled = initialRemindersEnabled,
+            showActions = showActionButtons,
         ),
         onCloseClick = onCloseClick,
-        onRemindMeClick = onDoneClick,
-        onNotNowClick = onDoneClick,
+        onCheckedChange = onRemindersEnabledChange,
+        onReminderTimeClick = onReminderTimeClick,
+        onRemindMeClick = onRemindMeClick,
+        onNotNowClick = onNotNowClick,
         modifier = modifier,
     )
 }

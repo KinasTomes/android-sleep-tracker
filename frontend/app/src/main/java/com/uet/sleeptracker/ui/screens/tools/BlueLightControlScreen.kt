@@ -30,12 +30,15 @@ private val BlueLightControlBackground = Color(0xFF111111)
 @Composable
 fun BlueLightControlScreen(
     modifier: Modifier = Modifier,
+    brightLightEnabled: Boolean = true,
+    avoidBrightLightEnabled: Boolean = true,
+    showActionButtons: Boolean = true,
+    onBrightLightEnabledChange: (Boolean) -> Unit = {},
+    onAvoidBrightLightEnabledChange: (Boolean) -> Unit = {},
+    onRemindMeClick: () -> Unit = {},
+    onNotNowClick: () -> Unit = {},
     onCloseClick: () -> Unit = {},
-    onDoneClick: () -> Unit = {},
 ) {
-    var brightLightEnabled by remember { mutableStateOf(true) }
-    var avoidBrightLightEnabled by remember { mutableStateOf(true) }
-
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = BlueLightControlBackground,
@@ -72,7 +75,7 @@ fun BlueLightControlScreen(
                 reminderValue = "",
                 reminderSubtitle = "Before melatonin window",
                 checked = brightLightEnabled,
-                onCheckedChange = { brightLightEnabled = it },
+                onCheckedChange = onBrightLightEnabledChange,
                 onReminderTimeClick = null,
             )
 
@@ -84,16 +87,18 @@ fun BlueLightControlScreen(
                 reminderValue = "4h",
                 reminderSubtitle = "Before melatonin window",
                 checked = avoidBrightLightEnabled,
-                onCheckedChange = { avoidBrightLightEnabled = it },
+                onCheckedChange = onAvoidBrightLightEnabledChange,
                 onReminderTimeClick = null,
             )
 
             Spacer(modifier = Modifier.weight(1f))
 
-            HabitReminderActionButtons(
-                onRemindMeClick = onDoneClick,
-                onNotNowClick = onDoneClick,
-            )
+            if (showActionButtons) {
+                HabitReminderActionButtons(
+                    onRemindMeClick = onRemindMeClick,
+                    onNotNowClick = onNotNowClick,
+                )
+            }
         }
     }
 }

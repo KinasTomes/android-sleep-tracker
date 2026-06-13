@@ -173,11 +173,11 @@ fun RoutineSettingsScreen(
     title: String,
     toggleTitle: String,
     reminderSubtitle: String,
+    initialEnabled: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
     onCloseClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var enabled by remember(title) { mutableStateOf(true) }
-
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = RoutineBackground,
@@ -217,8 +217,8 @@ fun RoutineSettingsScreen(
                     toggleSubtitle = "Send daily reminders",
                     reminderValue = "",
                     reminderSubtitle = reminderSubtitle,
-                    checked = enabled,
-                    onCheckedChange = { enabled = it },
+                    checked = initialEnabled,
+                    onCheckedChange = onCheckedChange,
                     onReminderTimeClick = null,
                 )
             }

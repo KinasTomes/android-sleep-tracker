@@ -44,8 +44,14 @@ fun BlueLightGlassesScreen(
 @Composable
 fun BlueLightGlassesSettingsScreen(
     modifier: Modifier = Modifier,
+    reminderTime: String = "1h 30m",
+    initialRemindersEnabled: Boolean = true,
+    showActionButtons: Boolean = true,
+    onRemindersEnabledChange: (Boolean) -> Unit = {},
+    onReminderTimeClick: () -> Unit = {},
+    onRemindMeClick: () -> Unit = {},
+    onNotNowClick: () -> Unit = {},
     onCloseClick: () -> Unit = {},
-    onDoneClick: () -> Unit = {},
 ) {
     HabitReminderSettingsScreen(
         content = HabitSettingsContent(
@@ -55,11 +61,15 @@ fun BlueLightGlassesSettingsScreen(
             heroGradientEnd = Color(0xFF502D0B),
             toggleTitle = "Remind me",
             toggleSubtitle = "to wear orange glasses",
-            reminderValue = "1h 30m",
+            reminderValue = reminderTime,
+            initialEnabled = initialRemindersEnabled,
+            showActions = showActionButtons,
         ),
         onCloseClick = onCloseClick,
-        onRemindMeClick = onDoneClick,
-        onNotNowClick = onDoneClick,
+        onCheckedChange = onRemindersEnabledChange,
+        onReminderTimeClick = onReminderTimeClick,
+        onRemindMeClick = onRemindMeClick,
+        onNotNowClick = onNotNowClick,
         modifier = modifier,
     )
 }

@@ -36,12 +36,16 @@ fun MorningRoutineScreen(
 @Composable
 fun MorningRoutineSettingsScreen(
     modifier: Modifier = Modifier,
+    initialEnabled: Boolean = true,
+    onCheckedChange: (Boolean) -> Unit = {},
     onCloseClick: () -> Unit = {},
 ) {
     RoutineSettingsScreen(
         title = "Morning Routine",
         toggleTitle = "Deliver my morning routine",
         reminderSubtitle = "Grogginess, morning peak",
+        initialEnabled = initialEnabled,
+        onCheckedChange = onCheckedChange,
         onCloseClick = onCloseClick,
         modifier = modifier,
     )

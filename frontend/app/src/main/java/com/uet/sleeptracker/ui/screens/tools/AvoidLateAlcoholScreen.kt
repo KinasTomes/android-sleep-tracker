@@ -46,8 +46,14 @@ fun AvoidLateAlcoholScreen(
 @Composable
 fun AvoidLateAlcoholSettingsScreen(
     modifier: Modifier = Modifier,
+    reminderTime: String = "4h",
+    initialRemindersEnabled: Boolean = true,
+    showActionButtons: Boolean = true,
+    onRemindersEnabledChange: (Boolean) -> Unit = {},
+    onReminderTimeClick: () -> Unit = {},
+    onRemindMeClick: () -> Unit = {},
+    onNotNowClick: () -> Unit = {},
     onCloseClick: () -> Unit = {},
-    onDoneClick: () -> Unit = {},
 ) {
     HabitReminderSettingsScreen(
         content = HabitSettingsContent(
@@ -57,11 +63,15 @@ fun AvoidLateAlcoholSettingsScreen(
             heroGradientEnd = Color(0xFF541923),
             toggleTitle = "Remind me",
             toggleSubtitle = "to avoid alcohol",
-            reminderValue = "4h",
+            reminderValue = reminderTime,
+            initialEnabled = initialRemindersEnabled,
+            showActions = showActionButtons,
         ),
         onCloseClick = onCloseClick,
-        onRemindMeClick = onDoneClick,
-        onNotNowClick = onDoneClick,
+        onCheckedChange = onRemindersEnabledChange,
+        onReminderTimeClick = onReminderTimeClick,
+        onRemindMeClick = onRemindMeClick,
+        onNotNowClick = onNotNowClick,
         modifier = modifier,
     )
 }

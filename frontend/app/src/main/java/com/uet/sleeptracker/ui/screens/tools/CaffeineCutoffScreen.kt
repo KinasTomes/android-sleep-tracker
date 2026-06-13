@@ -51,12 +51,12 @@ private val CaffeineDividerColor = Color(0xFF1A1A1D)
 fun CaffeineCutoffScreen(
     modifier: Modifier = Modifier,
     reminderTimeText: String = "10h",
+    initialRemindersEnabled: Boolean = true,
+    onRemindersEnabledChange: (Boolean) -> Unit = {},
     onCloseClick: () -> Unit = {},
     onReminderTimeClick: () -> Unit = {},
     onLearnMoreClick: () -> Unit = {},
 ) {
-    var reminderEnabled by remember { mutableStateOf(true) }
-
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = CaffeineScreenColor,
@@ -89,8 +89,8 @@ fun CaffeineCutoffScreen(
                 toggleSubtitle = "to avoid caffeine",
                 reminderValue = reminderTimeText,
                 reminderSubtitle = "Before melatonin window",
-                checked = reminderEnabled,
-                onCheckedChange = { reminderEnabled = it },
+                checked = initialRemindersEnabled,
+                onCheckedChange = onRemindersEnabledChange,
                 onReminderTimeClick = onReminderTimeClick,
             )
 

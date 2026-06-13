@@ -48,13 +48,14 @@ private val BrainDumpSettingsMuted = Color(0xFFBABABA)
 @Composable
 fun BrainDumpSettingsScreen(
     modifier: Modifier = Modifier,
+    morningSummaryEnabled: Boolean = true,
+    eveningReminderEnabled: Boolean = true,
     reminderTimeText: String = "1h 30m",
+    onMorningSummaryEnabledChange: (Boolean) -> Unit = {},
+    onEveningReminderEnabledChange: (Boolean) -> Unit = {},
     onCloseClick: () -> Unit = {},
     onReminderTimeClick: () -> Unit = {},
 ) {
-    var morningSummaryEnabled by remember { mutableStateOf(true) }
-    var eveningReminderEnabled by remember { mutableStateOf(true) }
-
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = BrainDumpSettingsBackground,
@@ -86,7 +87,7 @@ fun BrainDumpSettingsScreen(
                 title = "Morning summary",
                 subtitle = "Send list summary after I wake up",
                 checked = morningSummaryEnabled,
-                onCheckedChange = { morningSummaryEnabled = it }
+                onCheckedChange = onMorningSummaryEnabledChange
             )
 
             HorizontalDivider(color = BrainDumpSettingsDivider, thickness = 1.dp)
@@ -109,7 +110,7 @@ fun BrainDumpSettingsScreen(
                 title = "Evening reminder",
                 subtitle = "Send reminder to write brain dump",
                 checked = eveningReminderEnabled,
-                onCheckedChange = { eveningReminderEnabled = it }
+                onCheckedChange = onEveningReminderEnabledChange
             )
 
             HorizontalDivider(color = BrainDumpSettingsDivider, thickness = 1.dp)

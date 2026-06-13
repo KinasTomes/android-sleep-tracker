@@ -52,31 +52,20 @@ private val BrainDumpFooterDivider = Color(0xFF777777)
 @Composable
 fun BrainDumpScreen(
     modifier: Modifier = Modifier,
+    todos: List<com.uet.sleeptracker.data.BrainDumpTodoItem> = emptyList(),
+    onTodoAdd: (String) -> Unit = {},
+    onTodoCheckedChange: (index: Int, checked: Boolean) -> Unit = { _, _ -> },
+    onTodoDelete: (id: Int) -> Unit = {},
     onCloseClick: () -> Unit = {},
     onSetReminderClick: () -> Unit = {},
 ) {
-    val todos = remember {
-        mutableStateListOf(
-            BrainDumpTodoItem(id = 0, text = "Play games", completed = true),
-            BrainDumpTodoItem(id = 1, text = "Play games", completed = false)
-        )
-    }
-    var nextTodoId by remember { mutableIntStateOf(2) }
     var inputValue by remember { mutableStateOf("") }
     val addInputFocusRequester = remember { FocusRequester() }
 
     fun submitTodo() {
         val newText = inputValue.trim()
         if (newText.isEmpty()) return
-
-        todos.add(
-            BrainDumpTodoItem(
-                id = nextTodoId,
-                text = newText,
-                completed = false
-            )
-        )
-        nextTodoId += 1
+        onTodoAdd(newText)
         inputValue = ""
     }
 
@@ -104,10 +93,10 @@ fun BrainDumpScreen(
                     text = todo.text,
                     completed = todo.completed,
                     onCheckedChange = { checked ->
-                        todos[index] = todo.copy(completed = checked)
+                        onTodoCheckedChange(index, checked)
                     },
                     onDeleteClick = {
-                        todos.removeAll { it.id == todo.id }
+                        onTodoDelete(todo.id)
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -172,11 +161,7 @@ fun BrainDumpScreen(
     }
 }
 
-private data class BrainDumpTodoItem(
-    val id: Int,
-    val text: String,
-    val completed: Boolean,
-)
+
 
 @Composable
 private fun BrainDumpHero() {

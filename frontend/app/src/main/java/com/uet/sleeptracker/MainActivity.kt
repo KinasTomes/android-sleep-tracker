@@ -83,6 +83,11 @@ class MainActivity : ComponentActivity() {
                     onboardingNavGraph(navController)
 
                     composable("main_tabs") {
+                        val blueLightRemindMeClicked by toolsViewModel.blueLightGlassesRemindMeClicked.collectAsState(initial = false)
+                        val avoidLateMealsRemindMeClicked by toolsViewModel.avoidLateMealsRemindMeClicked.collectAsState(initial = false)
+                        val earlierWorkoutsRemindMeClicked by toolsViewModel.earlierWorkoutsRemindMeClicked.collectAsState(initial = false)
+                        val avoidLateAlcoholRemindMeClicked by toolsViewModel.avoidLateAlcoholRemindMeClicked.collectAsState(initial = false)
+
                         MainTabsScreen(
                             alarms = smartAlarmViewModel.alarms,
                             onProfileClick = { navController.navigate("profile") },
@@ -97,10 +102,34 @@ class MainActivity : ComponentActivity() {
                             onBrainDumpClick = { navController.navigate("brain_dump") },
                             onMelatoninWindowClick = { navController.navigate("melatonin_window") },
                             onMelatoninSupplementsClick = { navController.navigate("melatonin_supplements") },
-                            onBlueLightGlassesClick = { navController.navigate("blue_light_glasses") },
-                            onAvoidLateMealsClick = { navController.navigate("avoid_late_meals") },
-                            onEarlierWorkoutsClick = { navController.navigate("earlier_workouts") },
-                            onAvoidLateAlcoholClick = { navController.navigate("avoid_late_alcohol") },
+                            onBlueLightGlassesClick = {
+                                if (blueLightRemindMeClicked) {
+                                    navController.navigate("blue_light_glasses_settings")
+                                } else {
+                                    navController.navigate("blue_light_glasses")
+                                }
+                            },
+                            onAvoidLateMealsClick = {
+                                if (avoidLateMealsRemindMeClicked) {
+                                    navController.navigate("avoid_late_meals_settings")
+                                } else {
+                                    navController.navigate("avoid_late_meals")
+                                }
+                            },
+                            onEarlierWorkoutsClick = {
+                                if (earlierWorkoutsRemindMeClicked) {
+                                    navController.navigate("earlier_workouts_settings")
+                                } else {
+                                    navController.navigate("earlier_workouts")
+                                }
+                            },
+                            onAvoidLateAlcoholClick = {
+                                if (avoidLateAlcoholRemindMeClicked) {
+                                    navController.navigate("avoid_late_alcohol_settings")
+                                } else {
+                                    navController.navigate("avoid_late_alcohol")
+                                }
+                            },
                             onSleepRecordClick = { title, startTime, endTime, duration ->
                                 navController.navigate(
                                     "edit_sleep/${Uri.encode(title)}/${Uri.encode(startTime)}/${Uri.encode(endTime)}/${Uri.encode(duration)}"
@@ -158,12 +187,19 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("melatonin_window_settings") {
+                        val reminderTime by toolsViewModel.melatoninReminderTime.collectAsState(initial = "15 minutes")
+                        val reminderEnabled by toolsViewModel.melatoninReminderEnabled.collectAsState(initial = true)
+
                         MelatoninWindowSettingsScreen(
-                            onCloseClick = { navController.popBackStack() },
+                            reminderTime = reminderTime,
+                            initialRemindersEnabled = reminderEnabled,
+                            onRemindersEnabledChange = { toolsViewModel.setMelatoninReminderEnabled(it) },
                             onReminderTimeClick = { navController.navigate("melatonin_window_reminder") },
+                            onCloseClick = { navController.popBackStack() },
                         )
                     }
                     composable("melatonin_window_reminder") {
+                        val reminderTime by toolsViewModel.melatoninReminderTime.collectAsState(initial = "15 minutes")
                         val reminderChoices = buildReminderChoiceItems(
                             labels = listOf(
                                 "At melatonin window",
@@ -181,20 +217,78 @@ class MainActivity : ComponentActivity() {
                             options = reminderChoices,
                             initialSelectedIndex = findInitialReminderChoiceIndex(
                                 options = reminderChoices,
-                                selectedLabel = "15 minutes",
+                                selectedLabel = reminderTime,
                             ),
                             type = 1,
+                            onSelectedOption = { option ->
+                                toolsViewModel.setMelatoninReminderTime(option.label)
+                                navController.popBackStack()
+                            },
                             onCloseClick = { navController.popBackStack() },
                         )
                     }
                     composable("melatonin_supplements") {
+                        val remindMeClicked by toolsViewModel.melatoninSupplementsRemindMeClicked.collectAsState(initial = false)
+                        val savedTime by toolsViewModel.melatoninSupplementsReminderTime.collectAsState(initial = "4 hours")
+                        val savedEnabled by toolsViewModel.melatoninSupplementsReminderEnabled.collectAsState(initial = false)
+
+                        val isShowingActionButtons = !remindMeClicked
+
+                        androidx.compose.runtime.LaunchedEffect(isShowingActionButtons, savedTime, savedEnabled) {
+                            if (isShowingActionButtons && toolsViewModel.tempMelatoninSupplementsTime == null) {
+                                toolsViewModel.startMelatoninSupplementsOnboarding(savedTime, savedEnabled)
+                            }
+                        }
+
+                        val reminderTime = if (isShowingActionButtons) {
+                            toolsViewModel.tempMelatoninSupplementsTime ?: savedTime
+                        } else {
+                            savedTime
+                        }
+
+                        val reminderEnabled = if (isShowingActionButtons) {
+                            toolsViewModel.tempMelatoninSupplementsEnabled ?: savedEnabled
+                        } else {
+                            savedEnabled
+                        }
+
                         MelatoninSupplementsScreen(
-                            onCloseClick = { navController.popBackStack() },
-                            onReminderTimeClick = { navController.navigate("melatonin_supplements_reminder") },
-                            onDoneClick = { navController.popBackStack() },
+                            reminderTime = reminderTime,
+                            initialRemindersEnabled = reminderEnabled,
+                            showActionButtons = isShowingActionButtons,
+                            onRemindersEnabledChange = { enabled ->
+                                toolsViewModel.setMelatoninSupplementsEnabled(enabled, isShowingActionButtons)
+                            },
+                            onReminderTimeClick = {
+                                navController.navigate("melatonin_supplements_reminder")
+                            },
+                            onRemindMeClick = {
+                                toolsViewModel.commitMelatoninSupplementsOnboarding()
+                                navController.popBackStack()
+                            },
+                            onNotNowClick = {
+                                toolsViewModel.cancelMelatoninSupplementsOnboarding()
+                                navController.popBackStack()
+                            },
+                            onCloseClick = {
+                                if (isShowingActionButtons) {
+                                    toolsViewModel.cancelMelatoninSupplementsOnboarding()
+                                }
+                                navController.popBackStack()
+                            }
                         )
                     }
                     composable("melatonin_supplements_reminder") {
+                        val remindMeClicked by toolsViewModel.melatoninSupplementsRemindMeClicked.collectAsState(initial = false)
+                        val savedTime by toolsViewModel.melatoninSupplementsReminderTime.collectAsState(initial = "4 hours")
+                        val isShowingActionButtons = !remindMeClicked
+
+                        val currentTime = if (isShowingActionButtons) {
+                            toolsViewModel.tempMelatoninSupplementsTime ?: savedTime
+                        } else {
+                            savedTime
+                        }
+
                         val reminderChoices = buildReminderChoiceItems(
                             labels = listOf("4 hours", "5 hours", "6 hours"),
                             highlightedLabel = "4 hours",
@@ -204,8 +298,15 @@ class MainActivity : ComponentActivity() {
                             screenTitle = "Reminder time",
                             sectionLabel = "BEFORE MELATONIN WINDOW",
                             options = reminderChoices,
-                            initialSelectedIndex = 0,
+                            initialSelectedIndex = findInitialReminderChoiceIndex(
+                                options = reminderChoices,
+                                selectedLabel = currentTime
+                            ),
                             type = 1,
+                            onSelectedOption = { option ->
+                                toolsViewModel.setMelatoninSupplementsTime(option.label, isShowingActionButtons)
+                                navController.popBackStack()
+                            },
                             onCloseClick = { navController.popBackStack() },
                         )
                     }
@@ -216,9 +317,87 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("blue_light_glasses_settings") {
+                        val remindMeClicked by toolsViewModel.blueLightGlassesRemindMeClicked.collectAsState(initial = false)
+                        val savedTime by toolsViewModel.blueLightGlassesReminderTime.collectAsState(initial = "1h 30m")
+                        val savedEnabled by toolsViewModel.blueLightGlassesReminderEnabled.collectAsState(initial = true)
+
+                        val isShowingActionButtons = !remindMeClicked
+
+                        androidx.compose.runtime.LaunchedEffect(isShowingActionButtons, savedTime, savedEnabled) {
+                            if (isShowingActionButtons && toolsViewModel.tempBlueLightGlassesTime == null) {
+                                toolsViewModel.startBlueLightOnboarding(savedTime, savedEnabled)
+                            }
+                        }
+
+                        val reminderTime = if (isShowingActionButtons) {
+                            toolsViewModel.tempBlueLightGlassesTime ?: savedTime
+                        } else {
+                            savedTime
+                        }
+
+                        val reminderEnabled = if (isShowingActionButtons) {
+                            toolsViewModel.tempBlueLightGlassesEnabled ?: savedEnabled
+                        } else {
+                            savedEnabled
+                        }
+
                         BlueLightGlassesSettingsScreen(
-                            onCloseClick = { navController.popBackStack() },
-                            onDoneClick = { navController.popBackStack("main_tabs", false) },
+                            reminderTime = reminderTime,
+                            initialRemindersEnabled = reminderEnabled,
+                            showActionButtons = isShowingActionButtons,
+                            onRemindersEnabledChange = { enabled ->
+                                toolsViewModel.setBlueLightGlassesEnabled(enabled, isShowingActionButtons)
+                            },
+                            onReminderTimeClick = {
+                                navController.navigate("blue_light_glasses_reminder_time")
+                            },
+                            onRemindMeClick = {
+                                toolsViewModel.commitBlueLightOnboarding()
+                                navController.popBackStack("main_tabs", false)
+                            },
+                            onNotNowClick = {
+                                toolsViewModel.cancelBlueLightOnboarding()
+                                navController.popBackStack("main_tabs", false)
+                            },
+                            onCloseClick = {
+                                if (isShowingActionButtons) {
+                                    toolsViewModel.cancelBlueLightOnboarding()
+                                }
+                                navController.popBackStack()
+                            }
+                        )
+                    }
+                    composable("blue_light_glasses_reminder_time") {
+                        val remindMeClicked by toolsViewModel.blueLightGlassesRemindMeClicked.collectAsState(initial = false)
+                        val savedTime by toolsViewModel.blueLightGlassesReminderTime.collectAsState(initial = "1h 30m")
+                        val isShowingActionButtons = !remindMeClicked
+
+                        val currentTime = if (isShowingActionButtons) {
+                            toolsViewModel.tempBlueLightGlassesTime ?: savedTime
+                        } else {
+                            savedTime
+                        }
+
+                        val reminderChoices = buildReminderChoiceItems(
+                            labels = listOf("30m", "1h", "1h 30m", "2h"),
+                            highlightedLabel = "1h 30m"
+                        )
+
+                        ReminderTimeScreen(
+                            headerTitle = "Wear Orange Glasses",
+                            screenTitle = "Reminder Time",
+                            sectionLabel = "BEFORE BEDTIME",
+                            options = reminderChoices,
+                            initialSelectedIndex = findInitialReminderChoiceIndex(
+                                options = reminderChoices,
+                                selectedLabel = currentTime
+                            ),
+                            type = 1,
+                            onSelectedOption = { option ->
+                                toolsViewModel.setBlueLightGlassesTime(option.label, isShowingActionButtons)
+                                navController.popBackStack()
+                            },
+                            onCloseClick = { navController.popBackStack() }
                         )
                     }
                     composable("avoid_late_meals") {
@@ -228,9 +407,87 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("avoid_late_meals_settings") {
+                        val remindMeClicked by toolsViewModel.avoidLateMealsRemindMeClicked.collectAsState(initial = false)
+                        val savedTime by toolsViewModel.avoidLateMealsReminderTime.collectAsState(initial = "3h")
+                        val savedEnabled by toolsViewModel.avoidLateMealsReminderEnabled.collectAsState(initial = true)
+
+                        val isShowingActionButtons = !remindMeClicked
+
+                        androidx.compose.runtime.LaunchedEffect(isShowingActionButtons, savedTime, savedEnabled) {
+                            if (isShowingActionButtons && toolsViewModel.tempAvoidLateMealsTime == null) {
+                                toolsViewModel.startAvoidLateMealsOnboarding(savedTime, savedEnabled)
+                            }
+                        }
+
+                        val reminderTime = if (isShowingActionButtons) {
+                            toolsViewModel.tempAvoidLateMealsTime ?: savedTime
+                        } else {
+                            savedTime
+                        }
+
+                        val reminderEnabled = if (isShowingActionButtons) {
+                            toolsViewModel.tempAvoidLateMealsEnabled ?: savedEnabled
+                        } else {
+                            savedEnabled
+                        }
+
                         AvoidLateMealsSettingsScreen(
-                            onCloseClick = { navController.popBackStack() },
-                            onDoneClick = { navController.popBackStack("main_tabs", false) },
+                            reminderTime = reminderTime,
+                            initialRemindersEnabled = reminderEnabled,
+                            showActionButtons = isShowingActionButtons,
+                            onRemindersEnabledChange = { enabled ->
+                                toolsViewModel.setAvoidLateMealsEnabled(enabled, isShowingActionButtons)
+                            },
+                            onReminderTimeClick = {
+                                navController.navigate("avoid_late_meals_reminder_time")
+                            },
+                            onRemindMeClick = {
+                                toolsViewModel.commitAvoidLateMealsOnboarding()
+                                navController.popBackStack("main_tabs", false)
+                            },
+                            onNotNowClick = {
+                                toolsViewModel.cancelAvoidLateMealsOnboarding()
+                                navController.popBackStack("main_tabs", false)
+                            },
+                            onCloseClick = {
+                                if (isShowingActionButtons) {
+                                    toolsViewModel.cancelAvoidLateMealsOnboarding()
+                                }
+                                navController.popBackStack()
+                            }
+                        )
+                    }
+                    composable("avoid_late_meals_reminder_time") {
+                        val remindMeClicked by toolsViewModel.avoidLateMealsRemindMeClicked.collectAsState(initial = false)
+                        val savedTime by toolsViewModel.avoidLateMealsReminderTime.collectAsState(initial = "3h")
+                        val isShowingActionButtons = !remindMeClicked
+
+                        val currentTime = if (isShowingActionButtons) {
+                            toolsViewModel.tempAvoidLateMealsTime ?: savedTime
+                        } else {
+                            savedTime
+                        }
+
+                        val reminderChoices = buildReminderChoiceItems(
+                            labels = listOf("2h", "3h", "4h"),
+                            highlightedLabel = "3h"
+                        )
+
+                        ReminderTimeScreen(
+                            headerTitle = "Avoid Late Meals",
+                            screenTitle = "Reminder Time",
+                            sectionLabel = "BEFORE BEDTIME",
+                            options = reminderChoices,
+                            initialSelectedIndex = findInitialReminderChoiceIndex(
+                                options = reminderChoices,
+                                selectedLabel = currentTime
+                            ),
+                            type = 1,
+                            onSelectedOption = { option ->
+                                toolsViewModel.setAvoidLateMealsTime(option.label, isShowingActionButtons)
+                                navController.popBackStack()
+                            },
+                            onCloseClick = { navController.popBackStack() }
                         )
                     }
                     composable("avoid_late_alcohol") {
@@ -240,9 +497,87 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("avoid_late_alcohol_settings") {
+                        val remindMeClicked by toolsViewModel.avoidLateAlcoholRemindMeClicked.collectAsState(initial = false)
+                        val savedTime by toolsViewModel.avoidLateAlcoholReminderTime.collectAsState(initial = "4h")
+                        val savedEnabled by toolsViewModel.avoidLateAlcoholReminderEnabled.collectAsState(initial = true)
+
+                        val isShowingActionButtons = !remindMeClicked
+
+                        androidx.compose.runtime.LaunchedEffect(isShowingActionButtons, savedTime, savedEnabled) {
+                            if (isShowingActionButtons && toolsViewModel.tempAvoidLateAlcoholTime == null) {
+                                toolsViewModel.startAvoidLateAlcoholOnboarding(savedTime, savedEnabled)
+                            }
+                        }
+
+                        val reminderTime = if (isShowingActionButtons) {
+                            toolsViewModel.tempAvoidLateAlcoholTime ?: savedTime
+                        } else {
+                            savedTime
+                        }
+
+                        val reminderEnabled = if (isShowingActionButtons) {
+                            toolsViewModel.tempAvoidLateAlcoholEnabled ?: savedEnabled
+                        } else {
+                            savedEnabled
+                        }
+
                         AvoidLateAlcoholSettingsScreen(
-                            onCloseClick = { navController.popBackStack() },
-                            onDoneClick = { navController.popBackStack("main_tabs", false) },
+                            reminderTime = reminderTime,
+                            initialRemindersEnabled = reminderEnabled,
+                            showActionButtons = isShowingActionButtons,
+                            onRemindersEnabledChange = { enabled ->
+                                toolsViewModel.setAvoidLateAlcoholEnabled(enabled, isShowingActionButtons)
+                            },
+                            onReminderTimeClick = {
+                                navController.navigate("avoid_late_alcohol_reminder_time")
+                            },
+                            onRemindMeClick = {
+                                toolsViewModel.commitAvoidLateAlcoholOnboarding()
+                                navController.popBackStack("main_tabs", false)
+                            },
+                            onNotNowClick = {
+                                toolsViewModel.cancelAvoidLateAlcoholOnboarding()
+                                navController.popBackStack("main_tabs", false)
+                            },
+                            onCloseClick = {
+                                if (isShowingActionButtons) {
+                                    toolsViewModel.cancelAvoidLateAlcoholOnboarding()
+                                }
+                                navController.popBackStack()
+                            }
+                        )
+                    }
+                    composable("avoid_late_alcohol_reminder_time") {
+                        val remindMeClicked by toolsViewModel.avoidLateAlcoholRemindMeClicked.collectAsState(initial = false)
+                        val savedTime by toolsViewModel.avoidLateAlcoholReminderTime.collectAsState(initial = "4h")
+                        val isShowingActionButtons = !remindMeClicked
+
+                        val currentTime = if (isShowingActionButtons) {
+                            toolsViewModel.tempAvoidLateAlcoholTime ?: savedTime
+                        } else {
+                            savedTime
+                        }
+
+                        val reminderChoices = buildReminderChoiceItems(
+                            labels = listOf("3h", "4h", "5h"),
+                            highlightedLabel = "4h"
+                        )
+
+                        ReminderTimeScreen(
+                            headerTitle = "Avoid Late Alcohol",
+                            screenTitle = "Reminder Time",
+                            sectionLabel = "BEFORE BEDTIME",
+                            options = reminderChoices,
+                            initialSelectedIndex = findInitialReminderChoiceIndex(
+                                options = reminderChoices,
+                                selectedLabel = currentTime
+                            ),
+                            type = 1,
+                            onSelectedOption = { option ->
+                                toolsViewModel.setAvoidLateAlcoholTime(option.label, isShowingActionButtons)
+                                navController.popBackStack()
+                            },
+                            onCloseClick = { navController.popBackStack() }
                         )
                     }
                     composable("earlier_workouts") {
@@ -252,9 +587,87 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("earlier_workouts_settings") {
+                        val remindMeClicked by toolsViewModel.earlierWorkoutsRemindMeClicked.collectAsState(initial = false)
+                        val savedTime by toolsViewModel.earlierWorkoutsReminderTime.collectAsState(initial = "1h")
+                        val savedEnabled by toolsViewModel.earlierWorkoutsReminderEnabled.collectAsState(initial = true)
+
+                        val isShowingActionButtons = !remindMeClicked
+
+                        androidx.compose.runtime.LaunchedEffect(isShowingActionButtons, savedTime, savedEnabled) {
+                            if (isShowingActionButtons && toolsViewModel.tempEarlierWorkoutsTime == null) {
+                                toolsViewModel.startEarlierWorkoutsOnboarding(savedTime, savedEnabled)
+                            }
+                        }
+
+                        val reminderTime = if (isShowingActionButtons) {
+                            toolsViewModel.tempEarlierWorkoutsTime ?: savedTime
+                        } else {
+                            savedTime
+                        }
+
+                        val reminderEnabled = if (isShowingActionButtons) {
+                            toolsViewModel.tempEarlierWorkoutsEnabled ?: savedEnabled
+                        } else {
+                            savedEnabled
+                        }
+
                         EarlierWorkoutsSettingsScreen(
-                            onCloseClick = { navController.popBackStack() },
-                            onDoneClick = { navController.popBackStack("main_tabs", false) },
+                            reminderTime = reminderTime,
+                            initialRemindersEnabled = reminderEnabled,
+                            showActionButtons = isShowingActionButtons,
+                            onRemindersEnabledChange = { enabled ->
+                                toolsViewModel.setEarlierWorkoutsEnabled(enabled, isShowingActionButtons)
+                            },
+                            onReminderTimeClick = {
+                                navController.navigate("earlier_workouts_reminder_time")
+                            },
+                            onRemindMeClick = {
+                                toolsViewModel.commitEarlierWorkoutsOnboarding()
+                                navController.popBackStack("main_tabs", false)
+                            },
+                            onNotNowClick = {
+                                toolsViewModel.cancelEarlierWorkoutsOnboarding()
+                                navController.popBackStack("main_tabs", false)
+                            },
+                            onCloseClick = {
+                                if (isShowingActionButtons) {
+                                    toolsViewModel.cancelEarlierWorkoutsOnboarding()
+                                }
+                                navController.popBackStack()
+                            }
+                        )
+                    }
+                    composable("earlier_workouts_reminder_time") {
+                        val remindMeClicked by toolsViewModel.earlierWorkoutsRemindMeClicked.collectAsState(initial = false)
+                        val savedTime by toolsViewModel.earlierWorkoutsReminderTime.collectAsState(initial = "1h")
+                        val isShowingActionButtons = !remindMeClicked
+
+                        val currentTime = if (isShowingActionButtons) {
+                            toolsViewModel.tempEarlierWorkoutsTime ?: savedTime
+                        } else {
+                            savedTime
+                        }
+
+                        val reminderChoices = buildReminderChoiceItems(
+                            labels = listOf("1h", "2h", "3h"),
+                            highlightedLabel = "1h"
+                        )
+
+                        ReminderTimeScreen(
+                            headerTitle = "Earlier Workouts",
+                            screenTitle = "Reminder Time",
+                            sectionLabel = "BEFORE BEDTIME",
+                            options = reminderChoices,
+                            initialSelectedIndex = findInitialReminderChoiceIndex(
+                                options = reminderChoices,
+                                selectedLabel = currentTime
+                            ),
+                            type = 1,
+                            onSelectedOption = { option ->
+                                toolsViewModel.setEarlierWorkoutsTime(option.label, isShowingActionButtons)
+                                navController.popBackStack()
+                            },
+                            onCloseClick = { navController.popBackStack() }
                         )
                     }
                     composable(
@@ -284,7 +697,27 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     ) {
+                        val todos by toolsViewModel.brainDumpTodos.collectAsState(initial = emptyList())
                         BrainDumpScreen(
+                            todos = todos,
+                            onTodoAdd = { text ->
+                                val current = todos.toMutableList()
+                                val nextId = (current.maxOfOrNull { it.id } ?: -1) + 1
+                                current.add(com.uet.sleeptracker.data.BrainDumpTodoItem(id = nextId, text = text, completed = false))
+                                toolsViewModel.setBrainDumpTodos(current)
+                            },
+                            onTodoCheckedChange = { index, checked ->
+                                val current = todos.toMutableList()
+                                if (index in current.indices) {
+                                    current[index] = current[index].copy(completed = checked)
+                                    toolsViewModel.setBrainDumpTodos(current)
+                                }
+                            },
+                            onTodoDelete = { id ->
+                                val current = todos.toMutableList()
+                                current.removeAll { it.id == id }
+                                toolsViewModel.setBrainDumpTodos(current)
+                            },
                             onCloseClick = { navController.popBackStack() },
                             onSetReminderClick = { navController.navigate("brain_dump_settings") }
                         )
@@ -316,7 +749,16 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     ) {
+                        val morningEnabled by toolsViewModel.brainDumpMorningSummaryEnabled.collectAsState(initial = true)
+                        val eveningEnabled by toolsViewModel.brainDumpEveningReminderEnabled.collectAsState(initial = true)
+                        val reminderTimeText by toolsViewModel.brainDumpEveningReminderTime.collectAsState(initial = "15 minutes")
+
                         BrainDumpSettingsScreen(
+                            morningSummaryEnabled = morningEnabled,
+                            eveningReminderEnabled = eveningEnabled,
+                            reminderTimeText = reminderTimeText,
+                            onMorningSummaryEnabledChange = { toolsViewModel.setBrainDumpMorningSummaryEnabled(it) },
+                            onEveningReminderEnabledChange = { toolsViewModel.setBrainDumpEveningReminderEnabled(it) },
                             onCloseClick = { navController.popBackStack() },
                             onReminderTimeClick = { navController.navigate("brain_dump_reminder_time") }
                         )
@@ -348,6 +790,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     ) {
+                        val reminderTimeText by toolsViewModel.brainDumpEveningReminderTime.collectAsState(initial = "15 minutes")
                         val reminderChoices = buildReminderChoiceItems(
                             labels = listOf("15 minutes", "30 minutes", "1 hour", "2 hours"),
                             highlightedLabel = "15 minutes"
@@ -360,9 +803,13 @@ class MainActivity : ComponentActivity() {
                             options = reminderChoices,
                             initialSelectedIndex = findInitialReminderChoiceIndex(
                                 options = reminderChoices,
-                                selectedLabel = "15 minutes"
+                                selectedLabel = reminderTimeText
                             ),
                             type = 1,
+                            onSelectedOption = { option ->
+                                toolsViewModel.setBrainDumpEveningReminderTime(option.label)
+                                navController.popBackStack()
+                            },
                             onCloseClick = { navController.popBackStack() }
                         )
                     }
@@ -573,10 +1020,54 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     ) {
+                        val remindMeClicked by toolsViewModel.environmentRemindMeClicked.collectAsState(initial = false)
+                        val savedTime by toolsViewModel.environmentReminderTime.collectAsState(initial = "30 minutes")
+                        val savedEnabled by toolsViewModel.environmentReminderEnabled.collectAsState(initial = true)
+
+                        val isShowingActionButtons = !remindMeClicked
+
+                        androidx.compose.runtime.LaunchedEffect(isShowingActionButtons, savedTime, savedEnabled) {
+                            if (isShowingActionButtons && toolsViewModel.tempEnvironmentReminderTime == null) {
+                                toolsViewModel.startEnvironmentCheckOnboarding(savedTime, savedEnabled)
+                            }
+                        }
+
+                        val reminderTime = if (isShowingActionButtons) {
+                            toolsViewModel.tempEnvironmentReminderTime ?: savedTime
+                        } else {
+                            savedTime
+                        }
+
+                        val reminderEnabled = if (isShowingActionButtons) {
+                            toolsViewModel.tempEnvironmentReminderEnabled ?: savedEnabled
+                        } else {
+                            savedEnabled
+                        }
+
                         EnvironmentCheckScreen(
-                            onRemindMeClick = { navController.popBackStack() },
-                            onNotNowClick = { navController.popBackStack() },
-                            onReminderTimeClick = { navController.navigate("environment_check_reminder_time") }
+                            reminderTime = reminderTime,
+                            initialRemindersEnabled = reminderEnabled,
+                            showActionButtons = isShowingActionButtons,
+                            onRemindersEnabledChange = { enabled ->
+                                toolsViewModel.setEnvironmentReminderEnabled(enabled, isShowingActionButtons)
+                            },
+                            onReminderTimeClick = {
+                                navController.navigate("environment_check_reminder_time")
+                            },
+                            onRemindMeClick = {
+                                toolsViewModel.commitEnvironmentCheckOnboarding()
+                                navController.popBackStack()
+                            },
+                            onNotNowClick = {
+                                toolsViewModel.cancelEnvironmentCheckOnboarding()
+                                navController.popBackStack()
+                            },
+                            onBackClick = {
+                                if (isShowingActionButtons) {
+                                    toolsViewModel.cancelEnvironmentCheckOnboarding()
+                                }
+                                navController.popBackStack()
+                            }
                         )
                     }
                     composable(
@@ -606,6 +1097,16 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     ) {
+                        val remindMeClicked by toolsViewModel.environmentRemindMeClicked.collectAsState(initial = false)
+                        val savedTime by toolsViewModel.environmentReminderTime.collectAsState(initial = "30 minutes")
+                        val isShowingActionButtons = !remindMeClicked
+
+                        val currentTime = if (isShowingActionButtons) {
+                            toolsViewModel.tempEnvironmentReminderTime ?: savedTime
+                        } else {
+                            savedTime
+                        }
+
                         val reminderChoices = buildReminderChoiceItems(
                             labels = listOf("15 minutes", "30 minutes", "1 hour"),
                             highlightedLabel = "30 minutes"
@@ -618,8 +1119,13 @@ class MainActivity : ComponentActivity() {
                             options = reminderChoices,
                             initialSelectedIndex = findInitialReminderChoiceIndex(
                                 options = reminderChoices,
-                                selectedLabel = "30 minutes"
+                                selectedLabel = currentTime
                             ),
+                            type = 1,
+                            onSelectedOption = { option ->
+                                toolsViewModel.setEnvironmentReminderTime(option.label, isShowingActionButtons)
+                                navController.popBackStack()
+                            },
                             onCloseClick = { navController.popBackStack() }
                         )
                     }
@@ -682,7 +1188,10 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     ) {
+                        val reminderEnabled by toolsViewModel.eveningRoutineReminderEnabled.collectAsState(initial = true)
                         EveningRoutineSettingsScreen(
+                            initialEnabled = reminderEnabled,
+                            onCheckedChange = { toolsViewModel.setEveningRoutineReminderEnabled(it) },
                             onCloseClick = { navController.popBackStack() }
                         )
                     }
@@ -693,14 +1202,62 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("morning_routine_settings") {
+                        val reminderEnabled by toolsViewModel.morningRoutineReminderEnabled.collectAsState(initial = true)
                         MorningRoutineSettingsScreen(
+                            initialEnabled = reminderEnabled,
+                            onCheckedChange = { toolsViewModel.setMorningRoutineReminderEnabled(it) },
                             onCloseClick = { navController.popBackStack() },
                         )
                     }
                     composable("blue_light_control") {
+                        val remindMeClicked by toolsViewModel.blueLightControlRemindMeClicked.collectAsState(initial = false)
+                        val savedBrightEnabled by toolsViewModel.blueLightControlBrightLightEnabled.collectAsState(initial = true)
+                        val savedAvoidEnabled by toolsViewModel.blueLightControlAvoidBrightLightEnabled.collectAsState(initial = true)
+
+                        val isShowingActionButtons = !remindMeClicked
+
+                        androidx.compose.runtime.LaunchedEffect(isShowingActionButtons, savedBrightEnabled, savedAvoidEnabled) {
+                            if (isShowingActionButtons && toolsViewModel.tempBlueLightControlBrightLightEnabled == null) {
+                                toolsViewModel.startBlueLightControlOnboarding(savedBrightEnabled, savedAvoidEnabled)
+                            }
+                        }
+
+                        val brightEnabled = if (isShowingActionButtons) {
+                            toolsViewModel.tempBlueLightControlBrightLightEnabled ?: savedBrightEnabled
+                        } else {
+                            savedBrightEnabled
+                        }
+
+                        val avoidEnabled = if (isShowingActionButtons) {
+                            toolsViewModel.tempBlueLightControlAvoidBrightLightEnabled ?: savedAvoidEnabled
+                        } else {
+                            savedAvoidEnabled
+                        }
+
                         BlueLightControlScreen(
-                            onCloseClick = { navController.popBackStack() },
-                            onDoneClick = { navController.popBackStack("main_tabs", false) },
+                            brightLightEnabled = brightEnabled,
+                            avoidBrightLightEnabled = avoidEnabled,
+                            showActionButtons = isShowingActionButtons,
+                            onBrightLightEnabledChange = { enabled ->
+                                toolsViewModel.setBlueLightControlBrightEnabled(enabled, isShowingActionButtons)
+                            },
+                            onAvoidBrightLightEnabledChange = { enabled ->
+                                toolsViewModel.setBlueLightControlAvoidEnabled(enabled, isShowingActionButtons)
+                            },
+                            onRemindMeClick = {
+                                toolsViewModel.commitBlueLightControlOnboarding()
+                                navController.popBackStack()
+                            },
+                            onNotNowClick = {
+                                toolsViewModel.cancelBlueLightControlOnboarding()
+                                navController.popBackStack()
+                            },
+                            onCloseClick = {
+                                if (isShowingActionButtons) {
+                                    toolsViewModel.cancelBlueLightControlOnboarding()
+                                }
+                                navController.popBackStack()
+                            }
                         )
                     }
                     composable(
@@ -730,7 +1287,13 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     ) {
+                        val reminderTimeText by toolsViewModel.caffeineReminderTime.collectAsState(initial = "10h")
+                        val reminderEnabled by toolsViewModel.caffeineReminderEnabled.collectAsState(initial = true)
+
                         CaffeineCutoffScreen(
+                            reminderTimeText = reminderTimeText,
+                            initialRemindersEnabled = reminderEnabled,
+                            onRemindersEnabledChange = { toolsViewModel.setCaffeineReminderEnabled(it) },
                             onCloseClick = { navController.popBackStack() },
                             onReminderTimeClick = { navController.navigate("caffeine_cutoff_reminder_time") },
                             onLearnMoreClick = { navController.navigate("caffeine_cutoff_learn_more") }
@@ -763,7 +1326,27 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     ) {
+                        val morningEnabled by toolsViewModel.peaksAndDipsMorningForecastEnabled.collectAsState(initial = true)
+                        val morningTime by toolsViewModel.peaksAndDipsMorningForecastTime.collectAsState(initial = "1 hour")
+                        val peakEnabled by toolsViewModel.peaksAndDipsPeakRemindersEnabled.collectAsState(initial = true)
+                        val peakTime by toolsViewModel.peaksAndDipsPeakRemindersTime.collectAsState(initial = "15 minutes")
+                        val dipEnabled by toolsViewModel.peaksAndDipsDipReminderEnabled.collectAsState(initial = true)
+                        val dipTime by toolsViewModel.peaksAndDipsDipReminderTime.collectAsState(initial = "15 minutes")
+
+                        val morningTimeShort = morningTime.toShortReminderTimeLabel()
+                        val peakTimeShort = peakTime.toShortReminderTimeLabel()
+                        val dipTimeShort = dipTime.toShortReminderTimeLabel()
+
                         PeaksAndDipsScreen(
+                            morningForecastEnabled = morningEnabled,
+                            morningForecastTime = morningTimeShort,
+                            peakRemindersEnabled = peakEnabled,
+                            peakRemindersTime = peakTimeShort,
+                            dipReminderEnabled = dipEnabled,
+                            dipReminderTime = dipTimeShort,
+                            onMorningForecastEnabledChange = { toolsViewModel.setPeaksAndDipsMorningForecastEnabled(it) },
+                            onPeakRemindersEnabledChange = { toolsViewModel.setPeaksAndDipsPeakRemindersEnabled(it) },
+                            onDipReminderEnabledChange = { toolsViewModel.setPeaksAndDipsDipReminderEnabled(it) },
                             onCloseClick = { navController.popBackStack() },
                             onReminderTimeClick = { sectionLabel, selectedTime, recommendedTime ->
                                 navController.navigate(
@@ -819,6 +1402,14 @@ class MainActivity : ComponentActivity() {
                                 selectedLabel = selectedTime
                             ),
                             type = 1,
+                            onSelectedOption = { option ->
+                                when (sectionLabel) {
+                                    "AFTER WAKE" -> toolsViewModel.setPeaksAndDipsMorningForecastTime(option.label)
+                                    "BEFORE PEAKS" -> toolsViewModel.setPeaksAndDipsPeakRemindersTime(option.label)
+                                    "BEFORE DIP" -> toolsViewModel.setPeaksAndDipsDipReminderTime(option.label)
+                                }
+                                navController.popBackStack()
+                            },
                             onCloseClick = { navController.popBackStack() }
                         )
                     }
@@ -880,6 +1471,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     ) {
+                        val reminderTimeText by toolsViewModel.caffeineReminderTime.collectAsState(initial = "10h")
                         val reminderChoices = buildReminderChoiceItems(
                             labels = listOf("8h", "9h", "10h", "11h", "12h"),
                             highlightedLabel = "10h"
@@ -892,9 +1484,13 @@ class MainActivity : ComponentActivity() {
                             options = reminderChoices,
                             initialSelectedIndex = findInitialReminderChoiceIndex(
                                 options = reminderChoices,
-                                selectedLabel = "10h"
+                                selectedLabel = reminderTimeText
                             ),
                             type = 1,
+                            onSelectedOption = { option ->
+                                toolsViewModel.setCaffeineReminderTime(option.label)
+                                navController.popBackStack()
+                            },
                             onCloseClick = { navController.popBackStack() }
                         )
                     }
@@ -941,5 +1537,15 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+}
+
+private fun String.toShortReminderTimeLabel(): String {
+    return when (trim().lowercase()) {
+        "1 hour" -> "1h"
+        "15 minutes" -> "15m"
+        "30 minutes" -> "30m"
+        "2 hours" -> "2h"
+        else -> this
     }
 }

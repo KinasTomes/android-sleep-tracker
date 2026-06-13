@@ -43,8 +43,14 @@ fun AvoidLateMealsScreen(
 @Composable
 fun AvoidLateMealsSettingsScreen(
     modifier: Modifier = Modifier,
+    reminderTime: String = "3h",
+    initialRemindersEnabled: Boolean = true,
+    showActionButtons: Boolean = true,
+    onRemindersEnabledChange: (Boolean) -> Unit = {},
+    onReminderTimeClick: () -> Unit = {},
+    onRemindMeClick: () -> Unit = {},
+    onNotNowClick: () -> Unit = {},
     onCloseClick: () -> Unit = {},
-    onDoneClick: () -> Unit = {},
 ) {
     HabitReminderSettingsScreen(
         content = HabitSettingsContent(
@@ -54,11 +60,15 @@ fun AvoidLateMealsSettingsScreen(
             heroGradientEnd = Color(0xFF055555),
             toggleTitle = "Remind me",
             toggleSubtitle = "to avoid late meals",
-            reminderValue = "3h",
+            reminderValue = reminderTime,
+            initialEnabled = initialRemindersEnabled,
+            showActions = showActionButtons,
         ),
         onCloseClick = onCloseClick,
-        onRemindMeClick = onDoneClick,
-        onNotNowClick = onDoneClick,
+        onCheckedChange = onRemindersEnabledChange,
+        onReminderTimeClick = onReminderTimeClick,
+        onRemindMeClick = onRemindMeClick,
+        onNotNowClick = onNotNowClick,
         modifier = modifier,
     )
 }
