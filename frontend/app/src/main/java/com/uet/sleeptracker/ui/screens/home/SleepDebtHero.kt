@@ -203,7 +203,7 @@ internal fun SleepDebtHero(sleepDebtHours: Float) {
                             text = hoursText,
                             color = Color.White,
                             fontSize = 48.sp,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.Normal,
                             lineHeight = 48.sp
                         )
                         Text(

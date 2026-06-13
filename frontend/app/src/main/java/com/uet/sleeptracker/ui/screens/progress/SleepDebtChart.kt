@@ -4,6 +4,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uet.sleeptracker.ui.theme.SleepPrimary
+import androidx.compose.ui.tooling.preview.Preview
 
 private val DebtPointRadius = 6.dp
 private const val SleepDebtMaxHours = 12
@@ -130,26 +132,28 @@ private fun SleepDebtChartColumn(day: SleepDebtDay) {
             .width(ChartColumnWidth)
             .height(ChartHeight)
     ) {
-        Text(
-            day.debtLabel,
-            color = Color.White,
-            fontSize = 16.sp,
+        Column(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .offset(y = ChartHoursLabelY)
-                .padding(start = 8.dp)
-        )
-        Text(
-            day.label,
-            color = Color.White,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = (-1).sp,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .offset(y = ChartMinutesLabelY)
-                .padding(start = 8.dp)
-        )
+                .padding(start = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(1.dp)
+        ) {
+            Text(
+                day.debtLabel,
+                color = Color.White,
+                fontSize = 16.sp,
+                lineHeight = 16.sp
+            )
+            Text(
+                day.label,
+                color = Color.White,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = (-1).sp,
+                lineHeight = 20.sp
+            )
+        }
     }
 }
 
@@ -176,12 +180,6 @@ internal fun SleepDebtTimeScale(modifier: Modifier = Modifier) {
     }
 }
 
-internal data class SleepDebtDay(
-    val label: String,
-    val debtHours: Float,
-    val debtLabel: String
-)
-
 private fun debtGridY(index: Int): Dp {
     return ChartGridStartY + ChartGridHeight * (index / SleepDebtMaxHours.toFloat())
 }
@@ -191,19 +189,17 @@ private fun yForSleepDebt(hours: Float): Dp {
     return ChartGridStartY + ChartGridHeight * ((SleepDebtMaxHours - clampedHours) / SleepDebtMaxHours.toFloat())
 }
 
-internal fun progressSleepDebtDays(): List<SleepDebtDay> = listOf(
-    SleepDebtDay("TUE", 0f, "0h"),
-    SleepDebtDay("WED", 0.8f, "0.8h"),
-    SleepDebtDay("THU", 2.4f, "2.4h"),
-    SleepDebtDay("FRI", 2.5f, "2.5h"),
-    SleepDebtDay("SAT", 2.4f, "2.4h"),
-    SleepDebtDay("SUN", 3.9f, "3.9h"),
-    SleepDebtDay("MON", 3.1f, "3.1h"),
-    SleepDebtDay("TUE", 4.9f, "4.9h"),
-    SleepDebtDay("WED", 6.7f, "6.7h"),
-    SleepDebtDay("THU", 6.3f, "6.3h"),
-    SleepDebtDay("FRI", 5.8f, "5.8h"),
-    SleepDebtDay("SAT", 4.9f, "4.9h"),
-    SleepDebtDay("SUN", 6.3f, "6.3h"),
-    SleepDebtDay("MON", 4f, "4h")
-)
+@Preview(showBackground = true, backgroundColor = 0xFF010101)
+@Composable
+private fun SleepDebtChartPreview() {
+    Box(
+        modifier = Modifier
+            .background(Bg)
+            .padding(16.dp)
+    ) {
+        SleepDebtChart(
+            days = progressSleepDebtDays(),
+            modifier = Modifier.width(360.dp)
+        )
+    }
+}

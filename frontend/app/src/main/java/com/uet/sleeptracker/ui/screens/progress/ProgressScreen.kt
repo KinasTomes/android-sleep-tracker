@@ -24,10 +24,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,10 +42,26 @@ import com.uet.sleeptracker.ui.theme.SleepPrimary
 @Composable
 fun ProgressScreen(
     modifier: Modifier = Modifier,
+    viewModel: ProgressViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
     onSleepRecordClick: (title: String, startTime: String, endTime: String, duration: String) -> Unit = { _, _, _, _ -> },
 ) {
-    var selectedProgressTab by rememberSaveable { mutableStateOf(ProgressRangeTab.SleepTimes) }
+    val uiState by viewModel.uiState.collectAsState()
 
+    ProgressScreen(
+        uiState = uiState,
+        onTabSelected = { viewModel.selectTab(it) },
+        modifier = modifier,
+        onSleepRecordClick = onSleepRecordClick
+    )
+}
+
+@Composable
+fun ProgressScreen(
+    uiState: ProgressUiState,
+    onTabSelected: (ProgressRangeTab) -> Unit,
+    modifier: Modifier = Modifier,
+    onSleepRecordClick: (title: String, startTime: String, endTime: String, duration: String) -> Unit = { _, _, _, _ -> },
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -62,18 +76,18 @@ fun ProgressScreen(
         ) {
             val chartViewportWidth = (maxWidth + ChartLeftOverflow)
                 .coerceAtLeast(0.dp)
-            val chartDays = progressChartDays()
-            val timeRange = calculateChartTimeRange(chartDays)
+            val chartDays = uiState.chartDays
+            val timeRange = uiState.timeRange
 
             ProgressRangeSelector(
-                selectedTab = selectedProgressTab,
-                onTabSelected = { selectedProgressTab = it },
+                selectedTab = uiState.selectedTab,
+                onTabSelected = onTabSelected,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .padding(top = 18.dp)
             )
 
-            when (selectedProgressTab) {
+            when (uiState.selectedTab) {
                 ProgressRangeTab.SleepTimes -> {
                     SleepChart(
                         days = chartDays,
@@ -93,7 +107,7 @@ fun ProgressScreen(
 
                 ProgressRangeTab.SleepDebt -> {
                     SleepDebtChart(
-                        days = progressSleepDebtDays(),
+                        days = uiState.sleepDebtDays,
                         modifier = Modifier
                             .offset(x = -ChartLeftOverflow, y = 70.dp)
                             .width(chartViewportWidth)
@@ -110,15 +124,15 @@ fun ProgressScreen(
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        if (selectedProgressTab == ProgressRangeTab.SleepTimes) {
+        if (uiState.selectedTab == ProgressRangeTab.SleepTimes) {
             Text(
                 text = "All sleep times",
                 color = Color.White,
-                fontSize = 22.sp,
+                fontSize = 18.sp,
                 modifier = Modifier.padding(start = 19.dp, bottom = 28.dp)
             )
 
-            progressSleepRecords().forEach { record ->
+            uiState.sleepRecords.forEach { record ->
                 SleepRecordItem(
                     record = record,
                     onClick = {
@@ -141,18 +155,13 @@ fun ProgressScreen(
     }
 }
 
-private enum class ProgressRangeTab(val label: String) {
-    SleepTimes("Sleep Times"),
-    SleepDebt("Sleep Debt"),
-}
-
 @Composable
 private fun ProgressDataSources() {
     Column {
         Text(
             text = "DATA SOURCE",
             color = Color(0xFFBABABA),
-            fontSize = 14.sp,
+            fontSize = 13.sp,
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color(0xFF17151D))
@@ -199,7 +208,7 @@ private fun ProgressDataSources() {
         )
 
         Text(
-            text = "We only show the last two weeks of sleep because\nthis time period has the greatest impact on how you\nfeel and perform today.",
+            text = "We only show the last two weeks of sleep because this time period has the greatest impact on how you feel and perform today.",
             color = Muted,
             fontSize = 14.sp,
             lineHeight = 22.sp,
@@ -270,53 +279,33 @@ private fun SleepRecordItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(81.dp)
+                .height(72.dp)
                 .clickable(onClick = onClick)
                 .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(record.title, color = Color.White, fontSize = 18.sp)
-                Spacer(modifier = Modifier.height(2.dp))
+                Text(record.title, color = Color.White, fontSize = 16.sp)
+                Spacer(modifier = Modifier.height(1.dp))
                 Text(
                     "${record.startTime} - ${record.endTime}",
                     color = Muted,
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                 )
             }
 
-            Text(record.duration, color = Muted, fontSize = 16.sp)
+            Text(record.duration, color = Muted, fontSize = 14.sp)
             Icon(
                 painter = painterResource(id = R.drawable.right),
                 contentDescription = null,
                 tint = Color.White,
                 modifier = Modifier
-                    .padding(start = 18.dp)
+                    .padding(start = 4.dp)
                     .size(24.dp)
             )
         }
     }
 }
-
-private data class SleepRecord(
-    val title: String,
-    val editorTitle: String,
-    val startTime: String,
-    val endTime: String,
-    val duration: String,
-)
-
-private fun progressSleepRecords(): List<SleepRecord> = listOf(
-    SleepRecord("Last night (Sunday)", "Sunday night", "00:00", "06:45", "6h 45m"),
-    SleepRecord("Saturday night", "Saturday night", "01:43", "07:04", "6h 45m"),
-    SleepRecord("Friday night", "Friday night", "23:10", "04:45", "5h 21m"),
-    SleepRecord("Thursday night", "Thursday night", "23:32", "07:30", "5h 35m"),
-    SleepRecord("Wednesday night", "Wednesday night", "00:37", "06:57", "7h 57m"),
-    SleepRecord("Tuesday night", "Tuesday night", "00:32", "07:59", "6h"),
-    SleepRecord("Monday night", "Monday night", "23:22", "06:43", "7h 28m"),
-    SleepRecord("June 1", "June 1", "23:59", "06:00", "7h 21m"),
-    SleepRecord("June 1", "June 1", "23:59", "06:00", "6h"),
-)
 
 @Composable
 private fun SeedDataCard(modifier: Modifier = Modifier) {
@@ -349,10 +338,10 @@ private fun SeedDataCard(modifier: Modifier = Modifier) {
             }
 
             Text(
-                text = "In these initial stages, we’re learning on the\nsleep pattern you’ve provided in your profile\nto seed our insights and predictions.",
+                text = "In these initial stages, we’re learning on the sleep pattern you’ve provided in your profile to seed our insights and predictions.",
                 color = Color.White,
-                fontSize = 16.sp,
-                lineHeight = 24.sp,
+                fontSize = 14.sp,
+                lineHeight = 22.sp,
                 modifier = Modifier.padding(top = 22.dp)
             )
         }
@@ -371,5 +360,13 @@ private fun ManualIcon(modifier: Modifier = Modifier, size: Dp = 48.dp) {
 @Preview(showBackground = true, backgroundColor = 0xFF010101, widthDp = 476, heightDp = 2000)
 @Composable
 private fun ProgressScreenPreview() {
-    ProgressScreen()
+    ProgressScreen(
+        uiState = ProgressUiState(
+            selectedTab = ProgressRangeTab.SleepTimes,
+            chartDays = progressChartDays(),
+            sleepDebtDays = progressSleepDebtDays(),
+            sleepRecords = progressSleepRecords()
+        ),
+        onTabSelected = {}
+    )
 }

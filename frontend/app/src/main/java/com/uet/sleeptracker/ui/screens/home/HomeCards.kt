@@ -56,14 +56,14 @@ internal fun DebtSummary(
             Text(
                 text = "$displayedValue debt",
                 color = Color.White,
-                fontSize = 18.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Normal
             )
         }
         Text(
             text = "Since yesterday",
             color = Color.White.copy(alpha = 0.75f),
-            fontSize = 18.sp
+            fontSize = 16.sp
         )
     }
 }
@@ -92,21 +92,15 @@ internal fun EnergyPotentialCard(
                 Text(
                     text = "Energy Potential",
                     color = Color.White,
-                    fontSize = 18.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Normal
-                )
-                Icon(
-                    painter = painterResource(R.drawable.right),
-                    tint = Color.White,
-                    contentDescription = "Add time",
-                    modifier = Modifier.size(16.dp)
                 )
             }
             Text(
                 text = value,
                 color = Color(0xFF2DD4BF),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.SemiBold
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Normal
             )
         }
     }
@@ -166,7 +160,7 @@ internal fun LastNightCard(
                     Text(
                         text = totalSleepTime,
                         color = Color.White,
-                        fontSize = 18.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Normal
                     )
                     Text(
@@ -214,9 +208,9 @@ internal fun LastNightCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Self-Reported Sleep Pattern",
+                    text = "Phone movement via RISE Nightstand Detection",
                     color = Color.White,
-                    fontSize = 14.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Normal
                 )
             }
